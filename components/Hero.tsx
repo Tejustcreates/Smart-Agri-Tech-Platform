@@ -8,7 +8,7 @@ interface HeroProps {
 
 const Hero: React.FC<HeroProps> = ({ onKnowMore }) => {
   return (
-    <section id={Section.HERO} className="relative h-screen flex items-center justify-center text-white text-center bg-cover bg-center" style={{ backgroundImage: "url('https://images.pexels.com/photos/1653877/pexels-photo-1653877.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&dpr=2')" }}>
+    <section id={Section.HERO} className="relative h-screen flex items-center justify-center text-white text-center bg-cover bg-center" style={{ backgroundImage: "url('https://media.assettype.com/tnm/import/sites/default/files/India_Farming_1200.jpg')" }}>
       <div className="absolute inset-0 bg-black opacity-60"></div>
       <div className="relative z-10 p-4">
         <h1 className="text-5xl md:text-7xl font-extrabold uppercase tracking-wider mb-4 animate-fade-in-down">
