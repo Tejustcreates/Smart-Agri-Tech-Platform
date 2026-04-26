@@ -95,7 +95,7 @@ const AgriMarket: React.FC<AgriMarketProps> = ({ onAddToCart }) => {
                   {equipment.available ? 'Available' : 'Rented'}
                 </span>
               </div>
-              <button onClick={() => onAddToCart(equipment, 'Equipment')} className={`w-full mt-4 py-2 text-white rounded-lg transition-colors ${equipment.available ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-400 cursor-not-allowed'}`} disabled={!equipment.available}>
+              <button onClick={() => onAddToCart(equipment, 'Equipment')} className={`w-full mt-4 py-2 text-white rounded-lg transition-colors ${equipment.available ? 'bg-orange-500 hover:bg-orange-600' : 'bg-gray-400 cursor-not-allowed'}`} disabled={!equipment.available}>
                   <i className="fas fa-cart-plus mr-2"></i>Add to Cart
               </button>
             </div>
