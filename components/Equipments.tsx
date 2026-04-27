@@ -34,7 +34,7 @@ const EQUIPMENTS_DATA: Equipment[] = [
     {
     id: 4,
     name: 'Sprayer',
-    image: 'https://5.imimg.com/data5/SELLER/Default/2023/6/313485113/FV/FE/IV/1263483/agricultural-hand-sprayer-1000x1000.jpg',
+    image: 'https://5.imimg.com/data5/ST/EC/MY-1263483/seed-drills-1000x1000.jpg',
     description: 'For spraying pesticides, herbicides, and fertilizers on crops.',
     rentPerDay: 800,
     available: true,
