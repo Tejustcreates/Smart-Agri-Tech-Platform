@@ -343,7 +343,7 @@ const Weather: React.FC = () => {
           <h2 className="text-4xl font-bold text-gray-800">
             Smart Weather <span className="text-green-600">Intelligence</span>
           </h2>
-          <p className="text-gray-600 mt-4">AI-powered weather predictions and farming recommendations</p>
+          <p className="text-gray-600 mt-4">Smart weather predictions and farming recommendations</p>
         </div>
 
         <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-xl p-6 md:p-8">
@@ -441,7 +441,7 @@ const Weather: React.FC = () => {
             {modelLoading && (
               <div className="bg-blue-50 rounded-xl p-6 text-center">
                 <i className="fas fa-brain text-blue-500 text-3xl mb-3 animate-pulse"></i>
-                <p className="text-gray-600">Loading AI prediction models...</p>
+                <p className="text-gray-600">Loading prediction models...</p>
               </div>
             )}
 

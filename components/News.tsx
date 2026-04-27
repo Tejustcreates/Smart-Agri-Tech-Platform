@@ -291,9 +291,9 @@ const News: React.FC = () => {
               <i className="fas fa-robot text-3xl"></i>
             </div>
             <div>
-              <h3 className="text-xl font-bold">AI-Powered Personalization</h3>
+              <h3 className="text-xl font-bold">Smart Personalization</h3>
               <p className="opacity-90">
-                Our AI analyzes your location and crop preferences to show you the most relevant agricultural news
+                Our system analyzes your location and crop preferences to show you the most relevant agricultural news
               </p>
             </div>
           </div>

@@ -295,7 +295,7 @@ const DiseaseDetection: React.FC = () => {
           <h2 className="text-4xl font-bold text-gray-800">
             Disease Detection <span className="text-red-600">& Smart Treatment</span>
           </h2>
-          <p className="text-gray-600 mt-4">AI-powered crop disease identification with treatment recommendations</p>
+          <p className="text-gray-600 mt-4">Smart crop disease identification with treatment recommendations</p>
         </div>
 
           <div className="max-w-5xl mx-auto">

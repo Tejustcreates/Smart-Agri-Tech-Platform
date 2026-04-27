@@ -185,14 +185,14 @@ const Mandi: React.FC<MandiProps> = ({ onAddToCart }) => {
             <h2 className="text-4xl font-bold text-gray-800">
                 Smart Mandi <span className="text-green-600">Portal</span>
             </h2>
-            <p className="text-gray-600 mt-4">AI-powered crop marketplace with real-time price predictions</p>
+            <p className="text-gray-600 mt-4">Smart crop marketplace with real-time price predictions</p>
         </div>
         <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-2xl overflow-hidden">
           <div className="flex border-b border-gray-200 flex-wrap">
             <TabButton tabId="register" label="Crop Registration" icon="fas fa-clipboard-list" />
             <TabButton tabId="sell" label="My Listings" icon="fas fa-store" />
             <TabButton tabId="buy" label="Buy Crops" icon="fas fa-shopping-cart" />
-            <TabButton tabId="price-predict" label="AI Price Predictor" icon="fas fa-chart-line" />
+            <TabButton tabId="price-predict" label="Smart Price Predictor" icon="fas fa-chart-line" />
           </div>
 
           <div className="p-6 md:p-10">
@@ -319,8 +319,8 @@ const Mandi: React.FC<MandiProps> = ({ onAddToCart }) => {
 
             {activeTab === 'price-predict' && (
               <div className="animate-fade-in-up">
-                <h3 className="text-2xl font-bold text-gray-800 mb-2"><i className="fas fa-chart-line text-purple-600 mr-2"></i>AI Price Prediction</h3>
-                <p className="text-gray-500 mb-6">Get AI-powered price predictions to make informed selling decisions</p>
+                <h3 className="text-2xl font-bold text-gray-800 mb-2"><i className="fas fa-chart-line text-purple-600 mr-2"></i>Smart Price Prediction</h3>
+                <p className="text-gray-500 mb-6">Get smart price predictions to make informed selling decisions</p>
                 
                 <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl p-6 mb-8">
                   <div className="flex flex-col md:flex-row gap-4 items-end">
@@ -414,7 +414,7 @@ const Mandi: React.FC<MandiProps> = ({ onAddToCart }) => {
 
                           <div className="mt-2 text-xs text-gray-500">
                             <i className="fas fa-shield-alt mr-1"></i>
-                            {pred.confidence}% AI confidence
+                            {pred.confidence}% confidence
                           </div>
                         </div>
                       ))}
@@ -438,7 +438,7 @@ const Mandi: React.FC<MandiProps> = ({ onAddToCart }) => {
                       <i className="fas fa-chart-bar text-purple-600 text-3xl"></i>
                     </div>
                     <h4 className="font-bold text-gray-800 mb-2">Ready to Predict</h4>
-                    <p className="text-gray-600">Click "Get Predictions" to see AI-powered price forecasts</p>
+                    <p className="text-gray-600">Click "Get Predictions" to see smart price forecasts</p>
                   </div>
                 )}
               </div>

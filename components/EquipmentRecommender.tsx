@@ -96,7 +96,7 @@ const EquipmentRecommender: React.FC<{ onAddToCart: (product: any, type: any) =>
           <h2 className="text-4xl font-bold text-gray-800">
             Smart Equipment <span className="text-orange-600">Rental</span> Recommender
           </h2>
-          <p className="text-gray-600 mt-4">AI-powered equipment suggestions based on your farm</p>
+          <p className="text-gray-600 mt-4">Smart equipment suggestions based on your farm</p>
         </div>
 
         <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-xl p-6 md:p-8 mb-8">
@@ -236,7 +236,7 @@ const EquipmentRecommender: React.FC<{ onAddToCart: (product: any, type: any) =>
             </div>
             <h3 className="text-xl font-bold text-gray-800 mb-2">Get Smart Recommendations</h3>
             <p className="text-gray-600 max-w-md mx-auto">
-              Enter your farm details above to receive AI-powered equipment recommendations tailored to your needs
+              Enter your farm details above to receive smart equipment recommendations tailored to your needs
             </p>
           </div>
         )}

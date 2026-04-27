@@ -140,7 +140,7 @@ const Schemes: React.FC = () => {
           <h2 className="text-4xl font-bold text-gray-800">
             Government <span className="text-indigo-600">Schemes</span> Recommender
           </h2>
-          <p className="text-gray-600 mt-4">AI-powered personalized scheme recommendations for your farm</p>
+          <p className="text-gray-600 mt-4">Smart personalized scheme recommendations for your farm</p>
         </div>
 
         <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-xl p-6 md:p-8 mb-8">
@@ -241,7 +241,7 @@ const Schemes: React.FC = () => {
                     <i className="fas fa-robot text-3xl"></i>
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold">AI-Powered Recommendations</h3>
+                    <h3 className="text-xl font-bold">Smart Recommendations</h3>
                     <p className="opacity-90">
                       Schemes are ranked based on your profile. Match percentage shows relevance to your farm.
                     </p>

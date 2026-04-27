@@ -198,7 +198,7 @@ const CropRecommender: React.FC = () => {
           <h2 className="text-4xl font-bold text-gray-800">
             Crop <span className="text-green-600">Recommendation</span> System
           </h2>
-          <p className="text-gray-600 mt-4">AI-powered crop suggestions based on soil and climate conditions</p>
+          <p className="text-gray-600 mt-4">Smart crop suggestions based on soil and climate conditions</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -383,7 +383,7 @@ const CropRecommender: React.FC = () => {
               {isPredicting ? (
                 <>
                   <i className="fas fa-spinner fa-spin"></i>
-                  Analyzing with AI...
+                  Analyzing...
                 </>
               ) : (
                 <>
@@ -467,7 +467,7 @@ const CropRecommender: React.FC = () => {
                 </div>
                 <h3 className="text-xl font-bold text-gray-800 mb-2">Ready to Get Recommendations</h3>
                 <p className="text-gray-600 mb-6">
-                  Enter your soil data on the left and click "Get Crop Recommendations" to see AI-powered suggestions
+                  Enter your soil data on the left and click "Get Crop Recommendations" to see smart suggestions
                 </p>
                 <div className="flex flex-wrap justify-center gap-3">
                   {['Rice', 'Wheat', 'Cotton', 'Sugarcane'].map((crop) => (
