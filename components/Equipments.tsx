@@ -57,7 +57,7 @@ const SEEDS_DATA: Seed[] = [
 
 const PESTICIDES_DATA: Pesticide[] = [
     { id: 1, name: 'Neem-Based Bio Pesticide', image: 'https://images.pexels.com/photos/4032585/pexels-photo-4032585.jpeg?auto=compress&cs=tinysrgb&w=600', description: 'Organic and eco-friendly solution for controlling aphids and mealybugs.', pricePerLiter: 350, brand: 'BioCare' },
-    { id: 2, name: 'Crop Shield Insecticide', image: 'https://images.pexels.com/photos/5546261/pexels-photo-5546261.jpeg?auto=compress&cs=tinysrgb&w=600', description: 'Broad-spectrum insecticide for effective control of bollworms and mites.', pricePerLiter: 450, brand: 'AgroProtect' },
+    { id: 2, name: 'Crop Shield Insecticide', image: 'https://5.imimg.com/data5/SELLER/Default/2022/12/SL/HC/ZF/125050588/fmc-ferterra-insecticide-1000x1000.jpeg', description: 'Broad-spectrum insecticide for effective control of bollworms and mites.', pricePerLiter: 450, brand: 'AgroProtect' },
     { id: 3, name: 'FungiCure Fungicide', image: 'https://images.pexels.com/photos/7163953/pexels-photo-7163953.jpeg?auto=compress&cs=tinysrgb&w=600', description: 'Protects crops from fungal diseases like rust, mildew, and blight.', pricePerLiter: 600, brand: 'CropGuard' },
     { id: 4, name: 'WeedOut Herbicide', image: 'https://images.pexels.com/photos/4207892/pexels-photo-4207892.jpeg?auto=compress&cs=tinysrgb&w=600', description: 'Selective herbicide to control broadleaf weeds without harming the main crop.', pricePerLiter: 520, brand: 'WeedControl' },
 ];
