@@ -42,7 +42,7 @@ const EQUIPMENTS_DATA: Equipment[] = [
 ];
 
 const FERTILIZERS_DATA: Fertilizer[] = [
-    { id: 1, name: 'Urea Fertilizer', image: 'https://m.media-amazon.com/images/I/61ZvMOaPsL._AC_SY400_.jpg', description: 'High nitrogen content for lush green growth. Ideal for all crops.', pricePerBag: 300, brand: 'IFFCO' },
+    { id: 1, name: 'Urea Fertilizer', image: 'https://gogarden.co.in/cdn/shop/files/71yg6hRnpTL._SL1200_fac2b8e7-208b-482d-9493-07d03daaff6f.jpg?v=1741858085', description: 'High nitrogen content for lush green growth. Ideal for all crops.', pricePerBag: 300, brand: 'IFFCO' },
     { id: 2, name: 'DAP Fertilizer', image: 'https://m.media-amazon.com/images/I/51b0rRlEqFL._AC_SY400_.jpg', description: 'Rich in phosphorus, essential for root development and flowering.', pricePerBag: 1200, brand: 'NFL' },
     { id: 3, name: 'Organic Manure', image: 'https://organicbazar.net/cdn/shop/files/vermicompost_5kg_Organic_Bazar_fertilizer_organic_fertilizers_vermi_compost_kenchua_khaad_vermicompost_5kg.jpg', description: 'Composted manure to improve soil health and fertility naturally.', pricePerBag: 400, brand: 'FarmFresh' },
     { id: 4, name: 'Potash Fertilizer', image: 'https://m.media-amazon.com/images/I/51tMaq5qlCL._AC_SY400_.jpg', description: 'Enhances plant immunity and improves fruit quality and size.', pricePerBag: 950, brand: 'KRIBHCO' },
