@@ -153,7 +153,7 @@ const EquipmentRecommender: React.FC<{ onAddToCart: (product: any, type: any) =>
 
           <button
             onClick={getRecommendations}
-            className="w-full mt-8 py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl font-bold text-lg hover:shadow-lg transition-all flex items-center justify-center gap-2"
+            className="w-full mt-8 py-4 bg-green-600 text-white rounded-xl font-bold text-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
           >
             <i className="fas fa-search"></i>
             Get Equipment Recommendations
