@@ -26,7 +26,7 @@ const EQUIPMENTS_DATA: Equipment[] = [
   {
     id: 3,
     name: 'Rotavator',
-    image: 'https://5.imimg.com/data5/ST/EC/MY-1263483/seed-drills-1000x1000.jpg',
+    image: 'https://img.agriexpo.online/images_ag/photo-g/178897-16664336.jpg',
     description: 'Used for soil preparation by mixing and pulverizing the soil.',
     rentPerDay: 1500,
     available: true,
