@@ -18,7 +18,7 @@ const EQUIPMENTS_DATA: Equipment[] = [
   {
     id: 2,
     name: 'Harvester',
-    image: 'https://5.imimg.com/data5/SELLER/Default/2025/9/543529316/BD/CJ/MT/46205119/50-hp-preet-955-2wd-tractor-1000x1000.jpg',
+    image: 'https://www.estesperformanceconcaves.com/wp-content/uploads/2020/07/auger-platforms-R4D012314-1366x768-1.jpg',
     description: 'Combine harvester for efficient reaping, threshing, and winnowing.',
     rentPerDay: 5000,
     available: false,
