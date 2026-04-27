@@ -103,7 +103,7 @@ const Header: React.FC<HeaderProps> = ({ activeSection, setActiveSection, user, 
         <div className="flex items-center justify-between h-20">
           <div className="flex-shrink-0">
             <a href="#" onClick={(e) => { e.preventDefault(); handleLinkClick(Section.HERO);}} className="flex items-center transition-transform duration-300 hover:scale-105">
-              <img className="h-16 w-auto" src="https://i.ibb.co/3sZpYkX/logo.png" alt="GROWSMART Logo" />
+              <img className="h-16 w-auto" src="https://growsm.art/img/logo_green.svg" alt="GROWSMART Logo" />
             </a>
           </div>
           <div className="hidden md:block">
