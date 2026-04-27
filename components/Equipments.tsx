@@ -10,7 +10,7 @@ const EQUIPMENTS_DATA: Equipment[] = [
   {
     id: 1,
     name: 'Tractor',
-    image: './img/tractor.jpeg',
+    image: 'https://5.imimg.com/data5/SELLER/Default/2023/5/310928279/SK/RW/UH/46205119/50hp-preet-955-2wd-tractor-1000x1000.jpg',
     description: 'Powerful tractor for plowing and other heavy-duty tasks. 50 HP.',
     rentPerDay: 2500,
     available: true,
@@ -18,7 +18,7 @@ const EQUIPMENTS_DATA: Equipment[] = [
   {
     id: 2,
     name: 'Harvester',
-    image: 'https://images.pexels.com/photos/162639/agriculture-field-harvest-grain-162639.jpeg?auto=compress&cs=tinysrgb&w=600',
+    image: 'https://5.imimg.com/data5/SELLER/Default/2025/9/543529316/BD/CJ/MT/46205119/50-hp-preet-955-2wd-tractor-1000x1000.jpg',
     description: 'Combine harvester for efficient reaping, threshing, and winnowing.',
     rentPerDay: 5000,
     available: false,
@@ -26,7 +26,7 @@ const EQUIPMENTS_DATA: Equipment[] = [
   {
     id: 3,
     name: 'Rotavator',
-    image: 'https://images.pexels.com/photos/5638268/pexels-photo-5638268.jpeg?auto=compress&cs=tinysrgb&w=600',
+    image: 'https://5.imimg.com/data5/ST/EC/MY-1263483/seed-drills-1000x1000.jpg',
     description: 'Used for soil preparation by mixing and pulverizing the soil.',
     rentPerDay: 1500,
     available: true,
@@ -34,7 +34,7 @@ const EQUIPMENTS_DATA: Equipment[] = [
     {
     id: 4,
     name: 'Sprayer',
-    image: 'https://images.pexels.com/photos/4513940/pexels-photo-4513940.jpeg?auto=compress&cs=tinysrgb&w=600',
+    image: 'https://5.imimg.com/data5/SELLER/Default/2023/6/313485113/FV/FE/IV/1263483/agricultural-hand-sprayer-1000x1000.jpg',
     description: 'For spraying pesticides, herbicides, and fertilizers on crops.',
     rentPerDay: 800,
     available: true,
@@ -42,10 +42,10 @@ const EQUIPMENTS_DATA: Equipment[] = [
 ];
 
 const FERTILIZERS_DATA: Fertilizer[] = [
-    { id: 1, name: 'Urea Fertilizer', image: wheatImg, description: 'High nitrogen content for lush green growth. Ideal for all crops.', pricePerBag: 300, brand: 'IFFCO' },
-    { id: 2, name: 'DAP Fertilizer', image: 'https://images.pexels.com/photos/6957993/pexels-photo-6957993.jpeg?auto=compress&cs=tinysrgb&w=600', description: 'Rich in phosphorus, essential for root development and flowering.', pricePerBag: 1200, brand: 'NFL' },
-    { id: 3, name: 'Organic Manure', image: 'https://images.pexels.com/photos/776077/pexels-photo-776077.jpeg?auto=compress&cs=tinysrgb&w=600', description: 'Composted manure to improve soil health and fertility naturally.', pricePerBag: 400, brand: 'FarmFresh' },
-    { id: 4, name: 'Potash Fertilizer', image: 'https://images.pexels.com/photos/2600353/pexels-photo-2600353.jpeg?auto=compress&cs=tinysrgb&w=600', description: 'Enhances plant immunity and improves fruit quality and size.', pricePerBag: 950, brand: 'KRIBHCO' },
+    { id: 1, name: 'Urea Fertilizer', image: 'https://m.media-amazon.com/images/I/61ZvMOaPsL._AC_SY400_.jpg', description: 'High nitrogen content for lush green growth. Ideal for all crops.', pricePerBag: 300, brand: 'IFFCO' },
+    { id: 2, name: 'DAP Fertilizer', image: 'https://m.media-amazon.com/images/I/51b0rRlEqFL._AC_SY400_.jpg', description: 'Rich in phosphorus, essential for root development and flowering.', pricePerBag: 1200, brand: 'NFL' },
+    { id: 3, name: 'Organic Manure', image: 'https://organicbazar.net/cdn/shop/files/vermicompost_5kg_Organic_Bazar_fertilizer_organic_fertilizers_vermi_compost_kenchua_khaad_vermicompost_5kg.jpg', description: 'Composted manure to improve soil health and fertility naturally.', pricePerBag: 400, brand: 'FarmFresh' },
+    { id: 4, name: 'Potash Fertilizer', image: 'https://m.media-amazon.com/images/I/51tMaq5qlCL._AC_SY400_.jpg', description: 'Enhances plant immunity and improves fruit quality and size.', pricePerBag: 950, brand: 'KRIBHCO' },
 ];
 
 const SEEDS_DATA: Seed[] = [
