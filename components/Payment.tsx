@@ -24,7 +24,7 @@ const Payment: React.FC<PaymentProps> = ({ total, onPaymentSuccess, onBackToCart
 
   if (paymentState === 'success') {
     return (
-        <section id={Section.PAYMENT} className="py-20 bg-gray-100 flex items-center justify-center min-h-[calc(100vh-80px)]">
+        <section id={Section.PAYMENT} className="py-20 bg-gray-100 flex items-center justify-center min-h-[calc(100vh-64px)]">
             <div className="text-center bg-white p-10 rounded-xl shadow-lg animate-fade-in-up">
                 <i className="fas fa-check-circle text-6xl text-green-500 mb-4"></i>
                 <h2 className="text-3xl font-bold text-gray-800">Payment Successful!</h2>
@@ -35,10 +35,10 @@ const Payment: React.FC<PaymentProps> = ({ total, onPaymentSuccess, onBackToCart
   }
 
   return (
-    <section id={Section.PAYMENT} className="py-20 bg-gray-100 min-h-[calc(100vh-80px)]">
+    <section id={Section.PAYMENT} className="py-20 bg-gray-100 min-h-[calc(100vh-64px)]">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-md mx-auto bg-white rounded-xl shadow-lg p-8">
-                <button onClick={onBackToCart} className="text-sm text-gray-600 hover:text-green-600 mb-6">
+                <button onClick={onBackToCart} className="text-sm text-gray-600 hover:text-green-600 mb-6 transition-colors duration-300">
                     <i className="fas fa-arrow-left mr-2"></i>Back to Cart
                 </button>
                 <h2 className="text-3xl font-bold text-gray-800 text-center mb-2">
@@ -53,18 +53,42 @@ const Payment: React.FC<PaymentProps> = ({ total, onPaymentSuccess, onBackToCart
                     <div className="mb-4">
                         <label className="block text-sm font-medium text-gray-700 mb-1">Card Number</label>
                         <div className="relative">
-                            <input type="text" className="w-full p-3 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="•••• •••• •••• ••••" required />
+                            <input 
+                                type="text" 
+                                className="w-full p-3 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" 
+                                placeholder="1234 5678 9012 3456" 
+                                maxLength={19}
+                                pattern="[\d ]{16,19}"
+                                inputMode="numeric"
+                                required 
+                            />
                             <i className="fab fa-cc-visa text-gray-400 text-2xl absolute right-3 top-1/2 -translate-y-1/2"></i>
                         </div>
                     </div>
                     <div className="flex gap-4 mb-6">
                         <div className="flex-1">
                             <label className="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
-                            <input type="text" className="w-full p-3 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="MM / YY" required />
+                            <input 
+                                type="text" 
+                                className="w-full p-3 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" 
+                                placeholder="MM / YY" 
+                                maxLength={7}
+                                pattern="\d{2}\s*/?\s*\d{2}"
+                                inputMode="numeric"
+                                required 
+                            />
                         </div>
                         <div className="flex-1">
                             <label className="block text-sm font-medium text-gray-700 mb-1">CVV</label>
-                            <input type="text" className="w-full p-3 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="•••" required />
+                            <input 
+                                type="text" 
+                                className="w-full p-3 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" 
+                                placeholder="123" 
+                                maxLength={4}
+                                pattern="\d{3,4}"
+                                inputMode="numeric"
+                                required 
+                            />
                         </div>
                     </div>
                     <div className="border-t pt-4">

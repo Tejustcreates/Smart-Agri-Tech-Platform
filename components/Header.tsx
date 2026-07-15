@@ -72,7 +72,7 @@ const Header: React.FC<HeaderProps> = ({ activeSection, setActiveSection, user, 
           </button>
           <button
             onClick={() => { onLogout(); setIsMenuOpen(false); }}
-            className={`${baseClasses} text-gray-700 hover:bg-green-500 hover:text-white`}
+            className={`${baseClasses} text-gray-700 hover:bg-green-500 hover:text-white transition-colors duration-300`}
           >
             Logout
           </button>
@@ -100,7 +100,7 @@ const Header: React.FC<HeaderProps> = ({ activeSection, setActiveSection, user, 
   return (
     <header className="bg-lime-50 shadow-md sticky top-0 z-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
+        <div className="flex items-center justify-between h-16">
           <div className="flex-shrink-0">
             <a href="#" onClick={(e) => { e.preventDefault(); handleLinkClick(Section.HERO);}} className="flex items-center transition-transform duration-300 hover:scale-105">
               <img className="h-16 w-auto" src="https://growsm.art/img/logo_green.svg" alt="GROWSMART Logo" />

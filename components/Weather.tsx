@@ -179,7 +179,8 @@ const Weather: React.FC = () => {
   const [modelLoading, setModelLoading] = useState(false);
 
   const fetchWeatherData = useCallback(async () => {
-    if (!city) {
+    const trimmedCity = city.trim();
+    if (!trimmedCity) {
       setError('Please enter a city name.');
       return;
     }
@@ -194,34 +195,38 @@ const Weather: React.FC = () => {
       
       if (apiKey === 'demo' || !apiKey) {
         await new Promise(resolve => setTimeout(resolve, 1500));
-        const temp = 25 + (city.length % 15);
-        const humidity = 60 + (city.length % 30);
+        const temp = 25 + (trimmedCity.length % 15);
+        const humidity = 60 + (trimmedCity.length % 30);
         const mockData: WeatherData = {
-          city: city.charAt(0).toUpperCase() + city.slice(1),
+          city: trimmedCity.charAt(0).toUpperCase() + trimmedCity.slice(1),
           temperature: temp,
           description: 'Partly Cloudy',
           humidity,
-          windSpeed: 15 + (city.length % 10),
+          windSpeed: 15 + (trimmedCity.length % 10),
           icon: '04d',
-          rainfall: city.length % 2 === 0 ? 0 : 5,
+          rainfall: trimmedCity.length % 2 === 0 ? 0 : 5,
           pressure: 1013,
           visibility: 10,
-          forecast: [
-            { day: 'Mon', temp: temp + 2, icon: '01d', rainProb: 10 },
-            { day: 'Tue', temp: temp - 1, icon: '10d', rainProb: 70 },
-            { day: 'Wed', temp: temp + 1, icon: '04d', rainProb: 30 },
-            { day: 'Thu', temp: temp + 3, icon: '01d', rainProb: 5 },
-            { day: 'Fri', temp: temp, icon: '02d', rainProb: 20 },
-          ],
+          forecast: (() => {
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const today = new Date().getDay();
+            return [
+              { day: days[(today + 1) % 7], temp: temp + 2, icon: '01d', rainProb: 10 },
+              { day: days[(today + 2) % 7], temp: temp - 1, icon: '10d', rainProb: 70 },
+              { day: days[(today + 3) % 7], temp: temp + 1, icon: '04d', rainProb: 30 },
+              { day: days[(today + 4) % 7], temp: temp + 3, icon: '01d', rainProb: 5 },
+              { day: days[(today + 5) % 7], temp: temp, icon: '02d', rainProb: 20 },
+            ];
+          })(),
         };
         setWeatherData(mockData);
-        setLocation(city);
+        setLocation(trimmedCity);
       } else {
         const weatherResponse = await axios.get(
-          `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)},IN&units=metric&appid=${apiKey}`
+          `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(trimmedCity)},IN&units=metric&appid=${apiKey}`
         );
         const forecastResponse = await axios.get(
-          `https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(city)},IN&units=metric&appid=${apiKey}`
+          `https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(trimmedCity)},IN&units=metric&appid=${apiKey}`
         );
 
         const data = weatherResponse.data;
@@ -347,6 +352,16 @@ const Weather: React.FC = () => {
         </div>
 
         <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-xl p-6 md:p-8">
+          {(() => {
+            const apiKey = import.meta.env.VITE_OPENWEATHER_API_KEY;
+            const isDemo = !apiKey || apiKey === 'your_openweathermap_api_key_here';
+            return isDemo ? (
+              <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-700 flex items-center gap-2">
+                <i className="fas fa-info-circle"></i>
+                <span>Demo Mode — Add <code className="bg-yellow-100 px-1 rounded">VITE_OPENWEATHER_API_KEY</code> to <code className="bg-yellow-100 px-1 rounded">.env.local</code> for real weather data</span>
+              </div>
+            ) : null;
+          })()}
           <div className="flex flex-col md:flex-row gap-4">
             <input
               type="text"

@@ -114,7 +114,10 @@ const EquipmentRecommender: React.FC<{ onAddToCart: (product: any, type: any) =>
                 max="100"
                 step="0.5"
                 value={landSize}
-                onChange={(e) => setLandSize(Number(e.target.value))}
+                onChange={(e) => {
+                const val = parseFloat(e.target.value);
+                setLandSize(isNaN(val) ? 5 : Math.min(100, Math.max(0.5, val)));
+              }}
                 className="w-full px-4 py-3 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
               />
               <div className="flex justify-between text-xs text-gray-500 mt-1">

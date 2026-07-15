@@ -29,7 +29,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, onSwitchToSignup }) => {
   };
 
   return (
-    <section id="login" className="py-20 bg-gray-100 flex items-center justify-center min-h-[calc(100vh-80px)]">
+    <section id="login" className="py-20 bg-gray-100 flex items-center justify-center min-h-[calc(100vh-64px)]">
       <div className="container mx-auto px-4">
         <div className="max-w-md mx-auto bg-white rounded-xl shadow-lg p-8 animate-fade-in-up">
           <div className="text-center mb-8">

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Toaster, toast } from 'react-hot-toast';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import About from './components/About';
@@ -80,7 +81,7 @@ const App: React.FC = () => {
         return [...prevCart, { id, name: product.name, price, quantity: 1, image, type }];
       }
     });
-    alert(`${product.name} has been added to your cart!`);
+    toast.success(`${product.name} added to cart!`);
   };
 
   const removeFromCart = (itemId: string) => {
@@ -113,7 +114,7 @@ const App: React.FC = () => {
     setActiveSection(Section.HERO);
     // In a real app, you might show an order confirmation page first
     // For now, we'll just redirect to home.
-    alert('Payment successful! Your order has been placed.');
+    toast.success('Payment successful! Your order has been placed.');
   };
 
   useEffect(() => {
@@ -174,6 +175,7 @@ const App: React.FC = () => {
 
   return (
     <div className="App">
+      <Toaster position="top-right" toastOptions={{ duration: 3000, style: { borderRadius: '10px', background: '#333', color: '#fff' } }} />
       <Header
         activeSection={activeSection}
         setActiveSection={handleSetActiveSection}

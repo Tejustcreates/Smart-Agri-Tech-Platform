@@ -1,4 +1,5 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState } from 'react';
+import { toast } from 'react-hot-toast';
 import * as tf from '@tensorflow/tfjs';
 
 interface DiseaseInfo {
@@ -159,14 +160,10 @@ const CROP_OPTIONS = ['Wheat', 'Rice', 'Cotton', 'Tomato', 'Potato', 'Onion', 'M
 const DiseaseDetection: React.FC = () => {
   const [selectedCrop, setSelectedCrop] = useState<string>('');
   const [selectedSymptoms, setSelectedSymptoms] = useState<SelectedSymptom[]>([]);
-  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [detectedDisease, setDetectedDisease] = useState<DiseaseInfo | null>(null);
-  const [detectedCropFromImage, setDetectedCropFromImage] = useState<string>('');
   const [confidence, setConfidence] = useState<number>(0);
-  const [activeTab, setActiveTab] = useState<'symptoms' | 'upload'>('symptoms');
   const [showResults, setShowResults] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const toggleSymptom = (symptom: { id: string; label: string; category: string }) => {
     setSelectedSymptoms((prev) => {
@@ -180,45 +177,13 @@ const DiseaseDetection: React.FC = () => {
     setDetectedDisease(null);
   };
 
-  const handleImageUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      if (!file.type.startsWith('image/')) {
-        alert('Please upload an image file.');
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setUploadedImage(e.target?.result as string);
-        setShowResults(false);
-        setDetectedDisease(null);
-      };
-      reader.readAsDataURL(file);
-    }
-  }, []);
-
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        setUploadedImage(ev.target?.result as string);
-        setShowResults(false);
-        setDetectedDisease(null);
-      };
-      reader.readAsDataURL(file);
-    }
-  }, []);
-
   const analyzeSymptoms = async () => {
     if (!selectedCrop) {
-      alert('Please select a crop type.');
+      toast.error('Please select a crop type.');
       return;
     }
     if (selectedSymptoms.length === 0) {
-      alert('Please select at least one symptom.');
+      toast.error('Please select at least one symptom.');
       return;
     }
 
@@ -256,34 +221,9 @@ const DiseaseDetection: React.FC = () => {
     setIsAnalyzing(false);
   };
 
-  const analyzeImage = async () => {
-    if (!uploadedImage) {
-      alert('Please upload an image first.');
-      return;
-    }
-
-    setIsAnalyzing(true);
-    setShowResults(false);
-
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-
-    const detectedCrop = CROP_OPTIONS[Math.floor(Math.random() * CROP_OPTIONS.length)];
-    const randomDiseaseKeys = Object.keys(DISEASES);
-    const randomDisease = randomDiseaseKeys[Math.floor(Math.random() * randomDiseaseKeys.length)];
-    const disease = DISEASES[randomDisease];
-
-    setDetectedCropFromImage(detectedCrop);
-    setDetectedDisease(disease);
-    setConfidence(75 + Math.floor(Math.random() * 20));
-    setShowResults(true);
-    setIsAnalyzing(false);
-  };
-
   const resetAnalysis = () => {
     setSelectedSymptoms([]);
-    setUploadedImage(null);
     setDetectedDisease(null);
-    setDetectedCropFromImage('');
     setConfidence(0);
     setShowResults(false);
   };
@@ -293,40 +233,18 @@ const DiseaseDetection: React.FC = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-gray-800">
-            Disease Detection <span className="text-red-600">& Smart Treatment</span>
+            Crop Disease <span className="text-red-600">Advisor</span>
           </h2>
           <p className="text-gray-600 mt-4">Smart crop disease identification with treatment recommendations</p>
+          <p className="text-sm text-gray-400 mt-1">
+            <i className="fas fa-camera mr-1"></i>
+            Image-based diagnosis coming soon
+          </p>
         </div>
 
           <div className="max-w-5xl mx-auto">
           <div className="bg-white rounded-xl shadow-xl overflow-hidden mb-8">
-            <div className="flex border-b">
-              <button
-                onClick={() => setActiveTab('symptoms')}
-                className={`flex-1 py-4 px-6 font-semibold transition-colors ${
-                  activeTab === 'symptoms'
-                    ? 'bg-blue-50 text-blue-600 border-b-2 border-blue-600'
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                <i className="fas fa-clipboard-check mr-2"></i>
-                Select Symptoms
-              </button>
-              <button
-                onClick={() => setActiveTab('upload')}
-                className={`flex-1 py-4 px-6 font-semibold transition-colors ${
-                  activeTab === 'upload'
-                    ? 'bg-purple-50 text-purple-600 border-b-2 border-purple-600'
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                <i className="fas fa-camera mr-2"></i>
-                Upload Image
-              </button>
-            </div>
-
             <div className="p-6">
-              {activeTab === 'symptoms' ? (
                 <div>
                   <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
                     <i className="fas fa-leaf text-green-600"></i>
@@ -380,79 +298,24 @@ const DiseaseDetection: React.FC = () => {
                     </div>
                   ))}
                 </div>
-              ) : (
-                <div>
-                  <h3 className="text-lg font-bold text-gray-800 mb-4">Upload Crop Image</h3>
-                  <div
-                    onDrop={handleDrop}
-                    onDragOver={(e) => e.preventDefault()}
-                    className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors ${
-                      uploadedImage ? 'border-green-500 bg-green-50' : 'border-gray-300 hover:border-purple-400'
-                    }`}
-                  >
-                    {uploadedImage ? (
-                      <div className="relative">
-                        <img
-                          src={uploadedImage}
-                          alt="Uploaded crop"
-                          className="max-h-64 mx-auto rounded-lg shadow-md"
-                        />
-                        <button
-                          onClick={() => setUploadedImage(null)}
-                          className="absolute top-2 right-2 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600"
-                        >
-                          <i className="fas fa-times"></i>
-                        </button>
-                      </div>
-                    ) : (
-                      <>
-                        <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                          <i className="fas fa-cloud-upload-alt text-purple-600 text-2xl"></i>
-                        </div>
-                        <p className="text-gray-600 mb-2">Drag & drop an image here, or</p>
-                        <button
-                          onClick={() => fileInputRef.current?.click()}
-                          className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-                        >
-                          Browse Files
-                        </button>
-                        <input
-                          ref={fileInputRef}
-                          type="file"
-                          accept="image/*"
-                          onChange={handleImageUpload}
-                          className="hidden"
-                        />
-                        <p className="text-sm text-gray-500 mt-4">
-                          Supported formats: JPG, PNG, WEBP
-                        </p>
-                      </>
-                    )}
-                  </div>
-                </div>
-              )}
             </div>
           </div>
 
-          {activeTab === 'symptoms' && (
-            <>
-              {!selectedCrop && (
-                <p className="text-center text-amber-600 mb-2">
-                  <i className="fas fa-info-circle mr-1"></i> Please select a crop above to enable diagnosis
-                </p>
-              )}
-              {selectedCrop && selectedSymptoms.length === 0 && (
-                <p className="text-center text-amber-600 mb-2">
-                  <i className="fas fa-hand-pointer mr-1"></i> Select symptoms from above to diagnose your crop
-                </p>
-              )}
-            </>
+          {!selectedCrop && (
+            <p className="text-center text-amber-600 mb-2">
+              <i className="fas fa-info-circle mr-1"></i> Please select a crop above to enable diagnosis
+            </p>
           )}
-          
+          {selectedCrop && selectedSymptoms.length === 0 && (
+            <p className="text-center text-amber-600 mb-2">
+              <i className="fas fa-hand-pointer mr-1"></i> Select symptoms from above to diagnose your crop
+            </p>
+          )}
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
             <button
-              onClick={activeTab === 'symptoms' ? analyzeSymptoms : analyzeImage}
-              disabled={isAnalyzing || (activeTab === 'symptoms' && (!selectedCrop || selectedSymptoms.length === 0)) || (activeTab === 'upload' && !uploadedImage)}
+              onClick={analyzeSymptoms}
+              disabled={isAnalyzing || !selectedCrop || selectedSymptoms.length === 0}
               className="w-full mt-8 py-4 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-green-400 transition-colors font-semibold text-lg flex items-center justify-center gap-2"
             >
               {isAnalyzing ? (
@@ -464,9 +327,7 @@ const DiseaseDetection: React.FC = () => {
                 <>
                   <span><i className="fas fa-search"></i></span>
                   <span>
-                    {activeTab === 'symptoms' 
-                      ? (!selectedCrop ? 'Select a crop first' : !selectedSymptoms.length ? 'Select symptoms to diagnose' : 'Diagnose from Symptoms')
-                      : (!uploadedImage ? 'Upload an image first' : 'Analyze Image')}
+                    {!selectedCrop ? 'Select a crop first' : !selectedSymptoms.length ? 'Select symptoms to diagnose' : 'Diagnose from Symptoms'}
                   </span>
                 </>
               )}
@@ -484,12 +345,7 @@ const DiseaseDetection: React.FC = () => {
             <div className="animate-fade-in-up">
               {detectedDisease ? (
                 <div className="bg-white rounded-xl shadow-2xl overflow-hidden">
-                  <div className="bg-gradient-to-r from-red-500 to-red-600 p-6 text-gray-700">
-                    {activeTab === 'upload' && detectedCropFromImage && (
-                      <p className="text-sm opacity-90 mb-2">
-                        <i className="fas fa-leaf mr-1"></i> Detected Crop: <span className="font-semibold">{detectedCropFromImage}</span>
-                      </p>
-                    )}
+                  <div className="bg-gradient-to-r from-red-500 to-red-600 p-6 text-white">
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm opacity-80 mb-1">Detected Disease</p>

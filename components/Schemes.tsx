@@ -297,7 +297,10 @@ const Schemes: React.FC = () => {
                         </div>
                       </div>
 
-                      <button className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-semibold">
+                      <button 
+                        onClick={() => window.open('https://pmkisan.gov.in/', '_blank')}
+                        className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-semibold"
+                      >
                         <i className="fas fa-external-link-alt mr-2"></i>
                         Apply Now
                       </button>

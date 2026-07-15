@@ -150,7 +150,7 @@ const News: React.FC = () => {
                   className="w-full px-4 py-3 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                 >
                   <option value="">All States</option>
-                  {INDIAN_STATES.slice(0, 15).map((state) => (
+                  {INDIAN_STATES.map((state) => (
                     <option key={state} value={state}>{state}</option>
                   ))}
                 </select>
@@ -258,17 +258,6 @@ const News: React.FC = () => {
                       </span>
                     )}
                   </div>
-                </div>
-
-                <div className="bg-gradient-to-r from-green-500 to-green-600 p-4">
-                  <a 
-                    href="#" 
-                    className="text-white font-medium flex items-center justify-center gap-2 hover:underline"
-                    onClick={(e) => e.preventDefault()}
-                  >
-                    Read Full Article
-                    <i className="fas fa-arrow-right"></i>
-                  </a>
                 </div>
               </div>
             ))}

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { toast } from 'react-hot-toast';
 import { User } from '../types';
 import { signUpUser } from '../services/sheetService';
 
@@ -10,6 +11,8 @@ interface SignupProps {
 const Signup: React.FC<SignupProps> = ({ onSignup, onSwitchToLogin }) => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -19,8 +22,12 @@ const Signup: React.FC<SignupProps> = ({ onSignup, onSwitchToLogin }) => {
     const formData = new FormData(e.currentTarget);
     const name = formData.get('name') as string;
     const email = formData.get('email') as string;
-    const password = formData.get('password') as string;
-    const confirmPassword = formData.get('confirm-password') as string;
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters.");
+      setLoading(false);
+      return;
+    }
 
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
@@ -40,7 +47,7 @@ const Signup: React.FC<SignupProps> = ({ onSignup, onSwitchToLogin }) => {
   };
 
   return (
-    <section id="signup" className="py-20 bg-gray-100 flex items-center justify-center min-h-[calc(100vh-80px)]">
+    <section id="signup" className="py-20 bg-gray-100 flex items-center justify-center min-h-[calc(100vh-64px)]">
       <div className="container mx-auto px-4">
         <div className="max-w-md mx-auto bg-white rounded-xl shadow-lg p-8 animate-fade-in-up">
           <div className="text-center mb-8">
@@ -78,10 +85,16 @@ const Signup: React.FC<SignupProps> = ({ onSignup, onSwitchToLogin }) => {
                 type="password"
                 id="password"
                 name="password"
-                placeholder="••••••••"
+                placeholder="Min. 6 characters"
+                minLength={6}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-4 py-3 text-gray-700 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                 required
               />
+              {password.length > 0 && password.length < 6 && (
+                <p className="text-red-500 text-xs mt-1">Password must be at least 6 characters</p>
+              )}
             </div>
              <div className="mb-6">
               <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
@@ -89,10 +102,17 @@ const Signup: React.FC<SignupProps> = ({ onSignup, onSwitchToLogin }) => {
                 type="password"
                 id="confirm-password"
                 name="confirm-password"
-                placeholder="••••••••"
+                placeholder="Re-enter password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 className="w-full px-4 py-3 text-gray-700 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                 required
               />
+              {confirmPassword.length > 0 && (
+                <p className={`text-xs mt-1 ${password === confirmPassword ? 'text-green-600' : 'text-red-500'}`}>
+                  {password === confirmPassword ? 'Passwords match' : 'Passwords do not match'}
+                </p>
+              )}
             </div>
             {error && <p className="text-red-500 text-sm text-center mb-4">{error}</p>}
             <div className="text-center">

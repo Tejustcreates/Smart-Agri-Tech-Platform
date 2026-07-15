@@ -1,6 +1,6 @@
 import React from 'react';
 import { Section, Equipment, Fertilizer, Seed, Pesticide, Product, CartItem } from '../types';
-import wheatImg from '../img/wheat seeds.jpg';
+import wheatImg from './img/wheat_seeds.jpg';
 
 interface AgriMarketProps {
     onAddToCart: (product: Product, type: CartItem['type']) => void;
@@ -34,7 +34,7 @@ const EQUIPMENTS_DATA: Equipment[] = [
     {
     id: 4,
     name: 'Sprayer',
-    image: 'https://5.imimg.com/data5/ST/EC/MY-1263483/seed-drills-1000x1000.jpg',
+    image: 'https://images.pexels.com/photos/4513940/pexels-photo-4513940.jpeg?auto=compress&cs=tinysrgb&w=600',
     description: 'For spraying pesticides, herbicides, and fertilizers on crops.',
     rentPerDay: 800,
     available: true,

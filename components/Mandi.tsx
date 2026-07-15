@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { toast } from 'react-hot-toast';
 import { Section, Crop, ListedCrop, Product, CartItem } from '../types';
 import { CROP_OPTIONS } from '../constants';
 
@@ -31,39 +32,45 @@ const BASE_PRICES: Record<string, number> = {
   'Mustard': 55,
 };
 
+const formatDate = (daysOffset: number): string => {
+  const d = new Date();
+  d.setDate(d.getDate() + daysOffset);
+  return d.toLocaleDateString('en-CA');
+};
+
 const initialListedCrops: ListedCrop[] = [
     {
         id: 1,
         name: 'Wheat',
         quantity: '500',
         expectedPrice: '22',
-        harvestDate: '2023-10-25',
+        harvestDate: formatDate(15),
         farmerName: 'Rajesh Kumar',
         location: 'Pune, Maharashtra',
         status: 'Active',
-        listedOn: '2023-10-15',
+        listedOn: formatDate(-10),
     },
     {
         id: 2,
         name: 'Soybean',
         quantity: '800',
         expectedPrice: '38',
-        harvestDate: '2023-11-10',
+        harvestDate: formatDate(20),
         farmerName: 'Sunita Patil',
         location: 'Nagpur, Maharashtra',
         status: 'Pending',
-        listedOn: '2023-10-10',
+        listedOn: formatDate(-5),
     },
      {
         id: 3,
         name: 'Rice',
         quantity: '1000',
         expectedPrice: '45',
-        harvestDate: '2023-11-20',
+        harvestDate: formatDate(25),
         farmerName: 'Amit Singh',
         location: 'Patna, Bihar',
         status: 'Active',
-        listedOn: '2023-10-18',
+        listedOn: formatDate(-3),
     }
 ];
 
@@ -119,7 +126,7 @@ const Mandi: React.FC<MandiProps> = ({ onAddToCart }) => {
     setNextListedCropId(currentId);
     setListedCrops(prev => [...prev, ...newSubmissions]);
 
-    alert('Your crop registration has been submitted successfully and is now listed for sale!');
+    toast.success('Crop registration submitted and listed for sale!');
     
     setFarmerName('');
     setFarmerMobile('');
@@ -140,15 +147,30 @@ const Mandi: React.FC<MandiProps> = ({ onAddToCart }) => {
 
     await new Promise(resolve => setTimeout(resolve, 2000));
 
-    const results: PricePrediction[] = CROP_OPTIONS.slice(0, 8).map(crop => {
+    const month = new Date().getMonth();
+    const isKharif = month >= 5 && month <= 9;
+    const isRabi = month >= 10 || month <= 2;
+
+    const results: PricePrediction[] = CROP_OPTIONS.slice(0, 8).map((crop, index) => {
       const basePrice = BASE_PRICES[crop] || 20;
-      const variation = (Math.random() - 0.5) * 0.3;
-      const priceChange = basePrice * variation;
-      const predicted = basePrice + priceChange;
-      const trends: ('up' | 'down' | 'stable')[] = ['up', 'down', 'stable'];
-      const trend = trends[Math.floor(Math.random() * trends.length)];
-      const demands: ('High' | 'Medium' | 'Low')[] = ['High', 'Medium', 'Low'];
-      const demand = demands[Math.floor(Math.random() * 3)];
+
+      // Season-based price modifiers (deterministic, not random)
+      const kharifCrops = ['Rice', 'Cotton', 'Sugarcane', 'Maize', 'Soybean'];
+      const rabiCrops = ['Wheat', 'Mustard', 'Potato', 'Onion'];
+      
+      let seasonModifier = 1.0;
+      if (isKharif && kharifCrops.includes(crop)) seasonModifier = 0.90;
+      else if (isKharif && rabiCrops.includes(crop)) seasonModifier = 1.12;
+      else if (isRabi && rabiCrops.includes(crop)) seasonModifier = 0.92;
+      else if (isRabi && kharifCrops.includes(crop)) seasonModifier = 1.10;
+
+      // Small deterministic variation based on crop index
+      const indexVariation = ((index * 7 + 3) % 10 - 5) / 100;
+
+      const predicted = basePrice * (seasonModifier + indexVariation);
+      const trend: 'up' | 'down' | 'stable' = seasonModifier < 0.95 ? 'down' : seasonModifier > 1.05 ? 'up' : 'stable';
+      const demand: 'High' | 'Medium' | 'Low' = seasonModifier < 0.95 ? 'Low' : seasonModifier > 1.05 ? 'High' : 'Medium';
+      const confidence = Math.round(75 + (index * 3) % 15);
 
       return {
         crop,
@@ -156,8 +178,12 @@ const Mandi: React.FC<MandiProps> = ({ onAddToCart }) => {
         predictedPrice: Math.round(predicted * 100) / 100,
         trend,
         demand,
-        bestTimeToSell: trend === 'up' ? 'Wait 2-3 weeks for better prices' : 'Sell now to avoid further decline',
-        confidence: 70 + Math.floor(Math.random() * 25),
+        bestTimeToSell: trend === 'up' 
+          ? 'Prices rising — consider holding for better returns' 
+          : trend === 'down'
+          ? 'Prices may drop — consider selling soon'
+          : 'Stable prices — sell at your convenience',
+        confidence,
       };
     });
 
@@ -188,7 +214,7 @@ const Mandi: React.FC<MandiProps> = ({ onAddToCart }) => {
             <p className="text-gray-600 mt-4">Smart crop marketplace with real-time price predictions</p>
         </div>
         <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-2xl overflow-hidden">
-          <div className="flex border-b border-gray-200 flex-wrap">
+          <div className="flex border-b border-gray-200 overflow-x-auto">
             <TabButton tabId="register" label="Crop Registration" icon="fas fa-clipboard-list" />
             <TabButton tabId="sell" label="My Listings" icon="fas fa-store" />
             <TabButton tabId="buy" label="Buy Crops" icon="fas fa-shopping-cart" />
@@ -202,12 +228,13 @@ const Mandi: React.FC<MandiProps> = ({ onAddToCart }) => {
                 <p className="text-gray-500 mb-6">Register your crops with APMC (Agricultural Produce Market Committee)</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <input type="text" placeholder="Full Name" value={farmerName} onChange={e => setFarmerName(e.target.value)} className="w-full p-3 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required />
-                    <input type="tel" placeholder="Mobile Number" value={farmerMobile} onChange={e => setFarmerMobile(e.target.value)} className="w-full p-3 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required />
+                    <input type="tel" placeholder="Mobile Number" value={farmerMobile} onChange={e => setFarmerMobile(e.target.value)} pattern="[0-9]{10}" maxLength={10} className="w-full p-3 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required />
                     <textarea placeholder="Address (e.g., City, State)" value={farmerAddress} onChange={e => setFarmerAddress(e.target.value)} rows={3} className="md:col-span-2 w-full p-3 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required></textarea>
                 </div>
                 <hr className="my-8"/>
                 <h4 className="text-xl font-bold text-gray-800 mb-4">Crop Details</h4>
-                <div className="overflow-x-auto">
+                {/* Desktop Table */}
+                <div className="hidden md:block overflow-x-auto">
                     <table className="w-full text-sm text-left">
                         <thead className="bg-gray-100 text-gray-600 uppercase">
                             <tr>
@@ -222,14 +249,29 @@ const Mandi: React.FC<MandiProps> = ({ onAddToCart }) => {
                             {crops.map(crop => (
                                 <tr key={crop.id} className="border-b">
                                     <td className="p-2"><select value={crop.name} onChange={e => handleCropChange(crop.id, 'name', e.target.value)} className="w-full p-2 bg-gray-50 rounded" required><option value="">Select Crop</option>{CROP_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}</select></td>
-                                    <td className="p-2"><input type="number" value={crop.quantity} onChange={e => handleCropChange(crop.id, 'quantity', e.target.value)} placeholder="e.g., 500" className="w-full p-2 bg-gray-50 rounded" required /></td>
-                                    <td className="p-2"><input type="number" value={crop.expectedPrice} onChange={e => handleCropChange(crop.id, 'expectedPrice', e.target.value)} placeholder="e.g., 22" className="w-full p-2 bg-gray-50 rounded" required /></td>
+                                    <td className="p-2"><input type="number" value={crop.quantity} onChange={e => handleCropChange(crop.id, 'quantity', e.target.value)} placeholder="e.g., 500" min="1" className="w-full p-2 bg-gray-50 rounded" required /></td>
+                                    <td className="p-2"><input type="number" value={crop.expectedPrice} onChange={e => handleCropChange(crop.id, 'expectedPrice', e.target.value)} placeholder="e.g., 22" min="0.01" step="0.01" className="w-full p-2 bg-gray-50 rounded" required /></td>
                                     <td className="p-2"><input type="date" value={crop.harvestDate} onChange={e => handleCropChange(crop.id, 'harvestDate', e.target.value)} className="w-full p-2 bg-gray-50 rounded" required /></td>
                                     <td className="p-2"><button type="button" onClick={() => handleRemoveCrop(crop.id)} className="text-red-500 hover:text-red-700 disabled:text-gray-300" disabled={crops.length <= 1}><i className="fas fa-trash fa-lg"></i></button></td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
+                </div>
+                {/* Mobile Cards */}
+                <div className="md:hidden space-y-4">
+                    {crops.map(crop => (
+                        <div key={crop.id} className="bg-gray-50 rounded-lg p-4 space-y-3">
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm font-semibold text-gray-600">Crop #{crop.id}</span>
+                                <button type="button" onClick={() => handleRemoveCrop(crop.id)} className="text-red-500 hover:text-red-700 disabled:text-gray-300" disabled={crops.length <= 1}><i className="fas fa-trash"></i></button>
+                            </div>
+                            <select value={crop.name} onChange={e => handleCropChange(crop.id, 'name', e.target.value)} className="w-full p-2 bg-white rounded border" required><option value="">Select Crop</option>{CROP_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}</select>
+                            <input type="number" value={crop.quantity} onChange={e => handleCropChange(crop.id, 'quantity', e.target.value)} placeholder="Quantity (kg)" min="1" className="w-full p-2 bg-white rounded border" required />
+                            <input type="number" value={crop.expectedPrice} onChange={e => handleCropChange(crop.id, 'expectedPrice', e.target.value)} placeholder="Price (₹/kg)" min="0.01" step="0.01" className="w-full p-2 bg-white rounded border" required />
+                            <input type="date" value={crop.harvestDate} onChange={e => handleCropChange(crop.id, 'harvestDate', e.target.value)} className="w-full p-2 bg-white rounded border" required />
+                        </div>
+                    ))}
                 </div>
                 <div className="text-center mt-4">
                     <button type="button" onClick={handleAddCrop} className="px-4 py-2 text-green-600 border border-green-600 rounded-lg hover:bg-green-600 hover:text-white transition-colors">
@@ -248,7 +290,8 @@ const Mandi: React.FC<MandiProps> = ({ onAddToCart }) => {
               <div className="animate-fade-in-up">
                 <h3 className="text-2xl font-bold text-gray-800 mb-2"><i className="fas fa-store text-green-600 mr-2"></i>Your Listed Crops</h3>
                 <p className="text-gray-500 mb-6">View and manage your crop listings for sale</p>
-                 <div className="overflow-x-auto">
+                 {/* Desktop Table */}
+                 <div className="hidden md:block overflow-x-auto">
                     <table className="w-full text-sm text-left">
                          <thead className="bg-gray-100 text-gray-600 uppercase">
                             <tr>
@@ -268,8 +311,8 @@ const Mandi: React.FC<MandiProps> = ({ onAddToCart }) => {
                                         </span>
                                     </td>
                                     <td className="p-3">
-                                        <button className="text-blue-500 hover:text-blue-700 mr-4" title="Edit"><i className="fas fa-edit"></i></button>
-                                        <button onClick={() => handleRemoveListedCrop(crop.id)} className="text-red-500 hover:text-red-700" title="Remove"><i className="fas fa-trash"></i></button>
+                                        <button className="text-gray-400 cursor-not-allowed mr-4" title="Coming Soon" disabled><i className="fas fa-edit"></i></button>
+                                        <button onClick={() => handleRemoveListedCrop(crop.id)} className="text-red-500 hover:text-red-700 transition-colors" title="Remove"><i className="fas fa-trash"></i></button>
                                     </td>
                                 </tr>
                             )) : (
@@ -277,6 +320,28 @@ const Mandi: React.FC<MandiProps> = ({ onAddToCart }) => {
                             )}
                         </tbody>
                     </table>
+                </div>
+                {/* Mobile Cards */}
+                <div className="md:hidden space-y-4">
+                    {listedCrops.length > 0 ? listedCrops.map(crop => (
+                        <div key={crop.id} className="bg-gray-50 rounded-lg p-4 border">
+                            <div className="flex items-center justify-between mb-2">
+                                <h4 className="font-bold text-lg">{crop.name}</h4>
+                                <span className={`px-2 py-1 text-xs font-semibold rounded-full ${crop.status === 'Active' ? 'bg-green-200 text-green-800' : 'bg-yellow-200 text-yellow-800'}`}>
+                                    {crop.status}
+                                </span>
+                            </div>
+                            <p className="text-sm text-gray-600">Qty: <strong>{crop.quantity} kg</strong></p>
+                            <p className="text-sm text-gray-600">Price: <strong>₹{crop.expectedPrice}/kg</strong></p>
+                            <p className="text-xs text-gray-400 mt-2">Listed: {crop.listedOn}</p>
+                            <div className="flex gap-3 mt-3">
+                                <button disabled className="text-gray-400 cursor-not-allowed"><i className="fas fa-edit mr-1"></i>Edit</button>
+                                <button onClick={() => handleRemoveListedCrop(crop.id)} className="text-red-500 hover:text-red-700 transition-colors"><i className="fas fa-trash mr-1"></i>Remove</button>
+                            </div>
+                        </div>
+                    )) : (
+                        <p className="text-center text-gray-500 py-8">You have no crops listed for sale.</p>
+                    )}
                 </div>
               </div>
             )}

@@ -16,12 +16,12 @@ const Cart: React.FC<CartProps> = ({ cartItems, onUpdateQuantity, onRemoveItem, 
 
   if (cartItems.length === 0) {
     return (
-      <section id={Section.CART} className="py-20 bg-gray-100 flex items-center justify-center min-h-[calc(100vh-80px)]">
+      <section id={Section.CART} className="py-20 bg-gray-100 flex items-center justify-center min-h-[calc(100vh-64px)]">
         <div className="text-center">
           <i className="fas fa-shopping-cart text-6xl text-gray-300 mb-4"></i>
           <h2 className="text-3xl font-bold text-gray-800">Your Cart is Empty</h2>
           <p className="text-gray-600 mt-2">Looks like you haven't added anything to your cart yet.</p>
-          <button onClick={onBackToShopping} className="mt-6 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+          <button onClick={onBackToShopping} className="mt-6 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-300">
             Start Shopping
           </button>
         </div>
@@ -50,14 +50,18 @@ const Cart: React.FC<CartProps> = ({ cartItems, onUpdateQuantity, onRemoveItem, 
                     </div>
                   </div>
                   <div className="flex items-center">
-                    <input
+                      <input
                       type="number"
                       value={item.quantity}
-                      onChange={(e) => onUpdateQuantity(item.id, parseInt(e.target.value, 10))}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value, 10);
+                        onUpdateQuantity(item.id, isNaN(val) ? 1 : val);
+                      }}
                       className="w-16 text-center border rounded-md mx-4 py-1"
                       min="1"
+                      max="999"
                     />
-                    <button onClick={() => onRemoveItem(item.id)} className="ml-4 text-red-500 hover:text-red-700">
+                    <button onClick={() => onRemoveItem(item.id)} className="ml-4 text-red-500 hover:text-red-700 transition-colors duration-300">
                       <i className="fas fa-trash fa-lg"></i>
                     </button>
                   </div>

@@ -370,7 +370,10 @@ const CropRecommender: React.FC = () => {
                 max="100"
                 step="0.1"
                 value={landSize}
-                onChange={(e) => setLandSize(Number(e.target.value))}
+                onChange={(e) => {
+                  const val = parseFloat(e.target.value);
+                  setLandSize(isNaN(val) ? 1 : Math.min(100, Math.max(0.1, val)));
+                }}
                 className="w-full px-4 py-3 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
               />
             </div>
@@ -438,10 +441,11 @@ const CropRecommender: React.FC = () => {
                             <p className="font-semibold text-green-700">{rec.expectedYield}/acre</p>
                           </div>
                           <div className="bg-blue-50 rounded-lg p-3">
-                            <p className="text-xs text-gray-500">Estimated Total</p>
+                            <p className="text-xs text-gray-500">Estimated Total Yield</p>
                             <p className="font-semibold text-blue-700">
-                              {rec.expectedYield.split('-')[0]} × {landSize} acres
+                              {rec.expectedYield.replace('tons', '').replace(' ', '').split('-')[0]}–{rec.expectedYield.replace('tons', '').replace(' ', '').split('-')[1]} tons
                             </p>
+                            <p className="text-xs text-gray-400">for {landSize} acres</p>
                           </div>
                         </div>
                       </div>
