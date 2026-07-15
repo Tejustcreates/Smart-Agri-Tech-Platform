@@ -80,16 +80,16 @@ const Header: React.FC<HeaderProps> = ({ activeSection, setActiveSection, user, 
       );
     }
     return (
-      <div className={isMobile ? 'space-y-1' : 'flex items-baseline space-x-2'}>
+      <div className={isMobile ? 'space-y-1' : 'flex items-center space-x-2'}>
         <button
           onClick={() => handleLinkClick(Section.LOGIN)}
-          className={`${baseClasses} text-gray-700 hover:bg-green-500 hover:text-white`}
+          className={`${baseClasses} border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white`}
         >
           Login
         </button>
         <button
           onClick={() => handleLinkClick(Section.SIGNUP)}
-          className={`${baseClasses} bg-green-600 text-white hover:bg-green-700`}
+          className={`${baseClasses} bg-green-600 text-white hover:bg-green-700 shadow-sm`}
         >
           Sign Up
         </button>
@@ -100,14 +100,14 @@ const Header: React.FC<HeaderProps> = ({ activeSection, setActiveSection, user, 
   return (
     <header className="bg-lime-50 shadow-md sticky top-0 z-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-20">
           <div className="flex-shrink-0">
             <a href="#" onClick={(e) => { e.preventDefault(); handleLinkClick(Section.HERO);}} className="flex items-center transition-transform duration-300 hover:scale-105">
-              <img className="h-16 w-auto" src="https://growsm.art/img/logo_green.svg" alt="GROWSMART Logo" />
+              <img className="h-14 w-auto" src="./img/logo.png" alt="GROWSMART Logo" />
             </a>
           </div>
           <div className="hidden md:block">
-            <div className="ml-10 flex items-center space-x-4">
+            <div className="ml-8 flex items-center gap-3">
               {NAV_ITEMS.map((item) => (
                 <a
                   key={item.name}
@@ -116,15 +116,16 @@ const Header: React.FC<HeaderProps> = ({ activeSection, setActiveSection, user, 
                     e.preventDefault();
                     handleLinkClick(item.section);
                   }}
-                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300 ${
+                  className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 ${
                     activeSection === item.section
-                      ? 'bg-green-600 text-white'
-                      : 'text-gray-700 hover:bg-green-500 hover:text-white'
+                      ? 'bg-green-600 text-white shadow-md'
+                      : 'bg-gray-100 text-gray-700 hover:bg-green-100 hover:text-green-700'
                   }`}
                 >
                   {item.name}
                 </a>
               ))}
+              <div className="w-px h-8 bg-gray-300 mx-1"></div>
               <AuthButtons />
             </div>
           </div>
@@ -155,10 +156,10 @@ const Header: React.FC<HeaderProps> = ({ activeSection, setActiveSection, user, 
                     e.preventDefault();
                     handleLinkClick(item.section);
                 }}
-                className={`block px-3 py-2 rounded-md text-base font-medium ${
+                className={`block px-4 py-2 rounded-lg text-base font-medium transition-colors duration-200 ${
                   activeSection === item.section
                     ? 'bg-green-600 text-white'
-                    : 'text-gray-700 hover:bg-green-500 hover:text-white'
+                    : 'text-gray-700 hover:text-green-600 hover:bg-green-50'
                 }`}
               >
                 {item.name}
