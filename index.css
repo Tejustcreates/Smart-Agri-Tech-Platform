@@ -3,9 +3,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  --agri-primary: #16a34a;
-  --agri-secondary: #15803d;
-  --agri-accent: #22c55e;
+  --eco-primary: #16a34a;
+  --eco-secondary: #15803d;
+  --eco-accent: #22c55e;
+  --eco-earth: #78592b;
+  --eco-leaf: #65a30d;
+  --eco-sky: #0ea5e9;
+  --eco-cream: #fefce8;
+  --eco-sand: #f5f0e6;
 }
 
 * {
@@ -16,53 +21,50 @@
 
 body {
   font-family: 'Poppins', sans-serif;
-  background-color: #f9fafb;
+  background-color: #f8faf5;
   color: #1f2937;
 }
 
 @keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .animate-fade-in-up {
   animation: fadeInUp 0.5s ease-out forwards;
 }
 
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in-down {
+  animation: fadeInDown 0.6s ease-out forwards;
+}
+
 @keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
 .animate-slide-in {
   animation: slideIn 0.4s ease-out forwards;
 }
 
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
 @keyframes pulse-ring {
-  0% {
-    transform: scale(0.8);
-    opacity: 0.5;
-  }
-  50% {
-    transform: scale(1);
-    opacity: 0.3;
-  }
-  100% {
-    transform: scale(1.2);
-    opacity: 0;
-  }
+  0% { transform: scale(0.8); opacity: 0.5; }
+  50% { transform: scale(1); opacity: 0.3; }
+  100% { transform: scale(1.2); opacity: 0; }
 }
 
 .pulse-ring::before {
@@ -75,20 +77,20 @@ body {
 }
 
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: #f0f5eb;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--agri-primary);
+  background: var(--eco-primary);
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--agri-secondary);
+  background: var(--eco-secondary);
 }
 
 html {
@@ -96,13 +98,13 @@ html {
 }
 
 .gradient-bg {
-  background: linear-gradient(135deg, #16a34a 0%, #22c55e 50%, #4ade80 100%);
+  background: linear-gradient(135deg, #16a34a 0%, #65a30d 50%, #84cc16 100%);
 }
 
-.weather-gradient {
-  background: linear-gradient(180deg, #87CEEB 0%, #E0F7FA 100%);
+.eco-gradient {
+  background: linear-gradient(135deg, #166534 0%, #15803d 50%, #22c55e 100%);
 }
 
-.night-gradient {
-  background: linear-gradient(180deg, #1a237e 0%, #283593 100%);
+.earth-gradient {
+  background: linear-gradient(135deg, #78592b 0%, #92714a 50%, #a38860 100%);
 }

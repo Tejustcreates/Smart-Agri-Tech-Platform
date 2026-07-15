@@ -134,13 +134,17 @@ const Schemes: React.FC = () => {
   };
 
   return (
-    <section id={Section.SCHEMES} className="py-16 md:py-24 bg-gray-50">
+    <section id={Section.SCHEMES} className="py-16 md:py-24 bg-gradient-to-b from-indigo-50/40 to-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-800">
-            Government <span className="text-indigo-600">Schemes</span> Recommender
+          <div className="inline-flex items-center gap-2 bg-indigo-100 text-indigo-700 rounded-full px-4 py-1.5 text-sm font-medium mb-4">
+            <i className="fas fa-landmark text-xs"></i>
+            Government Support
+          </div>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-800">
+            Government <span className="text-green-600">Schemes</span> Recommender
           </h2>
-          <p className="text-gray-600 mt-4">Smart personalized scheme recommendations for your farm</p>
+          <p className="text-gray-500 mt-3 max-w-lg mx-auto">Personalized welfare scheme recommendations for your farm</p>
         </div>
 
         <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-xl p-6 md:p-8 mb-8">

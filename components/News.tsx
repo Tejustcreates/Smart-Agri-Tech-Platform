@@ -117,13 +117,17 @@ const News: React.FC = () => {
   };
 
   return (
-    <section id={Section.NEWS} className="py-16 md:py-24 bg-white">
+    <section id={Section.NEWS} className="py-16 md:py-24 bg-gradient-to-b from-emerald-50/40 to-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-800">
+          <div className="inline-flex items-center gap-2 bg-emerald-100 text-emerald-700 rounded-full px-4 py-1.5 text-sm font-medium mb-4">
+            <i className="fas fa-newspaper text-xs"></i>
+            Agricultural News
+          </div>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-800">
             Personalized <span className="text-green-600">Farmer News</span>
           </h2>
-          <p className="text-gray-600 mt-4">News tailored to your location and crops</p>
+          <p className="text-gray-500 mt-3 max-w-lg mx-auto">AI-curated news tailored to your location, crops, and interests</p>
         </div>
 
         <div className="max-w-4xl mx-auto mb-8">

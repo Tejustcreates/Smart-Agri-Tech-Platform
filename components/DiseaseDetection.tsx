@@ -229,17 +229,17 @@ const DiseaseDetection: React.FC = () => {
   };
 
   return (
-    <section id="disease-detection" className="py-16 md:py-24 bg-gray-50">
+    <section id="disease-detection" className="py-16 md:py-24 bg-gradient-to-b from-amber-50/40 to-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-800">
-            Crop Disease <span className="text-red-600">Advisor</span>
+          <div className="inline-flex items-center gap-2 bg-amber-100 text-amber-700 rounded-full px-4 py-1.5 text-sm font-medium mb-4">
+            <i className="fas fa-bug text-xs"></i>
+            Crop Protection
+          </div>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-800">
+            Crop Disease <span className="text-green-600">Advisor</span>
           </h2>
-          <p className="text-gray-600 mt-4">Smart crop disease identification with treatment recommendations</p>
-          <p className="text-sm text-gray-400 mt-1">
-            <i className="fas fa-camera mr-1"></i>
-            Image-based diagnosis coming soon
-          </p>
+          <p className="text-gray-500 mt-3 max-w-lg mx-auto">Identify crop diseases and get expert treatment recommendations</p>
         </div>
 
           <div className="max-w-5xl mx-auto">

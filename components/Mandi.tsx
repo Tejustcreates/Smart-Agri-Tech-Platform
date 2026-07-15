@@ -205,13 +205,17 @@ const Mandi: React.FC<MandiProps> = ({ onAddToCart }) => {
   );
 
   return (
-    <section id={Section.MANDI} className="py-16 md:py-24 bg-white">
+    <section id={Section.MANDI} className="py-16 md:py-24 bg-gradient-to-b from-amber-50/30 to-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-800">
+          <div className="inline-flex items-center gap-2 bg-amber-100 text-amber-700 rounded-full px-4 py-1.5 text-sm font-medium mb-4">
+            <i className="fas fa-store text-xs"></i>
+            Marketplace
+          </div>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-800">
                 Smart Mandi <span className="text-green-600">Portal</span>
             </h2>
-            <p className="text-gray-600 mt-4">Smart crop marketplace with real-time price predictions</p>
+            <p className="text-gray-500 mt-3 max-w-lg mx-auto">Live crop marketplace with AI-powered price predictions</p>
         </div>
         <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-2xl overflow-hidden">
           <div className="flex border-b border-gray-200 overflow-x-auto">

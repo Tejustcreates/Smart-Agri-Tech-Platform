@@ -98,7 +98,7 @@ const Header: React.FC<HeaderProps> = ({ activeSection, setActiveSection, user, 
   };
 
   return (
-    <header className="bg-lime-50 shadow-md sticky top-0 z-50">
+    <header className="bg-white/95 backdrop-blur-sm shadow-md sticky top-0 z-50 border-b border-green-100">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           <div className="flex-shrink-0 ml-4">

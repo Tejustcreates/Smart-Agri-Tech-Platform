@@ -192,13 +192,17 @@ const CropRecommender: React.FC = () => {
   };
 
   return (
-    <section id="crop-recommender" className="py-16 md:py-24 bg-white">
+    <section id="crop-recommender" className="py-16 md:py-24 bg-gradient-to-b from-green-50/40 to-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-800">
-            Crop <span className="text-green-600">Recommendation</span> System
+          <div className="inline-flex items-center gap-2 bg-green-100 text-green-700 rounded-full px-4 py-1.5 text-sm font-medium mb-4">
+            <i className="fas fa-seedling text-xs"></i>
+            Crop Advisor
+          </div>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-800">
+            Smart Crop <span className="text-green-600">Recommendation</span>
           </h2>
-          <p className="text-gray-600 mt-4">Smart crop suggestions based on soil and climate conditions</p>
+          <p className="text-gray-500 mt-3 max-w-lg mx-auto">ML-powered crop suggestions based on soil, season, and climate conditions</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

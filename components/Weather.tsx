@@ -342,13 +342,17 @@ const Weather: React.FC = () => {
   };
 
   return (
-    <section id={Section.WEATHER} className="py-16 md:py-24 bg-gray-50">
+    <section id={Section.WEATHER} className="py-16 md:py-24 bg-gradient-to-b from-blue-50/60 to-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-800">
-            Smart Weather <span className="text-green-600">Intelligence</span>
+          <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 rounded-full px-4 py-1.5 text-sm font-medium mb-4">
+            <i className="fas fa-cloud-sun text-xs"></i>
+            Weather Intelligence
+          </div>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-800">
+            Smart Weather <span className="text-green-600">Predictions</span>
           </h2>
-          <p className="text-gray-600 mt-4">Smart weather predictions and farming recommendations</p>
+          <p className="text-gray-500 mt-3 max-w-lg mx-auto">ML-powered weather forecasts and farming recommendations for your area</p>
         </div>
 
         <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-xl p-6 md:p-8">

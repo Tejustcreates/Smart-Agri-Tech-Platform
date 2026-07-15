@@ -90,13 +90,17 @@ const EquipmentRecommender: React.FC<{ onAddToCart: (product: any, type: any) =>
   };
 
   return (
-    <section id="equipment-recommender" className="py-16 md:py-24 bg-gray-50">
+    <section id="equipment-recommender" className="py-16 md:py-24 bg-gradient-to-b from-orange-50/40 to-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-800">
-            Smart Equipment <span className="text-orange-600">Rental</span> Recommender
+          <div className="inline-flex items-center gap-2 bg-orange-100 text-orange-700 rounded-full px-4 py-1.5 text-sm font-medium mb-4">
+            <i className="fas fa-tractor text-xs"></i>
+            Equipment Rental
+          </div>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-800">
+            Smart Equipment <span className="text-green-600">Rental</span>
           </h2>
-          <p className="text-gray-600 mt-4">Smart equipment suggestions based on your farm</p>
+          <p className="text-gray-500 mt-3 max-w-lg mx-auto">Find the right farming equipment based on your land size and crops</p>
         </div>
 
         <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-xl p-6 md:p-8 mb-8">
