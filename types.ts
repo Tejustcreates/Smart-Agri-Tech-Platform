@@ -5,7 +5,6 @@ export enum Section {
   NEWS = 'news',
   SCHEMES = 'schemes',
   MANDI = 'mandi',
-  AGRI_MARKET = 'agri-market',
   CROP_RECOMMENDER = 'crop-recommender',
   DISEASE_DETECTION = 'disease-detection',
   EQUIPMENT_RECOMMENDER = 'equipment-recommender',

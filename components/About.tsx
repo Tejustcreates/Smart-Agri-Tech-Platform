@@ -4,7 +4,7 @@ import { Section } from '../types';
 
 const About: React.FC = () => {
   return (
-    <section id={Section.ABOUT} className="py-20 bg-white animate-fade-in-up">
+    <section id={Section.ABOUT} className="py-16 md:py-24 bg-white animate-fade-in-up">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row items-center gap-12">
           <div className="md:w-1/2">

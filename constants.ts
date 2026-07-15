@@ -10,7 +10,6 @@ export const NAV_ITEMS = [
   { name: 'Schemes', section: Section.SCHEMES },
   { name: 'Mandi', section: Section.MANDI },
   { name: 'Equipment Rental', section: Section.EQUIPMENT_RECOMMENDER },
-  { name: 'Agri-Market', section: Section.AGRI_MARKET },
 ];
 
 export const INDIAN_STATES = [

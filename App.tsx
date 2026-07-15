@@ -7,7 +7,7 @@ import Weather from './components/Weather';
 import News from './components/News';
 import Schemes from './components/Schemes';
 import Mandi from './components/Mandi';
-import AgriMarket from './components/Equipments';
+// AgriMarket (Equipments store) removed — functionality covered by EquipmentRecommender
 import CropRecommender from './components/CropRecommender';
 import DiseaseDetection from './components/DiseaseDetection';
 import EquipmentRecommender from './components/EquipmentRecommender';
@@ -152,7 +152,7 @@ const App: React.FC = () => {
       return <Signup onSignup={handleSignup} onSwitchToLogin={() => setActiveSection(Section.LOGIN)} />;
     }
     if (activeSection === Section.CART) {
-        return <Cart cartItems={cart} onUpdateQuantity={updateQuantity} onRemoveItem={removeFromCart} onProceedToCheckout={handleProceedToCheckout} onBackToShopping={() => setActiveSection(Section.AGRI_MARKET)} />;
+        return <Cart cartItems={cart} onUpdateQuantity={updateQuantity} onRemoveItem={removeFromCart} onProceedToCheckout={handleProceedToCheckout} onBackToShopping={() => setActiveSection(Section.MANDI)} />;
     }
     if (activeSection === Section.PAYMENT) {
         return <Payment total={paymentTotal} onPaymentSuccess={handlePaymentSuccess} onBackToCart={() => setActiveSection(Section.CART)} />;
@@ -168,7 +168,6 @@ const App: React.FC = () => {
         <Schemes />
         <Mandi onAddToCart={addToCart} />
         <EquipmentRecommender />
-        <AgriMarket onAddToCart={addToCart} />
       </>
     );
   };
