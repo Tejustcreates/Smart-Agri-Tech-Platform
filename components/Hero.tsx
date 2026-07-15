@@ -13,7 +13,7 @@ const Hero: React.FC<HeroProps> = ({ onKnowMore }) => {
       <div className="absolute inset-0 bg-black opacity-40"></div>
       <div className="relative z-10 p-4">
         <h1 className="text-5xl md:text-7xl font-extrabold uppercase tracking-wider mb-4 animate-fade-in-down">
-          Single App For <br /> All Your Needs
+          Everything a Farmer Needs <br /> One Smart Platform
         </h1>
         <h2 className="text-3xl md:text-5xl font-bold text-green-400 mb-8 animate-fade-in-up">
           GROWSMART

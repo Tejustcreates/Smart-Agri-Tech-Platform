@@ -51,7 +51,7 @@ const Header: React.FC<HeaderProps> = ({ activeSection, setActiveSection, user, 
   };
 
   const AuthButtons: React.FC<{ isMobile?: boolean }> = ({ isMobile }) => {
-    const baseClasses = isMobile ? 'block px-3 py-2 rounded-md text-base font-medium' : 'px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300';
+    const baseClasses = isMobile ? 'block px-4 py-2 rounded-lg text-base font-medium' : 'px-8 py-3.5 rounded-full text-base font-bold transition-all duration-200';
 
     if (user) {
       return (
@@ -80,7 +80,7 @@ const Header: React.FC<HeaderProps> = ({ activeSection, setActiveSection, user, 
       );
     }
     return (
-      <div className={isMobile ? 'space-y-1' : 'flex items-center space-x-2'}>
+      <div className={isMobile ? 'space-y-2' : 'flex items-center space-x-6'}>
         <button
           onClick={() => handleLinkClick(Section.LOGIN)}
           className={`${baseClasses} border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white`}
@@ -89,7 +89,7 @@ const Header: React.FC<HeaderProps> = ({ activeSection, setActiveSection, user, 
         </button>
         <button
           onClick={() => handleLinkClick(Section.SIGNUP)}
-          className={`${baseClasses} bg-green-600 text-white hover:bg-green-700 shadow-sm`}
+          className={`${baseClasses} bg-green-600 text-white hover:bg-green-700 shadow-md hover:shadow-lg`}
         >
           Sign Up
         </button>
@@ -101,7 +101,7 @@ const Header: React.FC<HeaderProps> = ({ activeSection, setActiveSection, user, 
     <header className="bg-lime-50 shadow-md sticky top-0 z-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0 ml-4">
             <a href="#" onClick={(e) => { e.preventDefault(); handleLinkClick(Section.HERO);}} className="flex items-center transition-transform duration-300 hover:scale-105">
               <img className="h-14 w-auto" src="./img/logo.png" alt="GROWSMART Logo" />
             </a>
