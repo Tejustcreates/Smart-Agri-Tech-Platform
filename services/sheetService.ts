@@ -1,18 +1,27 @@
+import * as XLSX from 'xlsx';
 import { User } from '../types';
 
-// This is our in-memory "Google Sheet" database.
-// In a real application, this would be a backend API call to a real database.
-const userDatabase: User[] = [];
+const STORAGE_KEY = 'growsmart_users';
 
-// Simulate a delay to mimic a network request
+const loadUsers = (): User[] => {
+  try {
+    const data = localStorage.getItem(STORAGE_KEY);
+    return data ? JSON.parse(data) : [];
+  } catch {
+    return [];
+  }
+};
+
+const saveUsers = (users: User[]) => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+};
+
+let userDatabase: User[] = loadUsers();
+
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
-/**
- * Signs up a new user, checking for duplicate emails.
- * In a real app, the password would be hashed before saving.
- */
 export const signUpUser = async (newUser: User): Promise<{ user: { name: string } | null; error: string | null; }> => {
-  await delay(500); // Simulate network latency
+  await delay(500);
 
   if (!newUser.email || !newUser.password || !newUser.name) {
       return { user: null, error: "All fields are required." };
@@ -23,39 +32,66 @@ export const signUpUser = async (newUser: User): Promise<{ user: { name: string 
   if (existingUser) {
     return { user: null, error: "An account with this email already exists." };
   }
-  
-  // Storing the full user object including password for this simulation.
-  // NEVER do this in a real production application. Always hash passwords.
+
   userDatabase.push({
       name: newUser.name,
       email: newUser.email.toLowerCase(),
       password: newUser.password,
+      signedUpAt: new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }),
   });
-  
-  console.log("Updated User Database:", userDatabase.map(u => ({name: u.name, email: u.email}))); // For debugging without logging passwords
+
+  saveUsers(userDatabase);
   return { user: { name: newUser.name }, error: null };
 };
 
-/**
- * Logs in a user by verifying their email and password.
- */
 export const loginUser = async (email: string, password: string): Promise<{ user: { name: string } | null; error: string | null; }> => {
-    await delay(500); // Simulate network latency
+    await delay(500);
 
     if (!email || !password) {
         return { user: null, error: "Email and password are required." };
     }
 
+    userDatabase = loadUsers();
     const user = userDatabase.find(u => u.email.toLowerCase() === email.toLowerCase());
 
     if (!user) {
-        return { user: null, error: "Invalid email or password." };
+      return { user: null, error: "Invalid email or password." };
     }
 
-    // In a real app, you would compare a hashed password.
     if (user.password !== password) {
-        return { user: null, error: "Invalid email or password." };
+      return { user: null, error: "Invalid email or password." };
     }
 
     return { user: { name: user.name }, error: null };
+};
+
+export const getAllUsers = (): { name: string; email: string; signedUpAt: string }[] => {
+  userDatabase = loadUsers();
+  return userDatabase.map(u => ({
+    name: u.name,
+    email: u.email,
+    signedUpAt: u.signedUpAt || 'N/A',
+  }));
+};
+
+export const exportToExcel = () => {
+  const data = userDatabase.map((u, i) => ({
+    'S.No': i + 1,
+    'Name': u.name,
+    'Email': u.email,
+    'Signed Up': u.signedUpAt || 'N/A',
+  }));
+
+  const ws = XLSX.utils.json_to_sheet(data);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Registered Users');
+
+  ws['!cols'] = [
+    { wch: 6 },
+    { wch: 25 },
+    { wch: 35 },
+    { wch: 22 },
+  ];
+
+  XLSX.writeFile(wb, 'GrowSmart_Registered_Users.xlsx');
 };

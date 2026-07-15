@@ -106,7 +106,8 @@ const Header: React.FC<HeaderProps> = ({ activeSection, setActiveSection, user, 
               <img className="h-14 w-auto" src="./img/logo.png" alt="GROWSMART Logo" />
             </a>
           </div>
-          <div className="hidden md:block">
+          <div
+            className="hidden md:block">
             <div className="ml-8 flex items-center gap-3">
               {NAV_ITEMS.map((item) => (
                 <a

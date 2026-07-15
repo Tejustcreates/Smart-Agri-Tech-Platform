@@ -7,6 +7,7 @@ import Weather from './components/Weather';
 import News from './components/News';
 import Schemes from './components/Schemes';
 import Mandi from './components/Mandi';
+import { exportToExcel } from './services/sheetService';
 // AgriMarket (Equipments store) removed — functionality covered by EquipmentRecommender
 import CropRecommender from './components/CropRecommender';
 import DiseaseDetection from './components/DiseaseDetection';
@@ -116,6 +117,21 @@ const App: React.FC = () => {
     // For now, we'll just redirect to home.
     toast.success('Payment successful! Your order has been placed.');
   };
+
+  // Admin: Ctrl+Shift+A downloads Excel of registered users
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.shiftKey && e.key === 'A') {
+        e.preventDefault();
+        if (user) {
+          exportToExcel();
+          toast.success('Excel downloaded successfully!');
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [user]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(

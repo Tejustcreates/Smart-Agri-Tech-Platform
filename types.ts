@@ -18,6 +18,7 @@ export interface User {
   name: string;
   email: string;
   password?: string;
+  signedUpAt?: string;
 }
 
 export interface NewsArticle {
