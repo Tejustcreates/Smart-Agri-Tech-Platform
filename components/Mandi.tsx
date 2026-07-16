@@ -222,8 +222,8 @@ const Mandi: React.FC<MandiProps> = ({ onAddToCart }) => {
   );
 
   return (
-    <section id={Section.MANDI} className="snap-section min-h-screen flex flex-col justify-center border-t border-gray-100 bg-gradient-to-b from-amber-50/30 to-white">
-      <div className="max-w-7xl mx-auto px-6 lg:px-12 py-16 w-full">
+    <section id={Section.MANDI} className="snap-section min-h-screen flex flex-col justify-center items-center border-t border-gray-100 bg-gradient-to-b from-amber-50/30 to-white">
+      <div className="w-full max-w-7xl mx-auto px-6 lg:px-12 py-16">
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 bg-amber-100 text-amber-700 rounded-full px-4 py-1.5 text-sm font-medium mb-4">
             <i className="fas fa-store text-xs"></i>

@@ -134,8 +134,8 @@ const Schemes: React.FC = () => {
   };
 
   return (
-    <section id={Section.SCHEMES} className="snap-section min-h-screen flex flex-col justify-center border-t border-gray-100 bg-gradient-to-b from-indigo-50/40 to-white">
-      <div className="max-w-7xl mx-auto px-6 lg:px-12 py-16 w-full">
+    <section id={Section.SCHEMES} className="snap-section min-h-screen flex flex-col justify-center items-center border-t border-gray-100 bg-gradient-to-b from-indigo-50/40 to-white">
+      <div className="w-full max-w-7xl mx-auto px-6 lg:px-12 py-16">
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 bg-indigo-100 text-indigo-700 rounded-full px-4 py-1.5 text-sm font-medium mb-4">
             <i className="fas fa-landmark text-xs"></i>

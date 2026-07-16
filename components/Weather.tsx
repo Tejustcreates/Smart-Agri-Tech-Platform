@@ -345,8 +345,8 @@ const Weather: React.FC = () => {
   };
 
   return (
-    <section id={Section.WEATHER} className="snap-section min-h-screen flex flex-col justify-center border-t border-gray-100 bg-gradient-to-b from-blue-50/60 to-white">
-      <div className="max-w-7xl mx-auto px-6 lg:px-12 py-16 w-full">
+    <section id={Section.WEATHER} className="snap-section min-h-screen flex flex-col justify-center items-center border-t border-gray-100 bg-gradient-to-b from-blue-50/60 to-white">
+      <div className="w-full max-w-7xl mx-auto px-6 lg:px-12 py-16">
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 rounded-full px-4 py-1.5 text-sm font-medium mb-4">
             <i className="fas fa-cloud-sun text-xs"></i>

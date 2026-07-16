@@ -150,7 +150,7 @@ const AppContent: React.FC = () => {
         }}
       />
       <Header user={user} onLogout={handleLogout} cartCount={cartCount} />
-      <main className="flex-1">
+      <main className="flex-1 overflow-x-hidden">
         <Routes>
           <Route path="/" element={
             <>
