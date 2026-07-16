@@ -9,7 +9,7 @@ import CropRecommender from './components/CropRecommender';
 import DiseaseDetection from './components/DiseaseDetection';
 import FarmerNewsSection from './components/farmer-news/FarmerNewsSection';
 import GovernmentSchemes from './components/schemes/GovernmentSchemes';
-import Mandi from './components/Mandi';
+import DigitalMandi from './components/mandi/DigitalMandi';
 import EquipmentRecommender from './components/EquipmentRecommender';
 import LoginPage from './components/pages/LoginPage';
 import SignupPage from './components/pages/SignupPage';
@@ -160,7 +160,7 @@ const AppContent: React.FC = () => {
               <DiseaseDetection />
               <FarmerNewsSection />
               <GovernmentSchemes />
-              <Mandi onAddToCart={addToCart} />
+              <DigitalMandi />
               <EquipmentRecommender onAddToCart={addToCart} />
             </>
           } />
