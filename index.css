@@ -61,6 +61,11 @@ body {
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 70px;
+  scroll-snap-type: y proximity;
+}
+
+.snap-section {
+  scroll-snap-align: start;
 }
 
 /* Google Translate Widget Overrides */

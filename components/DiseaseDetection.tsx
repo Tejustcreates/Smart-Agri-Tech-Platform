@@ -228,8 +228,8 @@ const DiseaseDetection: React.FC = () => {
   };
 
   return (
-    <section id="disease-detection" className="py-20 md:py-28 bg-gradient-to-b from-amber-50/40 to-white">
-      <div className="max-w-7xl mx-auto px-6 lg:px-12">
+    <section id="disease-detection" className="snap-section min-h-screen flex flex-col justify-center border-t border-gray-100 bg-gradient-to-b from-amber-50/40 to-white">
+      <div className="max-w-7xl mx-auto px-6 lg:px-12 py-16 w-full">
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 bg-amber-100 text-amber-700 rounded-full px-4 py-1.5 text-sm font-medium mb-4">
             <i className="fas fa-bug text-xs"></i>

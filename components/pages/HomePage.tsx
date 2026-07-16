@@ -28,7 +28,7 @@ const HomePage: React.FC = () => {
   return (
     <div>
       {/* Hero Section */}
-      <section id="hero" className="relative min-h-[85vh] flex items-center overflow-hidden bg-gradient-to-br from-green-800 via-green-700 to-emerald-800">
+      <section id="hero" className="snap-section relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-green-800 via-green-700 to-emerald-800">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1920&q=80')", backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
         </div>
@@ -67,7 +67,7 @@ const HomePage: React.FC = () => {
       </section>
 
       {/* Features Grid */}
-      <section id="features" className="py-20 bg-white">
+      <section id="features" className="snap-section py-16 md:py-20 bg-white border-t border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
             <span className="inline-block px-4 py-1.5 bg-green-100 text-green-700 rounded-full text-sm font-semibold mb-4">Our Services</span>
@@ -96,7 +96,7 @@ const HomePage: React.FC = () => {
       </section>
 
       {/* About Brief */}
-      <section className="py-16 bg-gray-50 border-t border-gray-100">
+      <section className="snap-section py-12 md:py-16 bg-gray-50 border-t border-gray-100">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <span className="inline-block px-4 py-1.5 bg-green-100 text-green-700 rounded-full text-sm font-semibold mb-4">Why GROWSMART?</span>
