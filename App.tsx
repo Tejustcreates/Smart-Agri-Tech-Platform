@@ -10,7 +10,7 @@ import DiseaseDetection from './components/DiseaseDetection';
 import FarmerNewsSection from './components/farmer-news/FarmerNewsSection';
 import GovernmentSchemes from './components/schemes/GovernmentSchemes';
 import DigitalMandi from './components/mandi/DigitalMandi';
-import EquipmentRecommender from './components/EquipmentRecommender';
+import CommunityEquipment from './components/equipment/CommunityEquipment';
 import LoginPage from './components/pages/LoginPage';
 import SignupPage from './components/pages/SignupPage';
 import CartPage from './components/pages/CartPage';
@@ -161,7 +161,7 @@ const AppContent: React.FC = () => {
               <FarmerNewsSection />
               <GovernmentSchemes />
               <DigitalMandi />
-              <EquipmentRecommender onAddToCart={addToCart} />
+              <CommunityEquipment />
             </>
           } />
           <Route path="/login" element={<LoginPage user={user} onLogin={handleLogin} />} />
