@@ -1,22 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { Toaster, toast } from 'react-hot-toast';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import HomePage from './components/pages/HomePage';
-import WeatherPage from './components/pages/WeatherPage';
-import CropAdvisorPage from './components/pages/CropAdvisorPage';
-import DiseasePage from './components/pages/DiseasePage';
-import NewsPage from './components/pages/NewsPage';
-import SchemesPage from './components/pages/SchemesPage';
-import MandiPage from './components/pages/MandiPage';
-import EquipmentPage from './components/pages/EquipmentPage';
+import Weather from './components/Weather';
+import CropRecommender from './components/CropRecommender';
+import DiseaseDetection from './components/DiseaseDetection';
+import News from './components/News';
+import Schemes from './components/Schemes';
+import Mandi from './components/Mandi';
+import EquipmentRecommender from './components/EquipmentRecommender';
 import LoginPage from './components/pages/LoginPage';
 import SignupPage from './components/pages/SignupPage';
 import CartPage from './components/pages/CartPage';
 import PaymentPage from './components/pages/PaymentPage';
 import { exportToExcel } from './services/sheetService';
 import { User, CartItem, Product } from './types';
+import { ROUTES } from './constants';
 
 const NotFound: React.FC = () => (
   <section className="py-20 bg-gray-50 flex items-center justify-center min-h-[calc(100vh-64px)]">
@@ -44,6 +45,7 @@ const loadFromStorage = <T,>(key: string, fallback: T): T => {
 
 const AppContent: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [user, setUser] = useState<User | null>(() => loadFromStorage<User | null>('growsmart_user', null));
   const [cart, setCart] = useState<CartItem[]>(() => loadFromStorage<CartItem[]>('growsmart_cart', []));
   const [paymentTotal, setPaymentTotal] = useState<number>(0);
@@ -133,6 +135,8 @@ const AppContent: React.FC = () => {
 
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
+  const isHomePage = location.pathname === ROUTES.HOME;
+
   return (
     <div className="min-h-screen flex flex-col">
       <Toaster
@@ -148,14 +152,18 @@ const AppContent: React.FC = () => {
       <Header user={user} onLogout={handleLogout} cartCount={cartCount} />
       <main className="flex-1">
         <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/weather" element={<WeatherPage />} />
-          <Route path="/crop-advisor" element={<CropAdvisorPage />} />
-          <Route path="/disease-detection" element={<DiseasePage />} />
-          <Route path="/news" element={<NewsPage />} />
-          <Route path="/schemes" element={<SchemesPage />} />
-          <Route path="/mandi" element={<MandiPage onAddToCart={addToCart} />} />
-          <Route path="/equipment" element={<EquipmentPage onAddToCart={addToCart} />} />
+          <Route path="/" element={
+            <>
+              <HomePage />
+              <Weather />
+              <CropRecommender />
+              <DiseaseDetection />
+              <News />
+              <Schemes />
+              <Mandi onAddToCart={addToCart} />
+              <EquipmentRecommender onAddToCart={addToCart} />
+            </>
+          } />
           <Route path="/login" element={<LoginPage user={user} onLogin={handleLogin} />} />
           <Route path="/signup" element={<SignupPage user={user} onSignup={handleSignup} />} />
           <Route path="/cart" element={<CartPage cartItems={cart} onUpdateQuantity={updateQuantity} onRemoveItem={removeFromCart} onProceedToCheckout={handleProceedToCheckout} />} />
@@ -163,7 +171,7 @@ const AppContent: React.FC = () => {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
-      <Footer />
+      {isHomePage && <Footer />}
     </div>
   );
 };

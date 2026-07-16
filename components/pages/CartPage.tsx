@@ -16,10 +16,10 @@ const CartPage: React.FC<CartPageProps> = ({ cartItems, onUpdateQuantity, onRemo
     <div>
       <Cart
         cartItems={cartItems}
-        onUpdateQuantity={onUpdateQuantity}
+        onUpdateQuantity={updateQuantity}
         onRemoveItem={onRemoveItem}
         onProceedToCheckout={onProceedToCheckout}
-        onBackToShopping={() => navigate('/mandi')}
+        onBackToShopping={() => navigate('/', { state: { scrollTo: 'mandi' } })}
       />
     </div>
   );

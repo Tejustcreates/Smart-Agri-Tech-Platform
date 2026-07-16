@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { User } from '../types';
 import { NAV_ITEMS, ROUTES } from '../constants';
 
@@ -17,7 +17,58 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ user, onLogout, cartCount }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('hero');
   const navigate = useNavigate();
+  const location = useLocation();
+  const observerRef = useRef<IntersectionObserver | null>(null);
+
+  const scrollToSection = useCallback((sectionId: string) => {
+    if (location.pathname !== ROUTES.HOME) {
+      navigate(ROUTES.HOME, { state: { scrollTo: sectionId } });
+      return;
+    }
+    const el = document.getElementById(sectionId);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [location.pathname, navigate]);
+
+  useEffect(() => {
+    if (location.pathname !== ROUTES.HOME) return;
+
+    const sectionIds = NAV_ITEMS.map((item) => item.sectionId);
+    const elements = sectionIds
+      .map((id) => document.getElementById(id))
+      .filter(Boolean) as HTMLElement[];
+
+    if (observerRef.current) observerRef.current.disconnect();
+
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            setActiveSection(entry.target.id);
+          }
+        }
+      },
+      { rootMargin: '-80px 0px -60% 0px', threshold: 0 }
+    );
+
+    elements.forEach((el) => observerRef.current!.observe(el));
+
+    return () => observerRef.current?.disconnect();
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (location.pathname === ROUTES.HOME && location.state?.scrollTo) {
+      const timer = setTimeout(() => {
+        const el = document.getElementById(location.state.scrollTo);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        window.history.replaceState({}, '');
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [location]);
 
   useEffect(() => {
     const initGoogleTranslate = () => {
@@ -57,30 +108,42 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, cartCount }) => {
     navigate('/');
   };
 
-  const linkClass = ({ isActive }: { isActive: boolean }) =>
-    `px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-      isActive
-        ? 'bg-green-600 text-white shadow-sm'
-        : 'text-gray-700 hover:bg-green-50 hover:text-green-700'
-    }`;
+  const isOnHomePage = location.pathname === ROUTES.HOME;
 
   return (
     <header className="bg-white shadow-md sticky top-0 z-50 border-b border-green-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <NavLink to="/" className="flex items-center gap-2 flex-shrink-0">
+          <button
+            onClick={() => {
+              if (isOnHomePage) {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              } else {
+                navigate('/');
+              }
+            }}
+            className="flex items-center gap-2 flex-shrink-0"
+          >
             <img className="h-10 w-auto" src="./img/logo.png" alt="GROWSMART" />
             <span className="text-lg font-bold text-green-700 hidden sm:block">GROWSMART</span>
-          </NavLink>
+          </button>
 
           {/* Desktop Nav */}
           <nav className="hidden lg:flex items-center gap-1">
             {NAV_ITEMS.map((item) => (
-              <NavLink key={item.path} to={item.path} className={linkClass}>
+              <button
+                key={item.sectionId}
+                onClick={() => scrollToSection(item.sectionId)}
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  isOnHomePage && activeSection === item.sectionId
+                    ? 'bg-green-600 text-white shadow-sm'
+                    : 'text-gray-700 hover:bg-green-50 hover:text-green-700'
+                }`}
+              >
                 <i className={`${item.icon} mr-1.5 text-xs`} aria-hidden="true"></i>
                 {item.name}
-              </NavLink>
+              </button>
             ))}
           </nav>
 
@@ -147,19 +210,21 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, cartCount }) => {
         <div className="lg:hidden bg-white border-t border-gray-100 shadow-lg">
           <div className="px-4 py-3 space-y-1">
             {NAV_ITEMS.map((item) => (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                onClick={() => setIsMenuOpen(false)}
-                className={({ isActive }) =>
-                  `block px-4 py-3 rounded-lg text-base font-medium transition-colors ${
-                    isActive ? 'bg-green-600 text-white' : 'text-gray-700 hover:bg-green-50 hover:text-green-700'
-                  }`
-                }
+              <button
+                key={item.sectionId}
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  scrollToSection(item.sectionId);
+                }}
+                className={`block w-full text-left px-4 py-3 rounded-lg text-base font-medium transition-colors ${
+                  isOnHomePage && activeSection === item.sectionId
+                    ? 'bg-green-600 text-white'
+                    : 'text-gray-700 hover:bg-green-50 hover:text-green-700'
+                }`}
               >
                 <i className={`${item.icon} mr-3 w-5 text-center`} aria-hidden="true"></i>
                 {item.name}
-              </NavLink>
+              </button>
             ))}
             <div className="border-t border-gray-200 mt-2 pt-3">
               <div id="google_translate_element_mobile" className="mb-3 px-4"></div>

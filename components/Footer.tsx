@@ -1,8 +1,29 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { ROUTES } from '../constants';
 
+const FOOTER_LINKS = [
+  { name: 'Weather', sectionId: 'weather', icon: 'fas fa-cloud-sun' },
+  { name: 'Crop Advisor', sectionId: 'crop-recommender', icon: 'fas fa-seedling' },
+  { name: 'Disease Detection', sectionId: 'disease-detection', icon: 'fas fa-bug' },
+  { name: 'Smart Mandi', sectionId: 'mandi', icon: 'fas fa-store' },
+  { name: 'Govt Schemes', sectionId: 'schemes', icon: 'fas fa-landmark' },
+  { name: 'Equipment Rental', sectionId: 'equipment-recommender', icon: 'fas fa-tractor' },
+];
+
 const Footer: React.FC = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const scrollToSection = (sectionId: string) => {
+    if (location.pathname !== ROUTES.HOME) {
+      navigate(ROUTES.HOME, { state: { scrollTo: sectionId } });
+      return;
+    }
+    const el = document.getElementById(sectionId);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   return (
     <footer className="bg-gradient-to-b from-green-900 to-green-950 text-green-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -24,12 +45,16 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="text-white font-bold mb-4">Features</h3>
             <ul className="space-y-2 text-sm">
-              <li><Link to={ROUTES.WEATHER} className="text-green-300/70 hover:text-green-300 transition-colors"><i className="fas fa-cloud-sun mr-2 text-green-500/50"></i>Weather</Link></li>
-              <li><Link to={ROUTES.CROP_ADVISOR} className="text-green-300/70 hover:text-green-300 transition-colors"><i className="fas fa-seedling mr-2 text-green-500/50"></i>Crop Advisor</Link></li>
-              <li><Link to={ROUTES.DISEASE_DETECTION} className="text-green-300/70 hover:text-green-300 transition-colors"><i className="fas fa-bug mr-2 text-green-500/50"></i>Disease Detection</Link></li>
-              <li><Link to={ROUTES.MANDI} className="text-green-300/70 hover:text-green-300 transition-colors"><i className="fas fa-store mr-2 text-green-500/50"></i>Smart Mandi</Link></li>
-              <li><Link to={ROUTES.SCHEMES} className="text-green-300/70 hover:text-green-300 transition-colors"><i className="fas fa-landmark mr-2 text-green-500/50"></i>Govt Schemes</Link></li>
-              <li><Link to={ROUTES.EQUIPMENT} className="text-green-300/70 hover:text-green-300 transition-colors"><i className="fas fa-tractor mr-2 text-green-500/50"></i>Equipment Rental</Link></li>
+              {FOOTER_LINKS.map((link) => (
+                <li key={link.sectionId}>
+                  <button
+                    onClick={() => scrollToSection(link.sectionId)}
+                    className="text-green-300/70 hover:text-green-300 transition-colors text-left"
+                  >
+                    <i className={`${link.icon} mr-2 text-green-500/50`}></i>{link.name}
+                  </button>
+                </li>
+              ))}
             </ul>
           </div>
           <div>

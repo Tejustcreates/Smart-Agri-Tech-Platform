@@ -1,22 +1,34 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { ROUTES } from '../../constants';
 
 const FEATURES = [
-  { title: 'Weather Intelligence', desc: 'Real-time forecasts with ML rain predictions', icon: 'fas fa-cloud-sun', color: 'bg-blue-500', route: ROUTES.WEATHER, textColor: 'text-blue-600', bgColor: 'bg-blue-50' },
-  { title: 'Crop Advisor', desc: 'AI recommends best crops for your soil & season', icon: 'fas fa-seedling', color: 'bg-green-500', route: ROUTES.CROP_ADVISOR, textColor: 'text-green-600', bgColor: 'bg-green-50' },
-  { title: 'Disease Detection', desc: 'Identify crop diseases and get treatment advice', icon: 'fas fa-bug', color: 'bg-amber-500', route: ROUTES.DISEASE_DETECTION, textColor: 'text-amber-600', bgColor: 'bg-amber-50' },
-  { title: 'Farmer News', desc: 'AI-curated news tailored to your crops & region', icon: 'fas fa-newspaper', color: 'bg-emerald-500', route: ROUTES.NEWS, textColor: 'text-emerald-600', bgColor: 'bg-emerald-50' },
-  { title: 'Govt Schemes', desc: 'Personalized welfare scheme recommendations', icon: 'fas fa-landmark', color: 'bg-indigo-500', route: ROUTES.SCHEMES, textColor: 'text-indigo-600', bgColor: 'bg-indigo-50' },
-  { title: 'Smart Mandi', desc: 'Live market prices and AI price predictions', icon: 'fas fa-store', color: 'bg-orange-500', route: ROUTES.MANDI, textColor: 'text-orange-600', bgColor: 'bg-orange-50' },
-  { title: 'Equipment Rental', desc: 'Find and rent farming equipment near you', icon: 'fas fa-tractor', color: 'bg-red-500', route: ROUTES.EQUIPMENT, textColor: 'text-red-600', bgColor: 'bg-red-50' },
+  { title: 'Weather Intelligence', desc: 'Real-time forecasts with ML rain predictions', icon: 'fas fa-cloud-sun', sectionId: 'weather', textColor: 'text-blue-600', bgColor: 'bg-blue-50' },
+  { title: 'Crop Advisor', desc: 'AI recommends best crops for your soil & season', icon: 'fas fa-seedling', sectionId: 'crop-recommender', textColor: 'text-green-600', bgColor: 'bg-green-50' },
+  { title: 'Disease Detection', desc: 'Identify crop diseases and get treatment advice', icon: 'fas fa-bug', sectionId: 'disease-detection', textColor: 'text-amber-600', bgColor: 'bg-amber-50' },
+  { title: 'Farmer News', desc: 'AI-curated news tailored to your crops & region', icon: 'fas fa-newspaper', sectionId: 'news', textColor: 'text-emerald-600', bgColor: 'bg-emerald-50' },
+  { title: 'Govt Schemes', desc: 'Personalized welfare scheme recommendations', icon: 'fas fa-landmark', sectionId: 'schemes', textColor: 'text-indigo-600', bgColor: 'bg-indigo-50' },
+  { title: 'Smart Mandi', desc: 'Live market prices and AI price predictions', icon: 'fas fa-store', sectionId: 'mandi', textColor: 'text-orange-600', bgColor: 'bg-orange-50' },
+  { title: 'Equipment Rental', desc: 'Find and rent farming equipment near you', icon: 'fas fa-tractor', sectionId: 'equipment-recommender', textColor: 'text-red-600', bgColor: 'bg-red-50' },
 ];
 
 const HomePage: React.FC = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const scrollToSection = (sectionId: string) => {
+    if (location.pathname !== ROUTES.HOME) {
+      navigate(ROUTES.HOME, { state: { scrollTo: sectionId } });
+      return;
+    }
+    const el = document.getElementById(sectionId);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   return (
     <div>
       {/* Hero Section */}
-      <section className="relative min-h-[85vh] flex items-center overflow-hidden bg-gradient-to-br from-green-800 via-green-700 to-emerald-800">
+      <section id="hero" className="relative min-h-[85vh] flex items-center overflow-hidden bg-gradient-to-br from-green-800 via-green-700 to-emerald-800">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1920&q=80')", backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
         </div>
@@ -35,9 +47,12 @@ const HomePage: React.FC = () => {
               Weather intelligence, crop disease detection, live mandi prices, and government schemes — all in one place, completely free.
             </p>
             <div className="flex flex-wrap gap-4">
-              <Link to={ROUTES.WEATHER} className="inline-flex items-center gap-2 bg-white text-green-700 font-bold py-3.5 px-8 rounded-full hover:bg-green-50 transition-all shadow-lg">
+              <button
+                onClick={() => scrollToSection('weather')}
+                className="inline-flex items-center gap-2 bg-white text-green-700 font-bold py-3.5 px-8 rounded-full hover:bg-green-50 transition-all shadow-lg"
+              >
                 <i className="fas fa-rocket"></i> Get Started
-              </Link>
+              </button>
               <a href="#features" className="inline-flex items-center gap-2 border-2 border-white/30 text-white font-bold py-3.5 px-8 rounded-full hover:bg-white/10 transition-all">
                 <i className="fas fa-play-circle"></i> Learn More
               </a>
@@ -61,10 +76,10 @@ const HomePage: React.FC = () => {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {FEATURES.map((f) => (
-              <Link
+              <button
                 key={f.title}
-                to={f.route}
-                className="group bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-xl hover:border-green-200 transition-all duration-300 hover:-translate-y-1"
+                onClick={() => scrollToSection(f.sectionId)}
+                className="group bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-xl hover:border-green-200 transition-all duration-300 hover:-translate-y-1 text-left"
               >
                 <div className={`w-14 h-14 ${f.bgColor} rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
                   <i className={`${f.icon} ${f.textColor} text-2xl`}></i>
@@ -74,7 +89,7 @@ const HomePage: React.FC = () => {
                 <span className={`inline-flex items-center gap-1 text-sm font-semibold ${f.textColor}`}>
                   Explore <i className="fas fa-arrow-right text-xs group-hover:translate-x-1 transition-transform"></i>
                 </span>
-              </Link>
+              </button>
             ))}
           </div>
         </div>

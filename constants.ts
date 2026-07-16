@@ -1,12 +1,5 @@
 export const ROUTES = {
   HOME: '/',
-  WEATHER: '/weather',
-  CROP_ADVISOR: '/crop-advisor',
-  DISEASE_DETECTION: '/disease-detection',
-  NEWS: '/news',
-  SCHEMES: '/schemes',
-  MANDI: '/mandi',
-  EQUIPMENT: '/equipment',
   LOGIN: '/login',
   SIGNUP: '/signup',
   CART: '/cart',
@@ -14,14 +7,14 @@ export const ROUTES = {
 } as const;
 
 export const NAV_ITEMS = [
-  { name: 'Home', path: ROUTES.HOME, icon: 'fas fa-home' },
-  { name: 'Weather', path: ROUTES.WEATHER, icon: 'fas fa-cloud-sun' },
-  { name: 'Crop Advisor', path: ROUTES.CROP_ADVISOR, icon: 'fas fa-seedling' },
-  { name: 'Disease Detection', path: ROUTES.DISEASE_DETECTION, icon: 'fas fa-bug' },
-  { name: 'News', path: ROUTES.NEWS, icon: 'fas fa-newspaper' },
-  { name: 'Schemes', path: ROUTES.SCHEMES, icon: 'fas fa-landmark' },
-  { name: 'Mandi', path: ROUTES.MANDI, icon: 'fas fa-store' },
-  { name: 'Equipment', path: ROUTES.EQUIPMENT, icon: 'fas fa-tractor' },
+  { name: 'Home', sectionId: 'hero', icon: 'fas fa-home' },
+  { name: 'Weather', sectionId: 'weather', icon: 'fas fa-cloud-sun' },
+  { name: 'Crop Advisor', sectionId: 'crop-recommender', icon: 'fas fa-seedling' },
+  { name: 'Disease Detection', sectionId: 'disease-detection', icon: 'fas fa-bug' },
+  { name: 'News', sectionId: 'news', icon: 'fas fa-newspaper' },
+  { name: 'Schemes', sectionId: 'schemes', icon: 'fas fa-landmark' },
+  { name: 'Mandi', sectionId: 'mandi', icon: 'fas fa-store' },
+  { name: 'Equipment', sectionId: 'equipment-recommender', icon: 'fas fa-tractor' },
 ];
 
 export const INDIAN_STATES = [
