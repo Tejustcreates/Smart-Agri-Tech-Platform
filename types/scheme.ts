@@ -29,6 +29,9 @@ export interface Scheme {
 export type SortOption = 'newest' | 'match' | 'central' | 'state';
 
 export interface SchemeFilters {
+  state: string;
+  category: string;
+  crop: string;
   search: string;
   sort: SortOption;
   level: 'all' | 'Central' | 'State';

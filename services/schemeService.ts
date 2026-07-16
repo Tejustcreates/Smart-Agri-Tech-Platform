@@ -1,4 +1,4 @@
-import { Scheme, FarmerProfile } from '../types/scheme';
+import { Scheme, FarmerProfile, SchemeFilters } from '../types/scheme';
 
 const DATA_GOV_KEY = import.meta.env.VITE_DATA_GOV_API_KEY;
 
@@ -106,7 +106,7 @@ function computeMatch(scheme: Scheme, profile: FarmerProfile): number {
   return Math.min(98, score);
 }
 
-export async function searchSchemes(profile: FarmerProfile): Promise<Scheme[]> {
+export async function searchSchemes(filters: SchemeFilters, profile: FarmerProfile): Promise<Scheme[]> {
   if (DATA_GOV_KEY) {
     try {
       const params = new URLSearchParams({
@@ -147,7 +147,7 @@ export async function searchSchemes(profile: FarmerProfile): Promise<Scheme[]> {
   return schemes;
 }
 
-export function getPopularSchemes(): Scheme[] {
+export function getPopularSchemes(_state?: string): Scheme[] {
   return POPULAR_SCHEMES;
 }
 

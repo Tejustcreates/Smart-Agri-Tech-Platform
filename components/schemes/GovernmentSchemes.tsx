@@ -43,7 +43,7 @@ const GovernmentSchemes: React.FC = () => {
 
   // Load popular schemes on mount
   useEffect(() => {
-    getPopularSchemes('Maharashtra').then(setPopular).catch(() => {});
+    setPopular(getPopularSchemes('Maharashtra'));
   }, []);
 
   const handleSearch = async () => {
