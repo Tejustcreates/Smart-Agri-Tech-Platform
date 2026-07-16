@@ -1,8 +1,9 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, MapPin, Locate, ArrowRight, Loader2 } from 'lucide-react';
+import { Search, MapPin, Locate, ArrowRight, Loader2, Navigation } from 'lucide-react';
 import { INDIAN_CITIES } from '../../services/weather/openMeteo';
 import { GeoLocation } from '../../types/weather';
+import { reverseGeocode } from '../../services/shared/locationService';
 
 interface WeatherLandingProps {
   onSelectLocation: (lat: number, lon: number, name: string) => void;
@@ -17,6 +18,8 @@ const WeatherLanding: React.FC<WeatherLandingProps> = ({ onSelectLocation, searc
   const [query, setQuery] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
   const [focused, setFocused] = useState(false);
+  const [gpsLoading, setGpsLoading] = useState(false);
+  const [gpsError, setGpsError] = useState<string | null>(null);
 
   const handleSearch = useCallback((value: string) => {
     setQuery(value);
@@ -36,9 +39,25 @@ const WeatherLanding: React.FC<WeatherLandingProps> = ({ onSelectLocation, searc
 
   const handleGeolocate = () => {
     if (!navigator.geolocation) return;
+    setGpsLoading(true);
+    setGpsError(null);
     navigator.geolocation.getCurrentPosition(
-      (pos) => onSelectLocation(pos.coords.latitude, pos.coords.longitude, 'Your Location'),
-      () => {}
+      async (pos) => {
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+        try {
+          const geo = await reverseGeocode(lat, lon);
+          const name = geo.village || geo.district || geo.state || 'Your Location';
+          onSelectLocation(lat, lon, name);
+        } catch {
+          onSelectLocation(lat, lon, 'Your Location');
+        }
+        setGpsLoading(false);
+      },
+      () => {
+        setGpsLoading(false);
+        setGpsError('GPS permission denied. Please allow location access or search manually.');
+      }
     );
   };
 
@@ -103,12 +122,31 @@ const WeatherLanding: React.FC<WeatherLandingProps> = ({ onSelectLocation, searc
           </div>
           <button
             onClick={handleGeolocate}
-            className="p-4 sm:p-4.5 bg-white rounded-2xl border border-gray-200 hover:bg-green-50 hover:border-green-300 transition-all shadow-md hover:shadow-lg flex-shrink-0 active:scale-95"
+            disabled={gpsLoading}
+            className="p-4 sm:p-4.5 bg-white rounded-2xl border border-gray-200 hover:bg-green-50 hover:border-green-300 transition-all shadow-md hover:shadow-lg flex-shrink-0 active:scale-95 disabled:opacity-60"
             title="Use my current location"
           >
-            <Locate size={22} className="text-green-600" />
+            {gpsLoading ? (
+              <Loader2 size={22} className="text-green-500 animate-spin" />
+            ) : (
+              <Locate size={22} className="text-green-600" />
+            )}
           </button>
         </div>
+
+        {/* GPS Error */}
+        <AnimatePresence>
+          {gpsError && (
+            <motion.div
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="mt-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-sm text-amber-700 text-center"
+            >
+              {gpsError}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Search Dropdown */}
         <AnimatePresence>

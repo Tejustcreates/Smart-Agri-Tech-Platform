@@ -1,4 +1,5 @@
 import { EquipmentListing, SearchFilters, RegistrationForm, GpsLocation } from '../../types/equipment';
+import { reverseGeocode as sharedReverseGeocode } from '../shared/locationService';
 
 const IMAGES = [
   'https://picsum.photos/seed/tractor1/600/400',
@@ -139,25 +140,10 @@ export function estimateTravelTime(distanceKm: number): string {
   return '~5+ hrs';
 }
 
-// --- Reverse Geocoding via OpenStreetMap Nominatim ---
+// --- Reverse Geocoding via shared service ---
 export async function reverseGeocode(lat: number, lng: number): Promise<GpsLocation> {
-  try {
-    const res = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=16&addressdetails=1`,
-      { headers: { 'Accept-Language': 'en' } }
-    );
-    const data = await res.json();
-    const addr = data.address || {};
-    return {
-      lat,
-      lng,
-      address: data.display_name || `${lat.toFixed(4)}, ${lng.toFixed(4)}`,
-      village: addr.village || addr.town || addr.city || addr.suburb || addr.county || '',
-      pincode: addr.postcode || '',
-    };
-  } catch {
-    return { lat, lng, address: `${lat.toFixed(4)}, ${lng.toFixed(4)}`, village: '', pincode: '' };
-  }
+  const geo = await sharedReverseGeocode(lat, lng);
+  return { lat: geo.lat, lng: geo.lng, address: geo.address, village: geo.village, pincode: geo.pincode };
 }
 
 // --- Recommendation Score: 40% distance, 20% availability, 15% price, 10% rating, 10% verified, 5% condition ---

@@ -5,6 +5,7 @@ import { useWeatherData } from '../../hooks/useWeatherData';
 import { useLocationSearch } from '../../hooks/useLocationSearch';
 import { useMLPredictions } from '../../hooks/useMLPredictions';
 import { GeoLocation } from '../../types/weather';
+import { reverseGeocode } from '../../services/shared/locationService';
 import CurrentWeatherCard from './CurrentWeatherCard';
 import ForecastCards from './ForecastCards';
 import WeatherCharts from './WeatherCharts';
@@ -73,8 +74,15 @@ const WeatherDashboard: React.FC = () => {
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         setDashboardLoading(true);
-        setLocationName('Your Location');
-        await fetchWeather(pos.coords.latitude, pos.coords.longitude);
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+        try {
+          const geo = await reverseGeocode(lat, lon);
+          setLocationName(geo.village || geo.district || geo.state || 'Your Location');
+        } catch {
+          setLocationName('Your Location');
+        }
+        await fetchWeather(lat, lon);
         setDashboardLoading(false);
       },
       () => {}

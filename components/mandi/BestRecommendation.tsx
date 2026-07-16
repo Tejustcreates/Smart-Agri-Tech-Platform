@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, Wheat, Truck, IndianRupee, Loader2, Sparkles, Trophy } from 'lucide-react';
+import { MapPin, Wheat, Truck, IndianRupee, Loader2, Sparkles, Trophy, Navigation } from 'lucide-react';
 import { MandiRecommendation, RecommendationInput } from '../../types/mandi';
 import { getRecommendation } from '../../services/mandi/mandiApi';
-import { INDIAN_STATES, CROP_OPTIONS } from '../../constants';
+import { CROP_OPTIONS } from '../../constants';
+import { useGpsLocation } from '../../hooks/useGpsLocation';
 
 const BestRecommendation: React.FC = () => {
   const [input, setInput] = useState<RecommendationInput>({
@@ -12,6 +13,18 @@ const BestRecommendation: React.FC = () => {
   const [results, setResults] = useState<MandiRecommendation[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
+  const { location, status: gpsStatus, detect } = useGpsLocation();
+
+  useEffect(() => {
+    detect();
+  }, []);
+
+  useEffect(() => {
+    if (location) {
+      const name = location.village || location.district || location.state;
+      setInput((prev) => ({ ...prev, location: name }));
+    }
+  }, [location]);
 
   const update = (field: keyof RecommendationInput, value: string) => setInput((p) => ({ ...p, [field]: value }));
 
@@ -38,13 +51,25 @@ const BestRecommendation: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
           <div>
             <label className="block text-xs font-semibold text-gray-500 uppercase mb-1.5">Current Location</label>
-            <div className="relative">
-              <MapPin size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <select value={input.location} onChange={(e) => update('location', e.target.value)} className="w-full pl-9 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
-                <option value="">Select Location</option>
-                {INDIAN_STATES.map((s) => <option key={s} value={s}>{s}</option>)}
-              </select>
-            </div>
+            <button
+              onClick={detect}
+              disabled={gpsStatus === 'loading'}
+              className="w-full flex items-center gap-2 px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-left hover:bg-green-50 hover:border-green-300 transition-all active:scale-[0.98] disabled:opacity-60"
+            >
+              {gpsStatus === 'loading' ? (
+                <Loader2 size={14} className="animate-spin text-green-500 flex-shrink-0" />
+              ) : gpsStatus === 'granted' && location ? (
+                <Navigation size={14} className="text-green-600 flex-shrink-0" />
+              ) : (
+                <MapPin size={14} className="text-gray-400 flex-shrink-0" />
+              )}
+              <span className={`truncate text-xs font-medium ${gpsStatus === 'granted' && location ? 'text-green-700' : 'text-gray-500'}`}>
+                {gpsStatus === 'loading' ? 'Detecting...' : gpsStatus === 'granted' && location ? (location.village || location.district || location.state) : 'Auto-detect location'}
+              </span>
+            </button>
+            {location && gpsStatus === 'granted' && (
+              <p className="text-[10px] text-gray-400 mt-1 ml-1">{location.state && `${location.state}`}{location.district && `, ${location.district}`}</p>
+            )}
           </div>
           <div>
             <label className="block text-xs font-semibold text-gray-500 uppercase mb-1.5">Crop *</label>
