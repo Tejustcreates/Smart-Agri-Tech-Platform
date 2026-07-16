@@ -8,6 +8,14 @@ export type EquipmentCondition = 'Excellent' | 'Good' | 'Average';
 
 export type AvailabilityFilter = 'today' | 'tomorrow' | 'this-week' | 'any';
 
+export interface GpsLocation {
+  lat: number;
+  lng: number;
+  address: string;
+  village: string;
+  pincode: string;
+}
+
 export interface EquipmentListing {
   id: string;
   name: string;
@@ -29,12 +37,10 @@ export interface EquipmentListing {
   ownerName: string;
   ownerPhone: string;
   village: string;
-  taluka: string;
-  district: string;
-  state: string;
   lat: number;
   lng: number;
   distance: number;
+  travelTime: string;
   rating: number;
   reviewCount: number;
   verified: boolean;
@@ -46,7 +52,6 @@ export interface EquipmentListing {
 }
 
 export interface SearchFilters {
-  location: string;
   lat: number;
   lng: number;
   radius: number;
@@ -58,12 +63,11 @@ export interface SearchFilters {
 export interface RegistrationForm {
   ownerName: string;
   phone: string;
-  village: string;
-  taluka: string;
-  district: string;
-  state: string;
   lat: number;
   lng: number;
+  fullAddress: string;
+  village: string;
+  pincode: string;
   equipmentName: string;
   category: EquipmentCategory | '';
   brand: string;

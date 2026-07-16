@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Phone, MessageCircle, Star, Shield, MapPin, Calendar, Fuel, UserCheck, IndianRupee, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
+import { X, Phone, MessageCircle, Star, Shield, MapPin, Calendar, Fuel, UserCheck, IndianRupee, ChevronLeft, ChevronRight, ExternalLink, Navigation, Clock } from 'lucide-react';
 import { EquipmentListing } from '../../types/equipment';
 
 interface EquipmentDetailsModalProps {
@@ -73,6 +73,21 @@ const EquipmentDetailsModal: React.FC<EquipmentDetailsModalProps> = ({ listing, 
                 </div>
               </div>
 
+              {/* Distance Banner */}
+              <div className="bg-green-50 rounded-xl px-4 py-3 mb-5 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Navigation size={16} className="text-green-600" />
+                  <div>
+                    <span className="text-base font-extrabold text-green-700">{listing.distance} KM Away</span>
+                    <p className="text-[10px] text-green-600">Near {listing.village}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1 text-green-600">
+                  <Clock size={12} />
+                  <span className="text-xs font-semibold">~{listing.travelTime}</span>
+                </div>
+              </div>
+
               {/* Quick Info Badges */}
               <div className="flex flex-wrap gap-2 mb-5">
                 <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${conditionColor(listing.condition)}`}>{listing.condition}</span>
@@ -101,21 +116,27 @@ const EquipmentDetailsModal: React.FC<EquipmentDetailsModalProps> = ({ listing, 
               {/* Description */}
               <p className="text-sm text-gray-600 mb-5 leading-relaxed">{listing.description}</p>
 
-              {/* Owner & Location */}
+              {/* Owner */}
               <div className="bg-gray-50 rounded-xl p-4 mb-5">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-bold text-gray-800">{listing.ownerName}</p>
-                    <p className="text-xs text-gray-400 flex items-center gap-1"><MapPin size={11} /> {listing.village}, {listing.district} — {listing.distance} km away</p>
+                    <p className="text-xs text-gray-400 flex items-center gap-1"><MapPin size={11} /> {listing.village} — {listing.distance} km away</p>
                   </div>
                   {listing.verified && <Shield size={18} className="text-green-500" />}
                 </div>
               </div>
 
-              {/* Map Placeholder */}
-              <div className="bg-green-50 rounded-xl h-32 mb-5 flex items-center justify-center">
-                <p className="text-xs text-green-600 flex items-center gap-1"><MapPin size={12} /> Google Maps Preview — Coming Soon</p>
-              </div>
+              {/* Map Link */}
+              <a
+                href={`https://www.google.com/maps/dir/?api=1&destination=${listing.lat},${listing.lng}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block bg-green-50 rounded-xl p-4 mb-5 hover:bg-green-100 transition-all"
+              >
+                <p className="text-xs font-bold text-green-700 flex items-center gap-1"><MapPin size={12} /> Get Directions</p>
+                <p className="text-[10px] text-green-600 mt-1">Open Google Maps for navigation to {listing.village}</p>
+              </a>
 
               {/* Availability */}
               <div className="mb-5">
@@ -141,8 +162,8 @@ const EquipmentDetailsModal: React.FC<EquipmentDetailsModalProps> = ({ listing, 
                 <a href={`https://wa.me/${listing.ownerPhone.replace('+', '')}`} target="_blank" rel="noopener noreferrer" className="flex-1 py-3 bg-emerald-500 text-white rounded-xl font-semibold text-sm text-center hover:bg-emerald-600 transition-all flex items-center justify-center gap-1.5">
                   <MessageCircle size={14} /> WhatsApp
                 </a>
-                <a href={`https://www.google.com/maps?q=${listing.lat},${listing.lng}`} target="_blank" rel="noopener noreferrer" className="py-3 px-4 bg-gray-100 text-gray-600 rounded-xl font-semibold text-sm hover:bg-gray-200 transition-all flex items-center gap-1.5">
-                  <ExternalLink size={14} /> Map
+                <a href={`https://www.google.com/maps/dir/?api=1&destination=${listing.lat},${listing.lng}`} target="_blank" rel="noopener noreferrer" className="py-3 px-4 bg-gray-100 text-gray-600 rounded-xl font-semibold text-sm hover:bg-gray-200 transition-all flex items-center gap-1.5">
+                  <ExternalLink size={14} /> Navigate
                 </a>
               </div>
             </div>

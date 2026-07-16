@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Star, Shield, Phone, MessageCircle, Eye, MapPin, Fuel, UserCheck, Zap, Tag, Clock } from 'lucide-react';
+import { Star, Shield, Phone, MessageCircle, Eye, MapPin, Fuel, UserCheck, Zap, Tag, Clock, Navigation, ExternalLink } from 'lucide-react';
 import { EquipmentListing } from '../../types/equipment';
 
 interface EquipmentCardProps {
@@ -75,9 +75,22 @@ const EquipmentCard: React.FC<EquipmentCardProps> = ({ listing, onViewDetails, i
 
         <p className="text-xs text-gray-500 mb-3 line-clamp-2">{listing.description}</p>
 
+        {/* Location & Distance */}
+        <div className="bg-green-50 rounded-xl px-3 py-2.5 mb-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Navigation size={12} className="text-green-600" />
+              <span className="text-sm font-bold text-green-700">{listing.distance} KM Away</span>
+            </div>
+            <span className="text-[10px] text-green-600 font-medium">~{listing.travelTime}</span>
+          </div>
+          <p className="text-[10px] text-green-600 mt-1 flex items-center gap-1">
+            <MapPin size={9} /> Near {listing.village}
+          </p>
+        </div>
+
         {/* Info Row */}
         <div className="flex items-center gap-3 text-xs text-gray-500 mb-3">
-          <span className="flex items-center gap-1"><MapPin size={11} /> {listing.village} • {listing.distance} km</span>
           {listing.operatorIncluded && <span className="flex items-center gap-1 text-green-600"><UserCheck size={11} /> Operator</span>}
           {listing.fuelIncluded && <span className="flex items-center gap-1 text-blue-600"><Fuel size={11} /> Fuel</span>}
         </div>
@@ -107,9 +120,18 @@ const EquipmentCard: React.FC<EquipmentCardProps> = ({ listing, onViewDetails, i
           >
             <MessageCircle size={12} /> WhatsApp
           </a>
+          <a
+            href={`https://www.google.com/maps/dir/?api=1&destination=${listing.lat},${listing.lng}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="py-2.5 px-2.5 bg-gray-100 text-gray-600 rounded-xl text-xs font-semibold hover:bg-gray-200 transition-all flex items-center justify-center"
+            title="Open in Google Maps"
+          >
+            <ExternalLink size={12} />
+          </a>
           <button
             onClick={() => onViewDetails(listing)}
-            className="py-2.5 px-3 bg-gray-100 text-gray-600 rounded-xl text-xs font-semibold hover:bg-gray-200 transition-all flex items-center gap-1"
+            className="py-2.5 px-2.5 bg-gray-100 text-gray-600 rounded-xl text-xs font-semibold hover:bg-gray-200 transition-all flex items-center justify-center"
           >
             <Eye size={12} />
           </button>

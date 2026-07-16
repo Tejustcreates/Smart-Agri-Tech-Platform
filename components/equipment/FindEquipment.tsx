@@ -10,7 +10,7 @@ import MapPlaceholder from './MapPlaceholder';
 
 const FindEquipment: React.FC = () => {
   const [filters, setFilters] = useState<SearchFilters>({
-    location: 'Pune, Maharashtra', lat: 18.52, lng: 73.85, radius: 20, category: '', availability: 'any', maxBudget: 0,
+    lat: 0, lng: 0, radius: 20, category: '', availability: 'any', maxBudget: 0,
   });
   const [results, setResults] = useState<EquipmentListing[]>([]);
   const [loading, setLoading] = useState(false);
@@ -18,6 +18,7 @@ const FindEquipment: React.FC = () => {
   const [selectedListing, setSelectedListing] = useState<EquipmentListing | null>(null);
 
   const handleSearch = async () => {
+    if (filters.lat === 0 && filters.lng === 0) return;
     setLoading(true);
     setSearched(true);
     try {
@@ -51,8 +52,8 @@ const FindEquipment: React.FC = () => {
         </div>
       ) : searched && results.length > 0 ? (
         <>
-          <MapPlaceholder listings={results} />
-          <p className="text-sm font-semibold text-gray-700 mb-4">{results.length} equipment found within {filters.radius} km</p>
+          <MapPlaceholder listings={results} userLat={filters.lat} userLng={filters.lng} />
+          <p className="text-sm font-semibold text-gray-700 mb-4">{results.length} equipment found within {filters.radius} km — sorted nearest first</p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {results.map((l, i) => (
               <EquipmentCard key={l.id} listing={l} index={i} onViewDetails={setSelectedListing} />
@@ -68,7 +69,7 @@ const FindEquipment: React.FC = () => {
       ) : (
         <div className="text-center py-16">
           <Search size={40} className="text-gray-300 mx-auto mb-3" />
-          <p className="text-gray-500 text-sm">Set your location and filters, then search for nearby equipment.</p>
+          <p className="text-gray-500 text-sm">Allow GPS access or pick your location on the map, then search.</p>
         </div>
       )}
 
