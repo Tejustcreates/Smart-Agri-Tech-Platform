@@ -134,9 +134,9 @@ const Schemes: React.FC = () => {
   };
 
   return (
-    <section id={Section.SCHEMES} className="py-16 md:py-24 bg-gradient-to-b from-indigo-50/40 to-white">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
+    <section id={Section.SCHEMES} className="py-20 md:py-28 bg-gradient-to-b from-indigo-50/40 to-white">
+      <div className="max-w-7xl mx-auto px-6 lg:px-12">
+        <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 bg-indigo-100 text-indigo-700 rounded-full px-4 py-1.5 text-sm font-medium mb-4">
             <i className="fas fa-landmark text-xs"></i>
             Government Support
@@ -147,7 +147,7 @@ const Schemes: React.FC = () => {
           <p className="text-gray-500 mt-3 max-w-lg mx-auto">Personalized welfare scheme recommendations for your farm</p>
         </div>
 
-        <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-xl p-6 md:p-8 mb-8">
+        <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-xl p-6 md:p-8 mb-8">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
               <i className="fas fa-filter text-indigo-600"></i>
@@ -155,7 +155,7 @@ const Schemes: React.FC = () => {
             </h3>
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="text-indigo-600 hover:text-indigo-800 font-medium"
+              className="text-indigo-600 hover:text-indigo-800 font-medium md:hidden"
             >
               {showFilters ? 'Hide Filters' : 'Show Filters'}
             </button>
@@ -240,7 +240,7 @@ const Schemes: React.FC = () => {
           ) : schemes.length > 0 ? (
             <div className="space-y-6">
               <div className="bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl p-6 text-white mb-8">
-                <div className="flex items-center gap-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                   <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
                     <i className="fas fa-robot text-3xl"></i>
                   </div>
@@ -301,9 +301,21 @@ const Schemes: React.FC = () => {
                         </div>
                       </div>
 
-                      <button 
-                        onClick={() => window.open('https://pmkisan.gov.in/', '_blank')}
-                        className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-semibold"
+                      <button
+                        onClick={() => {
+                          const urls: Record<string, string> = {
+                            'PM-KISAN Samman Nidhi': 'https://pmkisan.gov.in/',
+                            'Pradhan Mantri Fasal Bima Yojana (PMFBY)': 'https://pmfby.gov.in/',
+                            'Kisan Credit Card (KCC)': 'https://www.myscheme.gov.in/search/kisan%20credit%20card',
+                            'Soil Health Card Scheme': 'https://soilhealth.dac.gov.in/',
+                            'State Scheme': 'https://www.myscheme.gov.in/',
+                            'Central Scheme': 'https://www.myscheme.gov.in/',
+                            'Subsidy': 'https://www.myscheme.gov.in/',
+                          };
+                          const url = urls[scheme.schemeName] || urls[scheme.category] || 'https://www.myscheme.gov.in/';
+                          window.open(url, '_blank');
+                        }}
+                        className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold"
                       >
                         <i className="fas fa-external-link-alt mr-2"></i>
                         Apply Now

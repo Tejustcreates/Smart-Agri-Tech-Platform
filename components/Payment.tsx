@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Section } from '../types';
 
 interface PaymentProps {
   total: number;
@@ -24,7 +23,7 @@ const Payment: React.FC<PaymentProps> = ({ total, onPaymentSuccess, onBackToCart
 
   if (paymentState === 'success') {
     return (
-        <section id={Section.PAYMENT} className="py-20 bg-gray-100 flex items-center justify-center min-h-[calc(100vh-64px)]">
+        <section id="payment" className="py-20 bg-gray-100 flex items-center justify-center min-h-[calc(100vh-64px)]">
             <div className="text-center bg-white p-10 rounded-xl shadow-lg animate-fade-in-up">
                 <i className="fas fa-check-circle text-6xl text-green-500 mb-4"></i>
                 <h2 className="text-3xl font-bold text-gray-800">Payment Successful!</h2>
@@ -35,16 +34,20 @@ const Payment: React.FC<PaymentProps> = ({ total, onPaymentSuccess, onBackToCart
   }
 
   return (
-    <section id={Section.PAYMENT} className="py-20 bg-gray-100 min-h-[calc(100vh-64px)]">
+    <section id="payment" className="py-20 bg-gray-100 min-h-[calc(100vh-64px)]">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-md mx-auto bg-white rounded-xl shadow-lg p-8">
+            <div className="max-w-md mx-auto bg-white rounded-xl shadow-lg p-5 sm:p-8">
                 <button onClick={onBackToCart} className="text-sm text-gray-600 hover:text-green-600 mb-6 transition-colors duration-300">
                     <i className="fas fa-arrow-left mr-2"></i>Back to Cart
                 </button>
                 <h2 className="text-3xl font-bold text-gray-800 text-center mb-2">
                     Checkout
                 </h2>
-                <p className="text-center text-gray-500 mb-8">Please enter your payment details</p>
+                <p className="text-center text-gray-500 mb-4">Please enter your payment details</p>
+                <div className="mb-6 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-700 flex items-center gap-2">
+                    <i className="fas fa-exclamation-triangle"></i>
+                    <span><strong>Sandbox Checkout</strong> — no real payment will be processed. Do not enter real card details.</span>
+                </div>
                 <form onSubmit={handlePayment}>
                     <div className="mb-4">
                         <label className="block text-sm font-medium text-gray-700 mb-1">Cardholder Name</label>

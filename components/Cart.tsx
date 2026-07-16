@@ -1,5 +1,5 @@
 import React from 'react';
-import { Section, CartItem } from '../types';
+import { CartItem } from '../types';
 
 interface CartProps {
   cartItems: CartItem[];
@@ -16,7 +16,7 @@ const Cart: React.FC<CartProps> = ({ cartItems, onUpdateQuantity, onRemoveItem, 
 
   if (cartItems.length === 0) {
     return (
-      <section id={Section.CART} className="py-20 bg-gray-100 flex items-center justify-center min-h-[calc(100vh-64px)]">
+      <section id="cart" className="py-20 bg-gray-100 flex items-center justify-center min-h-[calc(100vh-64px)]">
         <div className="text-center">
           <i className="fas fa-shopping-cart text-6xl text-gray-300 mb-4"></i>
           <h2 className="text-3xl font-bold text-gray-800">Your Cart is Empty</h2>
@@ -30,9 +30,9 @@ const Cart: React.FC<CartProps> = ({ cartItems, onUpdateQuantity, onRemoveItem, 
   }
 
   return (
-    <section id={Section.CART} className="py-20 bg-gray-100">
+    <section id="cart" className="py-20 bg-gray-100">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-4xl font-bold text-gray-800 text-center mb-12">
+        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 text-center mb-8 sm:mb-12">
           Your Shopping <span className="text-green-600">Cart</span>
         </h2>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -40,29 +40,30 @@ const Cart: React.FC<CartProps> = ({ cartItems, onUpdateQuantity, onRemoveItem, 
             <h3 className="text-xl font-semibold mb-4">Items in Cart ({cartItems.length})</h3>
             <div className="space-y-4">
               {cartItems.map(item => (
-                <div key={item.id} className="flex items-center justify-between border-b pb-4">
-                  <div className="flex items-center flex-grow">
-                    <img src={item.image} alt={item.name} className="h-20 w-20 object-cover rounded-md mr-4" />
-                    <div className="flex-grow">
-                      <h4 className="font-semibold text-gray-800">{item.name}</h4>
-                      <p className="text-sm text-gray-500">Unit Price: ₹{item.price.toFixed(2)}</p>
-                       <p className="text-sm text-gray-500 font-bold">Item Total: ₹{(item.price * item.quantity).toFixed(2)}</p>
+                <div key={item.id} className="flex flex-col sm:flex-row sm:items-center justify-between border-b pb-4 gap-3">
+                  <div className="flex items-center flex-grow gap-3">
+                    <img src={item.image} alt={item.name} className="h-16 w-16 sm:h-20 sm:w-20 object-cover rounded-md flex-shrink-0" />
+                    <div className="flex-grow min-w-0">
+                      <h4 className="font-semibold text-gray-800 truncate">{item.name}</h4>
+                      <p className="text-xs sm:text-sm text-gray-500">Unit Price: ₹{item.price.toFixed(2)}</p>
+                       <p className="text-xs sm:text-sm text-gray-500 font-bold">Item Total: ₹{(item.price * item.quantity).toFixed(2)}</p>
                     </div>
                   </div>
-                  <div className="flex items-center">
+                  <div className="flex items-center justify-between sm:justify-end gap-3 pl-19 sm:pl-0">
                       <input
                       type="number"
                       value={item.quantity}
+                      aria-label={`Quantity for ${item.name}`}
                       onChange={(e) => {
                         const val = parseInt(e.target.value, 10);
                         onUpdateQuantity(item.id, isNaN(val) ? 1 : val);
                       }}
-                      className="w-16 text-center border rounded-md mx-4 py-1"
+                      className="w-16 text-center border rounded-md py-1"
                       min="1"
                       max="999"
                     />
-                    <button onClick={() => onRemoveItem(item.id)} className="ml-4 text-red-500 hover:text-red-700 transition-colors duration-300">
-                      <i className="fas fa-trash fa-lg"></i>
+                    <button onClick={() => onRemoveItem(item.id)} aria-label={`Remove ${item.name} from cart`} className="text-red-500 hover:text-red-700 transition-colors duration-300">
+                      <i className="fas fa-trash fa-lg" aria-hidden="true"></i>
                     </button>
                   </div>
                 </div>

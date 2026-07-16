@@ -1,173 +1,185 @@
 import React, { useState, useEffect } from 'react';
-import { Section, User } from '../types';
-import { NAV_ITEMS } from '../constants';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { User } from '../types';
+import { NAV_ITEMS, ROUTES } from '../constants';
 
-// Add global declaration for TypeScript to recognize the Google Translate object
 declare global {
-    interface Window {
-        google: any;
-    }
+  interface Window {
+    google: any;
+  }
 }
 
 interface HeaderProps {
-  activeSection: Section;
-  setActiveSection: (section: Section) => void;
   user: User | null;
   onLogout: () => void;
   cartCount: number;
 }
 
-const Header: React.FC<HeaderProps> = ({ activeSection, setActiveSection, user, onLogout, cartCount }) => {
+const Header: React.FC<HeaderProps> = ({ user, onLogout, cartCount }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const initGoogleTranslate = () => {
-      const googleTranslateElement = document.getElementById('google_translate_element');
-      // Ensure the element exists and is empty before initializing
-      if (window.google && googleTranslateElement && googleTranslateElement.childElementCount === 0) {
+      const desktopEl = document.getElementById('google_translate_element');
+      const mobileEl = document.getElementById('google_translate_element_mobile');
+      if (window.google && desktopEl && desktopEl.childElementCount === 0) {
         new window.google.translate.TranslateElement(
-          {
-            pageLanguage: 'en',
-            includedLanguages: 'en,hi,bn,te,mr,ta,gu,kn,ml,pa,ur,or',
-            layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
-          },
+          { pageLanguage: 'en', includedLanguages: 'en,hi,bn,te,mr,ta,gu,kn,ml,pa,ur,or', layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE },
           'google_translate_element'
+        );
+      }
+      if (window.google && mobileEl && mobileEl.childElementCount === 0) {
+        new window.google.translate.TranslateElement(
+          { pageLanguage: 'en', includedLanguages: 'en,hi,bn,te,mr,ta,gu,kn,ml,pa,ur,or', layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE },
+          'google_translate_element_mobile'
         );
       }
     };
 
-    if (user) {
-      if (window.google) {
+    const maxAttempts = 25;
+    let attempts = 0;
+    const interval = setInterval(() => {
+      attempts++;
+      if (window.google?.translate) {
         initGoogleTranslate();
-      } else {
-        setTimeout(initGoogleTranslate, 500);
+        clearInterval(interval);
+      } else if (attempts >= maxAttempts) {
+        clearInterval(interval);
       }
-    }
-  }, [user]);
+    }, 200);
 
-  const handleLinkClick = (section: Section) => {
-    setActiveSection(section);
-    setIsMenuOpen(false);
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleLogout = () => {
+    onLogout();
+    navigate('/');
   };
 
-  const AuthButtons: React.FC<{ isMobile?: boolean }> = ({ isMobile }) => {
-    const baseClasses = isMobile ? 'block px-4 py-2 rounded-lg text-base font-medium' : 'px-8 py-3.5 rounded-full text-base font-bold transition-all duration-200';
-
-    if (user) {
-      return (
-        <div className={isMobile ? 'space-y-1' : 'flex items-center space-x-4'}>
-          <span className={`${baseClasses} text-gray-700`}>Welcome, {user.name}</span>
-          <div id="google_translate_element" className={isMobile ? 'py-2 px-3' : ''}></div>
-          <button
-            onClick={() => handleLinkClick(Section.CART)}
-            className="relative text-gray-700 hover:text-green-600 transition-colors"
-            aria-label="Open Shopping Cart"
-          >
-            <i className="fas fa-shopping-cart fa-lg"></i>
-            {cartCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                {cartCount}
-              </span>
-            )}
-          </button>
-          <button
-            onClick={() => { onLogout(); setIsMenuOpen(false); }}
-            className={`${baseClasses} text-gray-700 hover:bg-green-500 hover:text-white transition-colors duration-300`}
-          >
-            Logout
-          </button>
-        </div>
-      );
-    }
-    return (
-      <div className={isMobile ? 'space-y-2' : 'flex items-center space-x-6'}>
-        <button
-          onClick={() => handleLinkClick(Section.LOGIN)}
-          className={`${baseClasses} border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white`}
-        >
-          Login
-        </button>
-        <button
-          onClick={() => handleLinkClick(Section.SIGNUP)}
-          className={`${baseClasses} bg-green-600 text-white hover:bg-green-700 shadow-md hover:shadow-lg`}
-        >
-          Sign Up
-        </button>
-      </div>
-    );
-  };
+  const linkClass = ({ isActive }: { isActive: boolean }) =>
+    `px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+      isActive
+        ? 'bg-green-600 text-white shadow-sm'
+        : 'text-gray-700 hover:bg-green-50 hover:text-green-700'
+    }`;
 
   return (
-    <header className="bg-white/95 backdrop-blur-sm shadow-md sticky top-0 z-50 border-b border-green-100">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
-          <div className="flex-shrink-0 ml-4">
-            <a href="#" onClick={(e) => { e.preventDefault(); handleLinkClick(Section.HERO);}} className="flex items-center transition-transform duration-300 hover:scale-105">
-              <img className="h-14 w-auto" src="./img/logo.png" alt="GROWSMART Logo" />
-            </a>
+    <header className="bg-white shadow-md sticky top-0 z-50 border-b border-green-100">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <NavLink to="/" className="flex items-center gap-2 flex-shrink-0">
+            <img className="h-10 w-auto" src="./img/logo.png" alt="GROWSMART" />
+            <span className="text-lg font-bold text-green-700 hidden sm:block">GROWSMART</span>
+          </NavLink>
+
+          {/* Desktop Nav */}
+          <nav className="hidden lg:flex items-center gap-1">
+            {NAV_ITEMS.map((item) => (
+              <NavLink key={item.path} to={item.path} className={linkClass}>
+                <i className={`${item.icon} mr-1.5 text-xs`} aria-hidden="true"></i>
+                {item.name}
+              </NavLink>
+            ))}
+          </nav>
+
+          {/* Desktop Right Side */}
+          <div className="hidden lg:flex items-center gap-3">
+            <div id="google_translate_element"></div>
+            <NavLink
+              to={ROUTES.CART}
+              aria-label="View cart"
+              className={({ isActive }) =>
+                `relative p-2 rounded-lg transition-colors ${isActive ? 'text-green-600' : 'text-gray-600 hover:text-green-600 hover:bg-green-50'}`
+              }
+            >
+              <i className="fas fa-shopping-cart text-lg" aria-hidden="true"></i>
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
+                  {cartCount}
+                </span>
+              )}
+            </NavLink>
+            {user ? (
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-gray-600">Hi, {user.name}</span>
+                <button onClick={handleLogout} className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors">
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <NavLink to={ROUTES.LOGIN} className="px-4 py-2 text-sm font-medium border border-green-600 text-green-600 rounded-lg hover:bg-green-600 hover:text-white transition-all">
+                  Login
+                </NavLink>
+                <NavLink to={ROUTES.SIGNUP} className="px-4 py-2 text-sm font-medium bg-green-600 text-white rounded-lg hover:bg-green-700 shadow-sm transition-all">
+                  Sign Up
+                </NavLink>
+              </div>
+            )}
           </div>
-          <div
-            className="hidden md:block">
-            <div className="ml-8 flex items-center gap-3">
-              {NAV_ITEMS.map((item) => (
-                <a
-                  key={item.name}
-                  href={`#${item.section}`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleLinkClick(item.section);
-                  }}
-                  className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 ${
-                    activeSection === item.section
-                      ? 'bg-green-600 text-white shadow-md'
-                      : 'bg-gray-100 text-gray-700 hover:bg-green-100 hover:text-green-700'
-                  }`}
-                >
-                  {item.name}
-                </a>
-              ))}
-              <div className="w-px h-8 bg-gray-300 mx-1"></div>
-              <AuthButtons />
-            </div>
-          </div>
-          <div className="-mr-2 flex md:hidden">
+
+          {/* Mobile: Cart + Hamburger */}
+          <div className="flex lg:hidden items-center gap-2">
+            <NavLink to={ROUTES.CART} aria-label="View cart" className="relative p-2 text-gray-600">
+              <i className="fas fa-shopping-cart text-lg" aria-hidden="true"></i>
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
+                  {cartCount}
+                </span>
+              )}
+            </NavLink>
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              type="button"
-              className="bg-gray-100 inline-flex items-center justify-center p-2 rounded-md text-green-600 hover:text-white hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-white"
+              aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={isMenuOpen}
+              className="p-2 text-gray-600 hover:text-green-600"
             >
-              <span className="sr-only">Open main menu</span>
-              {isMenuOpen ? (
-                <i className="fas fa-times h-6 w-6"></i>
-              ) : (
-                <i className="fas fa-bars h-6 w-6"></i>
-              )}
+              <i className={`fas ${isMenuOpen ? 'fa-times' : 'fa-bars'} text-xl`} aria-hidden="true"></i>
             </button>
           </div>
         </div>
       </div>
+
+      {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="md:hidden">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+        <div className="lg:hidden bg-white border-t border-gray-100 shadow-lg">
+          <div className="px-4 py-3 space-y-1">
             {NAV_ITEMS.map((item) => (
-              <a
-                key={item.name}
-                href={`#${item.section}`}
-                onClick={(e) => {
-                    e.preventDefault();
-                    handleLinkClick(item.section);
-                }}
-                className={`block px-4 py-2 rounded-lg text-base font-medium transition-colors duration-200 ${
-                  activeSection === item.section
-                    ? 'bg-green-600 text-white'
-                    : 'text-gray-700 hover:text-green-600 hover:bg-green-50'
-                }`}
+              <NavLink
+                key={item.path}
+                to={item.path}
+                onClick={() => setIsMenuOpen(false)}
+                className={({ isActive }) =>
+                  `block px-4 py-3 rounded-lg text-base font-medium transition-colors ${
+                    isActive ? 'bg-green-600 text-white' : 'text-gray-700 hover:bg-green-50 hover:text-green-700'
+                  }`
+                }
               >
+                <i className={`${item.icon} mr-3 w-5 text-center`} aria-hidden="true"></i>
                 {item.name}
-              </a>
+              </NavLink>
             ))}
-             <div className="border-t border-gray-200 mt-2 pt-2">
-                <AuthButtons isMobile={true} />
+            <div className="border-t border-gray-200 mt-2 pt-3">
+              <div id="google_translate_element_mobile" className="mb-3 px-4"></div>
+              {user ? (
+                <div className="space-y-2">
+                  <p className="px-4 text-sm text-gray-500">Hi, {user.name}</p>
+                  <button onClick={() => { handleLogout(); setIsMenuOpen(false); }} className="w-full text-left px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg">
+                    <i className="fas fa-sign-out-alt mr-3" aria-hidden="true"></i>Logout
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <NavLink to={ROUTES.LOGIN} onClick={() => setIsMenuOpen(false)} className="block px-4 py-3 border border-green-600 text-green-600 rounded-lg text-center font-medium hover:bg-green-50">
+                    Login
+                  </NavLink>
+                  <NavLink to={ROUTES.SIGNUP} onClick={() => setIsMenuOpen(false)} className="block px-4 py-3 bg-green-600 text-white rounded-lg text-center font-medium hover:bg-green-700">
+                    Sign Up
+                  </NavLink>
+                </div>
+              )}
             </div>
           </div>
         </div>

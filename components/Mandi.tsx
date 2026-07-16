@@ -91,6 +91,21 @@ const Mandi: React.FC<MandiProps> = ({ onAddToCart }) => {
   const [priceCrop, setPriceCrop] = useState<string>(CROP_OPTIONS[0]);
   const [predictions, setPredictions] = useState<PricePrediction[]>([]);
   const [isPredicting, setIsPredicting] = useState(false);
+  const [cooldowns, setCooldowns] = useState<Set<number>>(new Set());
+
+  const handleAddToCart = (product: Product, type: CartItem['type']) => {
+    const key = product.id;
+    if (cooldowns.has(key)) return;
+    onAddToCart(product, type);
+    setCooldowns((prev) => new Set(prev).add(key));
+    setTimeout(() => {
+      setCooldowns((prev) => {
+        const next = new Set(prev);
+        next.delete(key);
+        return next;
+      });
+    }, 500);
+  };
 
   const handleAddCrop = () => {
     setCrops([...crops, { id: nextCropId, name: '', quantity: '', expectedPrice: '', harvestDate: '' }]);
@@ -191,23 +206,25 @@ const Mandi: React.FC<MandiProps> = ({ onAddToCart }) => {
     setIsPredicting(false);
   };
 
-  const TabButton: React.FC<{ tabId: MandiTab; label: string; icon: string }> = ({ tabId, label, icon }) => (
+  const TabButton: React.FC<{ tabId: MandiTab; label: string; mobileLabel: string; icon: string }> = ({ tabId, label, mobileLabel, icon }) => (
     <button
-      className={`flex-1 text-center py-3 px-4 font-semibold border-b-4 transition-colors duration-300 ${
+      className={`flex-1 text-center py-3 px-2 sm:px-4 font-semibold border-b-4 transition-colors duration-300 whitespace-nowrap ${
         activeTab === tabId 
           ? 'border-green-600 text-green-600' 
           : 'border-transparent text-gray-500 hover:text-green-600 hover:border-green-300'
       }`}
       onClick={() => setActiveTab(tabId)}
     >
-      <i className={`${icon} mr-2`}></i>{label}
+      <i className={`${icon} mr-1 sm:mr-2`}></i>
+      <span className="hidden sm:inline">{label}</span>
+      <span className="sm:hidden">{mobileLabel}</span>
     </button>
   );
 
   return (
-    <section id={Section.MANDI} className="py-16 md:py-24 bg-gradient-to-b from-amber-50/30 to-white">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
+    <section id={Section.MANDI} className="py-20 md:py-28 bg-gradient-to-b from-amber-50/30 to-white">
+      <div className="max-w-7xl mx-auto px-6 lg:px-12">
+        <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 bg-amber-100 text-amber-700 rounded-full px-4 py-1.5 text-sm font-medium mb-4">
             <i className="fas fa-store text-xs"></i>
             Marketplace
@@ -219,10 +236,10 @@ const Mandi: React.FC<MandiProps> = ({ onAddToCart }) => {
         </div>
         <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-2xl overflow-hidden">
           <div className="flex border-b border-gray-200 overflow-x-auto">
-            <TabButton tabId="register" label="Crop Registration" icon="fas fa-clipboard-list" />
-            <TabButton tabId="sell" label="My Listings" icon="fas fa-store" />
-            <TabButton tabId="buy" label="Buy Crops" icon="fas fa-shopping-cart" />
-            <TabButton tabId="price-predict" label="Smart Price Predictor" icon="fas fa-chart-line" />
+            <TabButton tabId="register" label="Crop Registration" mobileLabel="Register" icon="fas fa-clipboard-list" />
+            <TabButton tabId="sell" label="My Listings" mobileLabel="Listings" icon="fas fa-store" />
+            <TabButton tabId="buy" label="Buy Crops" mobileLabel="Buy" icon="fas fa-shopping-cart" />
+            <TabButton tabId="price-predict" label="Smart Price Predictor" mobileLabel="Predict" icon="fas fa-chart-line" />
           </div>
 
           <div className="p-6 md:p-10">
@@ -256,7 +273,7 @@ const Mandi: React.FC<MandiProps> = ({ onAddToCart }) => {
                                     <td className="p-2"><input type="number" value={crop.quantity} onChange={e => handleCropChange(crop.id, 'quantity', e.target.value)} placeholder="e.g., 500" min="1" className="w-full p-2 bg-gray-50 rounded" required /></td>
                                     <td className="p-2"><input type="number" value={crop.expectedPrice} onChange={e => handleCropChange(crop.id, 'expectedPrice', e.target.value)} placeholder="e.g., 22" min="0.01" step="0.01" className="w-full p-2 bg-gray-50 rounded" required /></td>
                                     <td className="p-2"><input type="date" value={crop.harvestDate} onChange={e => handleCropChange(crop.id, 'harvestDate', e.target.value)} className="w-full p-2 bg-gray-50 rounded" required /></td>
-                                    <td className="p-2"><button type="button" onClick={() => handleRemoveCrop(crop.id)} className="text-red-500 hover:text-red-700 disabled:text-gray-300" disabled={crops.length <= 1}><i className="fas fa-trash fa-lg"></i></button></td>
+                                    <td className="p-2"><button type="button" onClick={() => handleRemoveCrop(crop.id)} className="text-red-500 hover:text-red-700 disabled:text-gray-300" aria-label={`Remove crop ${crop.id}`} disabled={crops.length <= 1}><i className="fas fa-trash fa-lg" aria-hidden="true"></i></button></td>
                                 </tr>
                             ))}
                         </tbody>
@@ -268,7 +285,7 @@ const Mandi: React.FC<MandiProps> = ({ onAddToCart }) => {
                         <div key={crop.id} className="bg-gray-50 rounded-lg p-4 space-y-3">
                             <div className="flex items-center justify-between">
                                 <span className="text-sm font-semibold text-gray-600">Crop #{crop.id}</span>
-                                <button type="button" onClick={() => handleRemoveCrop(crop.id)} className="text-red-500 hover:text-red-700 disabled:text-gray-300" disabled={crops.length <= 1}><i className="fas fa-trash"></i></button>
+                                <button type="button" onClick={() => handleRemoveCrop(crop.id)} className="text-red-500 hover:text-red-700 disabled:text-gray-300" aria-label={`Remove crop ${crop.id}`} disabled={crops.length <= 1}><i className="fas fa-trash" aria-hidden="true"></i></button>
                             </div>
                             <select value={crop.name} onChange={e => handleCropChange(crop.id, 'name', e.target.value)} className="w-full p-2 bg-white rounded border" required><option value="">Select Crop</option>{CROP_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}</select>
                             <input type="number" value={crop.quantity} onChange={e => handleCropChange(crop.id, 'quantity', e.target.value)} placeholder="Quantity (kg)" min="1" className="w-full p-2 bg-white rounded border" required />
@@ -315,8 +332,8 @@ const Mandi: React.FC<MandiProps> = ({ onAddToCart }) => {
                                         </span>
                                     </td>
                                     <td className="p-3">
-                                        <button className="text-gray-400 cursor-not-allowed mr-4" title="Coming Soon" disabled><i className="fas fa-edit"></i></button>
-                                        <button onClick={() => handleRemoveListedCrop(crop.id)} className="text-red-500 hover:text-red-700 transition-colors" title="Remove"><i className="fas fa-trash"></i></button>
+                                        <button className="text-gray-400 cursor-not-allowed mr-4" title="Coming Soon" aria-label="Edit listing" disabled><i className="fas fa-edit" aria-hidden="true"></i></button>
+                                        <button onClick={() => handleRemoveListedCrop(crop.id)} className="text-red-500 hover:text-red-700 transition-colors" title="Remove" aria-label={`Remove ${crop.name} listing`}><i className="fas fa-trash" aria-hidden="true"></i></button>
                                     </td>
                                 </tr>
                             )) : (
@@ -339,8 +356,8 @@ const Mandi: React.FC<MandiProps> = ({ onAddToCart }) => {
                             <p className="text-sm text-gray-600">Price: <strong>₹{crop.expectedPrice}/kg</strong></p>
                             <p className="text-xs text-gray-400 mt-2">Listed: {crop.listedOn}</p>
                             <div className="flex gap-3 mt-3">
-                                <button disabled className="text-gray-400 cursor-not-allowed"><i className="fas fa-edit mr-1"></i>Edit</button>
-                                <button onClick={() => handleRemoveListedCrop(crop.id)} className="text-red-500 hover:text-red-700 transition-colors"><i className="fas fa-trash mr-1"></i>Remove</button>
+                                <button disabled className="text-gray-400 cursor-not-allowed" aria-label="Edit listing"><i className="fas fa-edit mr-1" aria-hidden="true"></i>Edit</button>
+                                <button onClick={() => handleRemoveListedCrop(crop.id)} className="text-red-500 hover:text-red-700 transition-colors" aria-label={`Remove ${crop.name} listing`}><i className="fas fa-trash mr-1" aria-hidden="true"></i>Remove</button>
                             </div>
                         </div>
                     )) : (
@@ -375,7 +392,7 @@ const Mandi: React.FC<MandiProps> = ({ onAddToCart }) => {
                                     Harvest: {crop.harvestDate}
                                 </p>
                             </div>
-                            <button onClick={() => onAddToCart(crop, 'Crop')} className="w-full py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors mt-4">
+                            <button onClick={() => handleAddToCart(crop, 'Crop')} disabled={cooldowns.has(crop.id)} className="w-full py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors mt-4 disabled:opacity-50">
                                 <i className="fas fa-cart-plus mr-2"></i>Add to Cart
                             </button>
                         </div>
@@ -408,7 +425,7 @@ const Mandi: React.FC<MandiProps> = ({ onAddToCart }) => {
                     <button 
                       onClick={predictPrices}
                       disabled={isPredicting}
-                      className="px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50 flex items-center gap-2"
+                      className="px-8 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-all disabled:opacity-50 flex items-center gap-2"
                     >
                       {isPredicting ? (
                         <>
@@ -425,9 +442,37 @@ const Mandi: React.FC<MandiProps> = ({ onAddToCart }) => {
                   </div>
                 </div>
 
-                {predictions.length > 0 ? (
+                {isPredicting && (
+                  <div className="space-y-4 animate-pulse">
+                    <h4 className="font-bold text-gray-800">Analyzing market data...</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {[1,2,3,4].map(i => (
+                        <div key={i} className="bg-gray-50 rounded-xl p-5 border-2 border-gray-100">
+                          <div className="flex justify-between mb-3">
+                            <div className="h-5 w-24 bg-gray-200 rounded"></div>
+                            <div className="h-5 w-16 bg-gray-200 rounded-full"></div>
+                          </div>
+                          <div className="flex justify-between mb-3">
+                            <div className="h-8 w-28 bg-gray-200 rounded"></div>
+                            <div className="h-8 w-28 bg-gray-200 rounded"></div>
+                          </div>
+                          <div className="h-10 bg-gray-200 rounded-lg mb-2"></div>
+                          <div className="h-3 w-20 bg-gray-200 rounded"></div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {!isPredicting && predictions.length > 0 ? (
                   <div className="space-y-4">
-                    <h4 className="font-bold text-gray-800">Price Forecast for All Crops</h4>
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-bold text-gray-800">Price Forecast for All Crops</h4>
+                      <span className="text-xs text-gray-400">
+                        <i className="fas fa-clock mr-1"></i>
+                        Updated: {new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {predictions.map((pred, index) => (
                         <div 
@@ -456,13 +501,23 @@ const Mandi: React.FC<MandiProps> = ({ onAddToCart }) => {
                             </div>
                             <div className="text-right">
                               <p className="text-sm text-gray-500">Predicted Price</p>
-                              <p className={`text-2xl font-bold ${
-                                pred.predictedPrice > pred.currentPrice ? 'text-green-600' :
-                                pred.predictedPrice < pred.currentPrice ? 'text-red-600' :
-                                'text-gray-600'
-                              }`}>
-                                ₹{pred.predictedPrice}/kg
-                              </p>
+                              <div className="flex items-center justify-end gap-2">
+                                <p className={`text-2xl font-bold ${
+                                  pred.predictedPrice > pred.currentPrice ? 'text-green-600' :
+                                  pred.predictedPrice < pred.currentPrice ? 'text-red-600' :
+                                  'text-gray-600'
+                                }`}>
+                                  ₹{pred.predictedPrice}/kg
+                                </p>
+                                <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                                  pred.predictedPrice > pred.currentPrice ? 'bg-green-100 text-green-700' :
+                                  pred.predictedPrice < pred.currentPrice ? 'bg-red-100 text-red-700' :
+                                  'bg-gray-100 text-gray-600'
+                                }`}>
+                                  {pred.predictedPrice > pred.currentPrice ? '↑' : pred.predictedPrice < pred.currentPrice ? '↓' : '→'}
+                                  {Math.abs(Math.round(((pred.predictedPrice - pred.currentPrice) / pred.currentPrice) * 100))}%
+                                </span>
+                              </div>
                             </div>
                           </div>
 

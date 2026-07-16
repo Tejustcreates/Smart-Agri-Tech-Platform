@@ -1,67 +1,80 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import { Toaster, toast } from 'react-hot-toast';
 import Header from './components/Header';
-import Hero from './components/Hero';
-import About from './components/About';
-import Weather from './components/Weather';
-import News from './components/News';
-import Schemes from './components/Schemes';
-import Mandi from './components/Mandi';
-import { exportToExcel } from './services/sheetService';
-// AgriMarket (Equipments store) removed — functionality covered by EquipmentRecommender
-import CropRecommender from './components/CropRecommender';
-import DiseaseDetection from './components/DiseaseDetection';
-import EquipmentRecommender from './components/EquipmentRecommender';
 import Footer from './components/Footer';
-import Login from './components/Login';
-import Signup from './components/Signup';
-import Cart from './components/Cart';
-import Payment from './components/Payment';
-import { Section, User, CartItem, Product } from './types';
-import { NAV_ITEMS } from './constants';
+import HomePage from './components/pages/HomePage';
+import WeatherPage from './components/pages/WeatherPage';
+import CropAdvisorPage from './components/pages/CropAdvisorPage';
+import DiseasePage from './components/pages/DiseasePage';
+import NewsPage from './components/pages/NewsPage';
+import SchemesPage from './components/pages/SchemesPage';
+import MandiPage from './components/pages/MandiPage';
+import EquipmentPage from './components/pages/EquipmentPage';
+import LoginPage from './components/pages/LoginPage';
+import SignupPage from './components/pages/SignupPage';
+import CartPage from './components/pages/CartPage';
+import PaymentPage from './components/pages/PaymentPage';
+import { exportToExcel } from './services/sheetService';
+import { User, CartItem, Product } from './types';
 
-const App: React.FC = () => {
-  const [activeSection, setActiveSection] = useState<Section>(Section.HERO);
-  const [user, setUser] = useState<User | null>(null);
-  const [cart, setCart] = useState<CartItem[]>([]);
+const NotFound: React.FC = () => (
+  <section className="py-20 bg-gray-50 flex items-center justify-center min-h-[calc(100vh-64px)]">
+    <div className="text-center">
+      <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+        <i className="fas fa-question text-green-600 text-4xl"></i>
+      </div>
+      <h2 className="text-3xl font-bold text-gray-800">Page Not Found</h2>
+      <p className="text-gray-600 mt-2 mb-6">The page you're looking for doesn't exist.</p>
+      <a href="/" className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold transition-colors">
+        <i className="fas fa-home mr-2"></i>Go Home
+      </a>
+    </div>
+  </section>
+);
+
+const loadFromStorage = <T,>(key: string, fallback: T): T => {
+  try {
+    const data = localStorage.getItem(key);
+    return data ? JSON.parse(data) : fallback;
+  } catch {
+    return fallback;
+  }
+};
+
+const AppContent: React.FC = () => {
+  const navigate = useNavigate();
+  const [user, setUser] = useState<User | null>(() => loadFromStorage<User | null>('growsmart_user', null));
+  const [cart, setCart] = useState<CartItem[]>(() => loadFromStorage<CartItem[]>('growsmart_cart', []));
   const [paymentTotal, setPaymentTotal] = useState<number>(0);
 
-  const handleKnowMore = () => {
-    setActiveSection(Section.ABOUT);
-    document.getElementById(Section.ABOUT)?.scrollIntoView({ behavior: 'smooth' });
+  useEffect(() => {
+    localStorage.setItem('growsmart_user', JSON.stringify(user));
+  }, [user]);
+
+  useEffect(() => {
+    localStorage.setItem('growsmart_cart', JSON.stringify(cart));
+  }, [cart]);
+
+  const handleLogin = (loggedInUser: { name: string }) => {
+    setUser(loggedInUser as User);
+    navigate('/');
   };
 
-  const handleLogin = (loggedInUser: User) => {
-    setUser(loggedInUser);
-    setActiveSection(Section.HERO); // Redirect to home after login
-  };
-  
-  const handleSignup = (signedUpUser: User) => {
-    setUser(signedUpUser);
-    setActiveSection(Section.HERO); // Redirect to home after signup
+  const handleSignup = (signedUpUser: { name: string }) => {
+    setUser(signedUpUser as User);
+    navigate('/');
   };
 
   const handleLogout = () => {
     setUser(null);
-    setCart([]); // Clear cart on logout
-    setActiveSection(Section.HERO);
+    setCart([]);
   };
-  
-  const handleSetActiveSection = (section: Section) => {
-      setActiveSection(section);
-      if (section !== Section.LOGIN && section !== Section.SIGNUP && section !== Section.CART && section !== Section.PAYMENT) {
-        const element = document.getElementById(section);
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth' });
-        }
-      }
-  };
-  
-  // Cart Functions
+
   const addToCart = (product: Product, type: CartItem['type']) => {
-    const id = `${type.toLowerCase()}-${product.id}`;
+    const id = `${type.toLowerCase()}-${product.id || Date.now()}`;
     let price = 0;
-    let image = 'https://picsum.photos/200'; // Default image
+    let image = 'https://picsum.photos/200';
 
     if ('expectedPrice' in product) price = Number(product.expectedPrice);
     else if ('rentPerDay' in product) price = product.rentPerDay;
@@ -71,54 +84,39 @@ const App: React.FC = () => {
 
     if ('image' in product) image = product.image;
 
-
-    setCart(prevCart => {
-      const existingItem = prevCart.find(item => item.id === id);
+    setCart((prevCart) => {
+      const existingItem = prevCart.find((item) => item.id === id);
       if (existingItem) {
-        return prevCart.map(item =>
-          item.id === id ? { ...item, quantity: item.quantity + 1 } : item
-        );
-      } else {
-        return [...prevCart, { id, name: product.name, price, quantity: 1, image, type }];
+        return prevCart.map((item) => (item.id === id ? { ...item, quantity: item.quantity + 1 } : item));
       }
+      return [...prevCart, { id, name: product.name, price, quantity: 1, image, type }];
     });
     toast.success(`${product.name} added to cart!`);
   };
 
   const removeFromCart = (itemId: string) => {
-    setCart(prevCart => prevCart.filter(item => item.id !== itemId));
+    setCart((prevCart) => prevCart.filter((item) => item.id !== itemId));
   };
 
   const updateQuantity = (itemId: string, newQuantity: number) => {
     if (newQuantity <= 0) {
       removeFromCart(itemId);
     } else {
-      setCart(prevCart =>
-        prevCart.map(item =>
-          item.id === itemId ? { ...item, quantity: newQuantity } : item
-        )
-      );
+      setCart((prevCart) => prevCart.map((item) => (item.id === itemId ? { ...item, quantity: newQuantity } : item)));
     }
-  };
-
-  const clearCart = () => {
-    setCart([]);
   };
 
   const handleProceedToCheckout = (total: number) => {
     setPaymentTotal(total);
-    setActiveSection(Section.PAYMENT);
+    navigate('/payment');
   };
 
   const handlePaymentSuccess = () => {
-    clearCart();
-    setActiveSection(Section.HERO);
-    // In a real app, you might show an order confirmation page first
-    // For now, we'll just redirect to home.
+    setCart([]);
     toast.success('Payment successful! Your order has been placed.');
+    navigate('/');
   };
 
-  // Admin: Ctrl+Shift+A downloads Excel of registered users
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.shiftKey && e.key === 'A') {
@@ -133,76 +131,48 @@ const App: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [user]);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-             const sectionId = entry.target.id as Section;
-             if (NAV_ITEMS.some(item => item.section === sectionId)) {
-                // To avoid conflict with click navigation
-                if (activeSection !== Section.LOGIN && activeSection !== Section.SIGNUP && activeSection !== Section.CART && activeSection !== Section.PAYMENT) {
-                    setActiveSection(sectionId);
-                }
-             }
-          }
-        });
-      },
-      { rootMargin: '-40% 0px -40% 0px' }
-    );
-
-    const sections = Array.from(document.querySelectorAll('section[id]')).filter(
-        (el) => el.id !== Section.LOGIN && el.id !== Section.SIGNUP
-    );
-    sections.forEach((section) => observer.observe(section));
-
-    return () => sections.forEach((section) => observer.unobserve(section));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
-
-  const renderContent = () => {
-    if (activeSection === Section.LOGIN) {
-      return <Login onLogin={handleLogin} onSwitchToSignup={() => setActiveSection(Section.SIGNUP)} />;
-    }
-    if (activeSection === Section.SIGNUP) {
-      return <Signup onSignup={handleSignup} onSwitchToLogin={() => setActiveSection(Section.LOGIN)} />;
-    }
-    if (activeSection === Section.CART) {
-        return <Cart cartItems={cart} onUpdateQuantity={updateQuantity} onRemoveItem={removeFromCart} onProceedToCheckout={handleProceedToCheckout} onBackToShopping={() => setActiveSection(Section.MANDI)} />;
-    }
-    if (activeSection === Section.PAYMENT) {
-        return <Payment total={paymentTotal} onPaymentSuccess={handlePaymentSuccess} onBackToCart={() => setActiveSection(Section.CART)} />;
-    }
-    return (
-      <>
-        <Hero onKnowMore={handleKnowMore} />
-        <About />
-        <Weather />
-        <CropRecommender />
-        <DiseaseDetection />
-        <News />
-        <Schemes />
-        <Mandi onAddToCart={addToCart} />
-        <EquipmentRecommender />
-      </>
-    );
-  };
+  const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
-    <div className="App">
-      <Toaster position="top-right" toastOptions={{ duration: 3000, style: { borderRadius: '10px', background: '#333', color: '#fff' } }} />
-      <Header
-        activeSection={activeSection}
-        setActiveSection={handleSetActiveSection}
-        user={user}
-        onLogout={handleLogout}
-        cartCount={cart.reduce((sum, item) => sum + item.quantity, 0)}
+    <div className="min-h-screen flex flex-col">
+      <Toaster
+        position="top-center"
+        containerStyle={{ top: 80 }}
+        toastOptions={{
+          duration: 3000,
+          style: { borderRadius: '10px', background: '#333', color: '#fff', maxWidth: '90vw' },
+          success: { position: 'top-center' },
+          error: { position: 'top-center' },
+        }}
       />
-      <main>
-        {renderContent()}
+      <Header user={user} onLogout={handleLogout} cartCount={cartCount} />
+      <main className="flex-1">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/weather" element={<WeatherPage />} />
+          <Route path="/crop-advisor" element={<CropAdvisorPage />} />
+          <Route path="/disease-detection" element={<DiseasePage />} />
+          <Route path="/news" element={<NewsPage />} />
+          <Route path="/schemes" element={<SchemesPage />} />
+          <Route path="/mandi" element={<MandiPage onAddToCart={addToCart} />} />
+          <Route path="/equipment" element={<EquipmentPage onAddToCart={addToCart} />} />
+          <Route path="/login" element={<LoginPage user={user} onLogin={handleLogin} />} />
+          <Route path="/signup" element={<SignupPage user={user} onSignup={handleSignup} />} />
+          <Route path="/cart" element={<CartPage cartItems={cart} onUpdateQuantity={updateQuantity} onRemoveItem={removeFromCart} onProceedToCheckout={handleProceedToCheckout} />} />
+          <Route path="/payment" element={<PaymentPage total={paymentTotal} onPaymentSuccess={handlePaymentSuccess} />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
       </main>
-      {activeSection !== Section.LOGIN && activeSection !== Section.SIGNUP && activeSection !== Section.CART && activeSection !== Section.PAYMENT && <Footer />}
+      <Footer />
     </div>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <BrowserRouter>
+      <AppContent />
+    </BrowserRouter>
   );
 };
 

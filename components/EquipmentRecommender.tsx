@@ -1,4 +1,10 @@
 import React, { useState } from 'react';
+import tractorImg from './img/tractor.jpeg';
+import tractor2Img from './img/tractor2.avif';
+import harvesterImg from './img/harvestor.jpg';
+import rotavatorImg from './img/rotavator.png';
+import riceImg from './img/basmati-rice.jpg';
+import sprayerImg from './img/weedout herbiside.jpg';
 
 interface EquipmentRecommendation {
   name: string;
@@ -10,16 +16,16 @@ interface EquipmentRecommendation {
 }
 
 const EQUIPMENT_DB: Record<string, { rent: number; image: string; bestFor: string; landRange: string }> = {
-  'Mini Tractor (20HP)': { rent: 1500, image: 'https://images.pexels.com/photos/162639/agriculture-field-harvest-grain-162639.jpeg?auto=compress&cs=tinysrgb&w=600', bestFor: 'Small plots, vegetable farms', landRange: '1-5 acres' },
-  'Standard Tractor (50HP)': { rent: 2500, image: 'https://images.pexels.com/photos/162639/agriculture-field-harvest-grain-162639.jpeg?auto=compress&cs=tinysrgb&w=600', bestFor: 'Medium farms, plowing', landRange: '5-25 acres' },
-  'Heavy Tractor (75HP)': { rent: 4000, image: 'https://images.pexels.com/photos/162639/agriculture-field-harvest-grain-162639.jpeg?auto=compress&cs=tinysrgb&w=600', bestFor: 'Large farms, heavy duty', landRange: '25+ acres' },
-  'Rotavator': { rent: 1500, image: 'https://images.pexels.com/photos/5638268/pexels-photo-5638268.jpeg?auto=compress&cs=tinysrgb&w=600', bestFor: 'Soil preparation, mixing', landRange: 'All sizes' },
-  'Seed Drill': { rent: 1200, image: 'https://images.pexels.com/photos/5638268/pexels-photo-5638268.jpeg?auto=compress&cs=tinysrgb&w=600', bestFor: 'Sowing seeds uniformly', landRange: 'All sizes' },
-  'Sprayer (Power)': { rent: 800, image: 'https://images.pexels.com/photos/4513940/pexels-photo-4513940.jpeg?auto=compress&cs=tinysrgb&w=600', bestFor: 'Pesticide/fertilizer spray', landRange: 'All sizes' },
-  'Harvester': { rent: 5000, image: 'https://images.pexels.com/photos/162639/agriculture-field-harvest-grain-162639.jpeg?auto=compress&cs=tinysrgb&w=600', bestFor: 'Harvesting grains', landRange: '10+ acres' },
-  'Thresher': { rent: 1000, image: 'https://images.pexels.com/photos/5638268/pexels-photo-5638268.jpeg?auto=compress&cs=tinysrgb&w=600', bestFor: 'Separating grain from straw', landRange: 'All sizes' },
-  'Plough': { rent: 600, image: 'https://images.pexels.com/photos/5638268/pexels-photo-5638268.jpeg?auto=compress&cs=tinysrgb&w=600', bestFor: 'Initial plowing', landRange: 'All sizes' },
-  'Transplanter (Rice)': { rent: 2000, image: 'https://images.pexels.com/photos/5638268/pexels-photo-5638268.jpeg?auto=compress&cs=tinysrgb&w=600', bestFor: 'Rice seedling transplanting', landRange: '5+ acres' },
+  'Mini Tractor (20HP)': { rent: 1500, image: tractor2Img, bestFor: 'Small plots, vegetable farms', landRange: '1-5 acres' },
+  'Standard Tractor (50HP)': { rent: 2500, image: tractorImg, bestFor: 'Medium farms, plowing', landRange: '5-25 acres' },
+  'Heavy Tractor (75HP)': { rent: 4000, image: tractorImg, bestFor: 'Large farms, heavy duty', landRange: '25+ acres' },
+  'Rotavator': { rent: 1500, image: rotavatorImg, bestFor: 'Soil preparation, mixing', landRange: 'All sizes' },
+  'Seed Drill': { rent: 1200, image: tractor2Img, bestFor: 'Sowing seeds uniformly', landRange: 'All sizes' },
+  'Sprayer (Power)': { rent: 800, image: sprayerImg, bestFor: 'Pesticide/fertilizer spray', landRange: 'All sizes' },
+  'Harvester': { rent: 5000, image: harvesterImg, bestFor: 'Harvesting grains', landRange: '10+ acres' },
+  'Thresher': { rent: 1000, image: harvesterImg, bestFor: 'Separating grain from straw', landRange: 'All sizes' },
+  'Plough': { rent: 600, image: rotavatorImg, bestFor: 'Initial plowing', landRange: 'All sizes' },
+  'Transplanter (Rice)': { rent: 2000, image: riceImg, bestFor: 'Rice seedling transplanting', landRange: '5+ acres' },
 };
 
 const CROPS_FOR_EQUIPMENT: Record<string, string[]> = {
@@ -45,6 +51,21 @@ const EquipmentRecommender: React.FC<{ onAddToCart: (product: any, type: any) =>
   const [selectedSeason, setSelectedSeason] = useState<string>('Kharif (Monsoon)');
   const [recommendations, setRecommendations] = useState<EquipmentRecommendation[]>([]);
   const [hasSearched, setHasSearched] = useState(false);
+  const [cooldowns, setCooldowns] = useState<Set<string>>(new Set());
+
+  const handleRentNow = (equip: EquipmentRecommendation, index: number) => {
+    const key = `rent-${equip.name}`;
+    if (cooldowns.has(key)) return;
+    onAddToCart({ id: index, name: equip.name, rentPerDay: equip.rentPerDay, image: equip.image }, 'Equipment');
+    setCooldowns((prev) => new Set(prev).add(key));
+    setTimeout(() => {
+      setCooldowns((prev) => {
+        const next = new Set(prev);
+        next.delete(key);
+        return next;
+      });
+    }, 500);
+  };
 
   const getRecommendations = () => {
     setHasSearched(true);
@@ -58,7 +79,7 @@ const EquipmentRecommender: React.FC<{ onAddToCart: (product: any, type: any) =>
     combined.forEach((equipmentName) => {
       const data = EQUIPMENT_DB[equipmentName];
       if (data) {
-        const isRecommended = landSize >= 5 && landSize <= 25 ? true : landSize < 5;
+        const isRecommended = landSize >= 5;
         
         let reason = '';
         if (cropEquipment.includes(equipmentName)) {
@@ -90,9 +111,9 @@ const EquipmentRecommender: React.FC<{ onAddToCart: (product: any, type: any) =>
   };
 
   return (
-    <section id="equipment-recommender" className="py-16 md:py-24 bg-gradient-to-b from-orange-50/40 to-white">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
+    <section id="equipment-recommender" className="py-20 md:py-28 bg-gradient-to-b from-orange-50/40 to-white">
+      <div className="max-w-7xl mx-auto px-6 lg:px-12">
+        <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 bg-orange-100 text-orange-700 rounded-full px-4 py-1.5 text-sm font-medium mb-4">
             <i className="fas fa-tractor text-xs"></i>
             Equipment Rental
@@ -205,8 +226,9 @@ const EquipmentRecommender: React.FC<{ onAddToCart: (product: any, type: any) =>
                         <p className="text-xl font-bold text-orange-600">₹{equip.rentPerDay}</p>
                       </div>
                       <button
-                        onClick={() => onAddToCart({ id: index, name: equip.name, rentPerDay: equip.rentPerDay, image: equip.image }, 'Equipment')}
-                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-semibold"
+                        onClick={() => handleRentNow(equip, index)}
+                        disabled={cooldowns.has(`rent-${equip.name}`)}
+                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-semibold disabled:opacity-50"
                       >
                         <i className="fas fa-cart-plus mr-1"></i>
                         Rent Now
@@ -253,7 +275,7 @@ const EquipmentRecommender: React.FC<{ onAddToCart: (product: any, type: any) =>
             <i className="fas fa-info-circle text-blue-600"></i>
             Equipment Guide
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             <div className="bg-blue-50 rounded-lg p-4">
               <h4 className="font-semibold text-blue-800 mb-2">Tractors</h4>
               <p className="text-sm text-gray-600">Choose based on land size: Mini for small plots, Standard for medium, Heavy for large farms.</p>

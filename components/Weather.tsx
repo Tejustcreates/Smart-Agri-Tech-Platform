@@ -178,6 +178,9 @@ const Weather: React.FC = () => {
   const [error, setError] = useState('');
   const [modelLoading, setModelLoading] = useState(false);
 
+  const apiKey = import.meta.env.VITE_OPENWEATHER_API_KEY;
+  const isDemo = !apiKey || apiKey === 'your_openweathermap_api_key_here';
+
   const fetchWeatherData = useCallback(async () => {
     const trimmedCity = city.trim();
     if (!trimmedCity) {
@@ -342,9 +345,9 @@ const Weather: React.FC = () => {
   };
 
   return (
-    <section id={Section.WEATHER} className="py-16 md:py-24 bg-gradient-to-b from-blue-50/60 to-white">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
+    <section id={Section.WEATHER} className="py-20 md:py-28 bg-gradient-to-b from-blue-50/60 to-white">
+      <div className="max-w-7xl mx-auto px-6 lg:px-12">
+        <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 rounded-full px-4 py-1.5 text-sm font-medium mb-4">
             <i className="fas fa-cloud-sun text-xs"></i>
             Weather Intelligence
@@ -355,17 +358,13 @@ const Weather: React.FC = () => {
           <p className="text-gray-500 mt-3 max-w-lg mx-auto">ML-powered weather forecasts and farming recommendations for your area</p>
         </div>
 
-        <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-xl p-6 md:p-8">
-          {(() => {
-            const apiKey = import.meta.env.VITE_OPENWEATHER_API_KEY;
-            const isDemo = !apiKey || apiKey === 'your_openweathermap_api_key_here';
-            return isDemo ? (
+        <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-xl p-6 md:p-8">
+          {isDemo && (
               <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-700 flex items-center gap-2">
                 <i className="fas fa-info-circle"></i>
                 <span>Demo Mode — Add <code className="bg-yellow-100 px-1 rounded">VITE_OPENWEATHER_API_KEY</code> to <code className="bg-yellow-100 px-1 rounded">.env.local</code> for real weather data</span>
               </div>
-            ) : null;
-          })()}
+          )}
           <div className="flex flex-col md:flex-row gap-4">
             <input
               type="text"
@@ -401,6 +400,34 @@ const Weather: React.FC = () => {
           )}
         </div>
 
+        {loading && !weatherData && (
+          <div className="mt-8 space-y-6 animate-pulse">
+            <div className="bg-white rounded-xl shadow-xl p-6 md:p-8">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
+                <div className="h-5 w-32 bg-gray-200 rounded"></div>
+              </div>
+              <div className="flex items-center gap-6 mb-6">
+                <div className="h-16 w-36 bg-gray-200 rounded"></div>
+                <div className="h-8 w-24 bg-gray-200 rounded"></div>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {[1,2,3,4].map(i => (
+                  <div key={i} className="bg-gray-100 rounded-xl p-4">
+                    <div className="h-3 w-16 bg-gray-200 rounded mb-2"></div>
+                    <div className="h-6 w-20 bg-gray-200 rounded"></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="bg-white rounded-xl shadow-xl p-6 md:p-8">
+              <div className="h-5 w-40 bg-gray-200 rounded mb-4"></div>
+              <div className="h-4 w-full bg-gray-200 rounded mb-3"></div>
+              <div className="h-4 w-3/4 bg-gray-200 rounded"></div>
+            </div>
+          </div>
+        )}
+
         {weatherData && (
           <div className="mt-8 space-y-6">
             <div className="bg-white rounded-xl shadow-xl p-6 md:p-8 animate-fade-in-up">
@@ -409,6 +436,11 @@ const Weather: React.FC = () => {
                   <h3 className="text-2xl md:text-3xl font-bold text-gray-800 flex items-center gap-2">
                     <i className="fas fa-map-marker-alt text-green-600"></i>
                     {weatherData.city}
+                    {isDemo && (
+                      <span className="ml-2 px-2 py-0.5 bg-yellow-100 text-yellow-700 text-xs font-semibold rounded-full border border-yellow-300">
+                        Demo Data
+                      </span>
+                    )}
                   </h3>
                   <p className="text-gray-500 capitalize">{weatherData.description}</p>
                 </div>
@@ -442,9 +474,9 @@ const Weather: React.FC = () => {
               </div>
 
               <h4 className="text-lg font-semibold text-gray-700 mb-4">5-Day Forecast</h4>
-              <div className="flex justify-around overflow-x-auto pb-2">
+              <div className="flex justify-around overflow-x-auto pb-2 gap-1">
                 {weatherData.forecast.map((day, index) => (
-                  <div key={index} className="flex flex-col items-center min-w-[80px]">
+                  <div key={index} className="flex flex-col items-center min-w-[64px] sm:min-w-[80px]">
                     <p className="font-semibold text-gray-600">{day.day}</p>
                     <i className={`${WEATHER_ICONS[day.icon] || 'fas fa-cloud'} text-2xl text-gray-500 my-2`}></i>
                     <p className="font-bold text-gray-800">{day.temp}°C</p>
@@ -473,9 +505,7 @@ const Weather: React.FC = () => {
                   : 'bg-gradient-to-r from-green-500 to-green-600 text-white'
               }`}>
                 <div className="flex items-center gap-4">
-                  <div className={`w-16 h-16 rounded-full flex items-center justify-center ${
-                    rainPrediction.willRain ? 'bg-white/20' : 'bg-white/20'
-                  }`}>
+                  <div className="w-16 h-16 rounded-full flex items-center justify-center bg-white/20">
                     <i className={`${rainPrediction.willRain ? 'fas fa-cloud-showers-heavy' : 'fas fa-sun'} text-3xl`}></i>
                   </div>
                   <div className="flex-1">
@@ -560,7 +590,7 @@ const Weather: React.FC = () => {
 
         {!weatherData && !loading && (
           <div className="mt-12 text-center">
-            <div className="bg-white rounded-xl shadow-lg p-8 max-w-2xl mx-auto">
+            <div className="bg-white rounded-xl shadow-xl p-6 md:p-8">
               <i className="fas fa-satellite-dish text-green-600 text-5xl mb-4"></i>
               <h3 className="text-xl font-bold text-gray-800 mb-2">Real-Time Weather Data</h3>
               <p className="text-gray-600 mb-4">

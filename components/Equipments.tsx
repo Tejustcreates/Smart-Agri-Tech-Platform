@@ -1,6 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Section, Equipment, Fertilizer, Seed, Pesticide, Product, CartItem } from '../types';
 import wheatImg from './img/wheat_seeds.jpg';
+import tractorImg from './img/tractor.jpeg';
+import harvesterImg from './img/harvestor.jpg';
+import rotavatorImg from './img/rotavator.png';
+import sprayerImg from './img/weedout herbiside.jpg';
+import ureaImg from './img/uria fertilizer.jpg';
+import dapImg from './img/DAP.avif';
+import organicManureImg from './img/Organic-Manure.webp';
+import potashImg from './img/potash-fertilizer.webp';
+import basmatiImg from './img/basmati-rice.jpg';
+import cottonImg from './img/ballgard cotton seeds.png';
+import hybridVegImg from './img/hybrid veg seed.webp';
+import neemPesticideImg from './img/neem bio pesticide.jpg';
+import cropShieldImg from './img/fungicure.jpg';
+import fungiCureImg from './img/fungicure.jpg';
+import weedOutImg from './img/weedout herbiside.jpg';
 
 interface AgriMarketProps {
     onAddToCart: (product: Product, type: CartItem['type']) => void;
@@ -10,7 +25,7 @@ const EQUIPMENTS_DATA: Equipment[] = [
   {
     id: 1,
     name: 'Tractor',
-    image: 'https://5.imimg.com/data5/SELLER/Default/2023/5/310928279/SK/RW/UH/46205119/50hp-preet-955-2wd-tractor-1000x1000.jpg',
+    image: tractorImg,
     description: 'Powerful tractor for plowing and other heavy-duty tasks. 50 HP.',
     rentPerDay: 2500,
     available: true,
@@ -18,7 +33,7 @@ const EQUIPMENTS_DATA: Equipment[] = [
   {
     id: 2,
     name: 'Harvester',
-    image: 'https://www.estesperformanceconcaves.com/wp-content/uploads/2020/07/auger-platforms-R4D012314-1366x768-1.jpg',
+    image: harvesterImg,
     description: 'Combine harvester for efficient reaping, threshing, and winnowing.',
     rentPerDay: 5000,
     available: false,
@@ -26,7 +41,7 @@ const EQUIPMENTS_DATA: Equipment[] = [
   {
     id: 3,
     name: 'Rotavator',
-    image: 'https://img.agriexpo.online/images_ag/photo-g/178897-16664336.jpg',
+    image: rotavatorImg,
     description: 'Used for soil preparation by mixing and pulverizing the soil.',
     rentPerDay: 1500,
     available: true,
@@ -34,7 +49,7 @@ const EQUIPMENTS_DATA: Equipment[] = [
     {
     id: 4,
     name: 'Sprayer',
-    image: 'https://images.pexels.com/photos/4513940/pexels-photo-4513940.jpeg?auto=compress&cs=tinysrgb&w=600',
+    image: sprayerImg,
     description: 'For spraying pesticides, herbicides, and fertilizers on crops.',
     rentPerDay: 800,
     available: true,
@@ -42,28 +57,44 @@ const EQUIPMENTS_DATA: Equipment[] = [
 ];
 
 const FERTILIZERS_DATA: Fertilizer[] = [
-    { id: 1, name: 'Urea Fertilizer', image: 'https://gogarden.co.in/cdn/shop/files/71yg6hRnpTL._SL1200_fac2b8e7-208b-482d-9493-07d03daaff6f.jpg?v=1741858085', description: 'High nitrogen content for lush green growth. Ideal for all crops.', pricePerBag: 300, brand: 'IFFCO' },
-    { id: 2, name: 'DAP Fertilizer', image: 'https://sakthifertilizers.com/wp-content/uploads/2016/11/IFFCO-–-DAP.jpg', description: 'Rich in phosphorus, essential for root development and flowering.', pricePerBag: 1200, brand: 'NFL' },
-    { id: 3, name: 'Organic Manure', image: 'https://organicbazar.net/cdn/shop/files/vermicompost_5kg_Organic_Bazar_fertilizer_organic_fertilizers_vermi_compost_kenchua_khaad_vermicompost_5kg.jpg', description: 'Composted manure to improve soil health and fertility naturally.', pricePerBag: 400, brand: 'FarmFresh' },
-    { id: 4, name: 'Potash Fertilizer', image: 'https://m.media-amazon.com/images/I/51tMaq5qlCL._AC_SY400_.jpg', description: 'Enhances plant immunity and improves fruit quality and size.', pricePerBag: 950, brand: 'KRIBHCO' },
+    { id: 1, name: 'Urea Fertilizer', image: ureaImg, description: 'High nitrogen content for lush green growth. Ideal for all crops.', pricePerBag: 300, brand: 'IFFCO' },
+    { id: 2, name: 'DAP Fertilizer', image: dapImg, description: 'Rich in phosphorus, essential for root development and flowering.', pricePerBag: 1200, brand: 'NFL' },
+    { id: 3, name: 'Organic Manure', image: organicManureImg, description: 'Composted manure to improve soil health and fertility naturally.', pricePerBag: 400, brand: 'FarmFresh' },
+    { id: 4, name: 'Potash Fertilizer', image: potashImg, description: 'Enhances plant immunity and improves fruit quality and size.', pricePerBag: 950, brand: 'KRIBHCO' },
 ];
 
 const SEEDS_DATA: Seed[] = [
     { id: 1, name: 'HD-3085 Wheat Seeds', image: wheatImg, description: 'High-yield, disease-resistant wheat seeds suitable for the Rabi season.', pricePerKg: 850, brand: 'Nirmal Seeds' },
-    { id: 2, name: 'Basmati Rice Seeds', image: 'https://images.pexels.com/photos/1556410/pexels-photo-1556410.jpeg?auto=compress&cs=tinysrgb&w=600', description: 'Premium quality seeds for aromatic, long-grain Basmati rice.', pricePerKg: 650, brand: 'Kaveri Seeds' },
-    { id: 3, name: 'Bollgard Cotton Seeds', image: 'https://images.pexels.com/photos/59321/pexels-photo-59321.jpeg?auto=compress&cs=tinysrgb&w=600', description: 'Genetically modified seeds for high yield and resistance to bollworms.', pricePerKg: 1200, brand: 'Mahyco' },
-    { id: 4, name: 'Hybrid Vegetable Seeds', image: 'https://images.pexels.com/photos/1029045/pexels-photo-1029045.jpeg?auto=compress&cs=tinysrgb&w=600', description: 'A variety pack of high-quality hybrid seeds for vegetables like tomatoes and peppers.', pricePerKg: 150, brand: 'Namdhari' },
+    { id: 2, name: 'Basmati Rice Seeds', image: basmatiImg, description: 'Premium quality seeds for aromatic, long-grain Basmati rice.', pricePerKg: 650, brand: 'Kaveri Seeds' },
+    { id: 3, name: 'Bollgard Cotton Seeds', image: cottonImg, description: 'Genetically modified seeds for high yield and resistance to bollworms.', pricePerKg: 1200, brand: 'Mahyco' },
+    { id: 4, name: 'Hybrid Vegetable Seeds', image: hybridVegImg, description: 'A variety pack of high-quality hybrid seeds for vegetables like tomatoes and peppers.', pricePerKg: 150, brand: 'Namdhari' },
 ];
 
 const PESTICIDES_DATA: Pesticide[] = [
-    { id: 1, name: 'Neem-Based Bio Pesticide', image: 'https://images.pexels.com/photos/4032585/pexels-photo-4032585.jpeg?auto=compress&cs=tinysrgb&w=600', description: 'Organic and eco-friendly solution for controlling aphids and mealybugs.', pricePerLiter: 350, brand: 'BioCare' },
-    { id: 2, name: 'Crop Shield Insecticide', image: 'https://5.imimg.com/data5/SELLER/Default/2022/12/SL/HC/ZF/125050588/fmc-ferterra-insecticide-1000x1000.jpeg', description: 'Broad-spectrum insecticide for effective control of bollworms and mites.', pricePerLiter: 450, brand: 'AgroProtect' },
-    { id: 3, name: 'FungiCure Fungicide', image: 'https://images.pexels.com/photos/7163953/pexels-photo-7163953.jpeg?auto=compress&cs=tinysrgb&w=600', description: 'Protects crops from fungal diseases like rust, mildew, and blight.', pricePerLiter: 600, brand: 'CropGuard' },
-    { id: 4, name: 'WeedOut Herbicide', image: 'https://images.pexels.com/photos/4207892/pexels-photo-4207892.jpeg?auto=compress&cs=tinysrgb&w=600', description: 'Selective herbicide to control broadleaf weeds without harming the main crop.', pricePerLiter: 520, brand: 'WeedControl' },
+    { id: 1, name: 'Neem-Based Bio Pesticide', image: neemPesticideImg, description: 'Organic and eco-friendly solution for controlling aphids and mealybugs.', pricePerLiter: 350, brand: 'BioCare' },
+    { id: 2, name: 'Crop Shield Insecticide', image: cropShieldImg, description: 'Broad-spectrum insecticide for effective control of bollworms and mites.', pricePerLiter: 450, brand: 'AgroProtect' },
+    { id: 3, name: 'FungiCure Fungicide', image: fungiCureImg, description: 'Protects crops from fungal diseases like rust, mildew, and blight.', pricePerLiter: 600, brand: 'CropGuard' },
+    { id: 4, name: 'WeedOut Herbicide', image: weedOutImg, description: 'Selective herbicide to control broadleaf weeds without harming the main crop.', pricePerLiter: 520, brand: 'WeedControl' },
 ];
 
 
 const AgriMarket: React.FC<AgriMarketProps> = ({ onAddToCart }) => {
+  const [cooldowns, setCooldowns] = useState<Set<string>>(new Set());
+
+  const handleAddToCart = (product: Product, type: CartItem['type']) => {
+    const key = `${type}-${product.id}`;
+    if (cooldowns.has(key)) return;
+    onAddToCart(product, type);
+    setCooldowns((prev) => new Set(prev).add(key));
+    setTimeout(() => {
+      setCooldowns((prev) => {
+        const next = new Set(prev);
+        next.delete(key);
+        return next;
+      });
+    }, 500);
+  };
+
   const renderSection = (title: string, children: React.ReactNode) => (
     <div className="mb-16">
       <h3 className="text-3xl font-bold text-gray-800 mb-8 border-l-4 border-green-600 pl-4">{title}</h3>
@@ -95,7 +126,7 @@ const AgriMarket: React.FC<AgriMarketProps> = ({ onAddToCart }) => {
                   {equipment.available ? 'Available' : 'Rented'}
                 </span>
               </div>
-              <button onClick={() => onAddToCart(equipment, 'Equipment')} className={`w-full mt-4 py-2 text-white rounded-lg transition-colors ${equipment.available ? 'bg-orange-500 hover:bg-orange-600' : 'bg-gray-400 cursor-not-allowed'}`} disabled={!equipment.available}>
+              <button onClick={() => handleAddToCart(equipment, 'Equipment')} className={`w-full mt-4 py-2 text-white rounded-lg transition-colors ${equipment.available ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-400 cursor-not-allowed'}`} disabled={!equipment.available || cooldowns.has(`Equipment-${equipment.id}`)}>
                   <i className="fas fa-cart-plus mr-2"></i>Add to Cart
               </button>
             </div>
@@ -110,7 +141,7 @@ const AgriMarket: React.FC<AgriMarketProps> = ({ onAddToCart }) => {
                     <p className="text-gray-600 text-xs uppercase font-semibold">{item.brand}</p>
                     <p className="text-gray-700 text-sm leading-relaxed h-20 overflow-hidden flex-grow mt-2">{item.description}</p>
                     <div className="text-lg font-bold text-green-600 mt-4">₹{item.pricePerBag}/bag</div>
-                    <button onClick={() => onAddToCart(item, 'Fertilizer')} className="w-full mt-4 py-2 text-white rounded-lg bg-green-600 hover:bg-green-700 transition-colors">
+                    <button onClick={() => handleAddToCart(item, 'Fertilizer')} disabled={cooldowns.has(`Fertilizer-${item.id}`)} className="w-full mt-4 py-2 text-white rounded-lg bg-green-600 hover:bg-green-700 transition-colors disabled:opacity-50">
                         <i className="fas fa-cart-plus mr-2"></i>Add to Cart
                     </button>
                 </div>
@@ -125,7 +156,7 @@ const AgriMarket: React.FC<AgriMarketProps> = ({ onAddToCart }) => {
                     <p className="text-gray-600 text-xs uppercase font-semibold">{item.brand}</p>
                     <p className="text-gray-700 text-sm leading-relaxed h-20 overflow-hidden flex-grow mt-2">{item.description}</p>
                     <div className="text-lg font-bold text-green-600 mt-4">₹{item.pricePerKg}/kg</div>
-                    <button onClick={() => onAddToCart(item, 'Seed')} className="w-full mt-4 py-2 text-white rounded-lg bg-green-600 hover:bg-green-700 transition-colors">
+                    <button onClick={() => handleAddToCart(item, 'Seed')} disabled={cooldowns.has(`Seed-${item.id}`)} className="w-full mt-4 py-2 text-white rounded-lg bg-green-600 hover:bg-green-700 transition-colors disabled:opacity-50">
                         <i className="fas fa-cart-plus mr-2"></i>Add to Cart
                     </button>
                 </div>
@@ -140,7 +171,7 @@ const AgriMarket: React.FC<AgriMarketProps> = ({ onAddToCart }) => {
                     <p className="text-gray-600 text-xs uppercase font-semibold">{item.brand}</p>
                     <p className="text-gray-700 text-sm leading-relaxed h-20 overflow-hidden flex-grow mt-2">{item.description}</p>
                     <div className="text-lg font-bold text-green-600 mt-4">₹{item.pricePerLiter}/liter</div>
-                    <button onClick={() => onAddToCart(item, 'Pesticide')} className="w-full mt-4 py-2 text-white rounded-lg bg-green-600 hover:bg-green-700 transition-colors">
+                    <button onClick={() => handleAddToCart(item, 'Pesticide')} disabled={cooldowns.has(`Pesticide-${item.id}`)} className="w-full mt-4 py-2 text-white rounded-lg bg-green-600 hover:bg-green-700 transition-colors disabled:opacity-50">
                         <i className="fas fa-cart-plus mr-2"></i>Add to Cart
                     </button>
                 </div>
