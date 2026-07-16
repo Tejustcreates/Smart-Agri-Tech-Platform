@@ -1,3 +1,4 @@
+// Section IDs used in HTML elements (for scroll-to and anchor links)
 export enum Section {
   HERO = 'hero',
   ABOUT = 'about',
@@ -8,10 +9,6 @@ export enum Section {
   CROP_RECOMMENDER = 'crop-recommender',
   DISEASE_DETECTION = 'disease-detection',
   EQUIPMENT_RECOMMENDER = 'equipment-recommender',
-  LOGIN = 'login',
-  SIGNUP = 'signup',
-  CART = 'cart',
-  PAYMENT = 'payment',
 }
 
 export interface User {
@@ -94,7 +91,7 @@ export interface Pesticide {
 export type Product = ListedCrop | Equipment | Fertilizer | Seed | Pesticide;
 
 export interface CartItem {
-    id: string; // Composite key like 'crop-1' or 'equipment-2'
+    id: string;
     name: string;
     price: number;
     quantity: number;

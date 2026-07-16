@@ -1,15 +1,27 @@
-import { Section } from './types';
+export const ROUTES = {
+  HOME: '/',
+  WEATHER: '/weather',
+  CROP_ADVISOR: '/crop-advisor',
+  DISEASE_DETECTION: '/disease-detection',
+  NEWS: '/news',
+  SCHEMES: '/schemes',
+  MANDI: '/mandi',
+  EQUIPMENT: '/equipment',
+  LOGIN: '/login',
+  SIGNUP: '/signup',
+  CART: '/cart',
+  PAYMENT: '/payment',
+} as const;
 
 export const NAV_ITEMS = [
-  { name: 'Home', section: Section.HERO },
-  { name: 'About', section: Section.ABOUT },
-  { name: 'Weather', section: Section.WEATHER },
-  { name: 'Crop Advisor', section: Section.CROP_RECOMMENDER },
-  { name: 'Disease Detection', section: Section.DISEASE_DETECTION },
-  { name: 'News', section: Section.NEWS },
-  { name: 'Schemes', section: Section.SCHEMES },
-  { name: 'Mandi', section: Section.MANDI },
-  { name: 'Equipment Rental', section: Section.EQUIPMENT_RECOMMENDER },
+  { name: 'Home', path: ROUTES.HOME, icon: 'fas fa-home' },
+  { name: 'Weather', path: ROUTES.WEATHER, icon: 'fas fa-cloud-sun' },
+  { name: 'Crop Advisor', path: ROUTES.CROP_ADVISOR, icon: 'fas fa-seedling' },
+  { name: 'Disease Detection', path: ROUTES.DISEASE_DETECTION, icon: 'fas fa-bug' },
+  { name: 'News', path: ROUTES.NEWS, icon: 'fas fa-newspaper' },
+  { name: 'Schemes', path: ROUTES.SCHEMES, icon: 'fas fa-landmark' },
+  { name: 'Mandi', path: ROUTES.MANDI, icon: 'fas fa-store' },
+  { name: 'Equipment', path: ROUTES.EQUIPMENT, icon: 'fas fa-tractor' },
 ];
 
 export const INDIAN_STATES = [

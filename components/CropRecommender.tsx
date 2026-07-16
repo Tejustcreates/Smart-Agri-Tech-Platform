@@ -192,9 +192,9 @@ const CropRecommender: React.FC = () => {
   };
 
   return (
-    <section id="crop-recommender" className="py-16 md:py-24 bg-gradient-to-b from-green-50/40 to-white">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
+    <section id="crop-recommender" className="py-20 md:py-28 bg-gradient-to-b from-green-50/40 to-white">
+      <div className="max-w-7xl mx-auto px-6 lg:px-12">
+        <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 bg-green-100 text-green-700 rounded-full px-4 py-1.5 text-sm font-medium mb-4">
             <i className="fas fa-seedling text-xs"></i>
             Crop Advisor

@@ -37,24 +37,31 @@ const News: React.FC = () => {
     const getNews = async () => {
       setLoading(true);
       const newsArticles = await fetchNews();
-      
+
       const personalized: PersonalizedNewsArticle[] = newsArticles.map((article) => {
         const category = categorizeArticle(article.headline + ' ' + article.summary);
-        const relevance = calculateRelevance(article.headline + ' ' + article.summary, selectedCrop, selectedState);
-        
+
         return {
           ...article,
           category,
-          relevance,
+          relevance: 50,
         };
       });
-      
-      personalized.sort((a, b) => b.relevance - a.relevance);
+
       setArticles(personalized);
       setLoading(false);
     };
 
     getNews();
+  }, []);
+
+  useEffect(() => {
+    const updated = articles.map((article) => ({
+      ...article,
+      relevance: calculateRelevance(article.headline + ' ' + article.summary, selectedCrop, selectedState),
+    }));
+    updated.sort((a, b) => b.relevance - a.relevance);
+    setArticles(updated);
   }, [selectedCrop, selectedState]);
 
   const categorizeArticle = (text: string): string => {
@@ -117,9 +124,9 @@ const News: React.FC = () => {
   };
 
   return (
-    <section id={Section.NEWS} className="py-16 md:py-24 bg-gradient-to-b from-emerald-50/40 to-white">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
+    <section id={Section.NEWS} className="py-20 md:py-28 bg-gradient-to-b from-emerald-50/40 to-white">
+      <div className="max-w-7xl mx-auto px-6 lg:px-12">
+        <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 bg-emerald-100 text-emerald-700 rounded-full px-4 py-1.5 text-sm font-medium mb-4">
             <i className="fas fa-newspaper text-xs"></i>
             Agricultural News
@@ -130,7 +137,7 @@ const News: React.FC = () => {
           <p className="text-gray-500 mt-3 max-w-lg mx-auto">AI-curated news tailored to your location, crops, and interests</p>
         </div>
 
-        <div className="max-w-4xl mx-auto mb-8">
+        <div className="max-w-5xl mx-auto mb-8">
           <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
@@ -139,7 +146,7 @@ const News: React.FC = () => {
               </h3>
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="text-green-600 hover:text-green-800 font-medium text-sm"
+                className="text-green-600 hover:text-green-800 font-medium text-sm md:hidden"
               >
                 {showFilters ? 'Hide' : 'Show'} Filters
               </button>
@@ -215,11 +222,19 @@ const News: React.FC = () => {
         </div>
 
         {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="text-center">
-              <i className="fas fa-spinner fa-spin text-green-600 text-4xl mb-4"></i>
-              <p className="text-lg text-gray-700">Fetching personalized news...</p>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
+            {[1,2,3,4,5,6].map(i => (
+              <div key={i} className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                <div className="h-5 w-20 bg-gray-200 rounded-full mb-3"></div>
+                <div className="h-5 w-3/4 bg-gray-200 rounded mb-3"></div>
+                <div className="h-3 w-full bg-gray-200 rounded mb-2"></div>
+                <div className="h-3 w-5/6 bg-gray-200 rounded mb-4"></div>
+                <div className="flex justify-between">
+                  <div className="h-3 w-24 bg-gray-200 rounded"></div>
+                  <div className="h-3 w-16 bg-gray-200 rounded"></div>
+                </div>
+              </div>
+            ))}
           </div>
         ) : filteredArticles.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -278,8 +293,8 @@ const News: React.FC = () => {
           </div>
         )}
 
-        <div className="mt-12 bg-gradient-to-r from-green-500 to-green-600 rounded-xl p-6 text-white">
-          <div className="flex items-center gap-4">
+        <div className="mt-12 bg-gradient-to-r from-green-500 to-green-600 rounded-xl p-4 sm:p-6 text-white">
+          <div className="flex flex-col sm:flex-row items-center gap-4">
             <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
               <i className="fas fa-robot text-3xl"></i>
             </div>

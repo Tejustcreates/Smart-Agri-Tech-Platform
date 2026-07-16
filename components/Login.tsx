@@ -32,7 +32,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, onSwitchToSignup }) => {
   return (
     <section id="login" className="min-h-[calc(100vh-80px)] flex">
       {/* Left Panel — Green branding */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-green-800 via-green-600 to-green-700 text-white p-12 flex-col justify-center items-center relative overflow-hidden">
+      <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-green-800 via-green-600 to-green-700 text-white p-8 lg:p-12 flex-col justify-center items-center relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-20 right-10 w-56 h-56 bg-white rounded-full blur-3xl"></div>
           <div className="absolute bottom-10 left-10 w-40 h-40 bg-white rounded-full blur-3xl"></div>
@@ -61,7 +61,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, onSwitchToSignup }) => {
       </div>
 
       {/* Right Panel — Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 bg-gray-50">
+      <div className="w-full md:w-1/2 flex items-center justify-center p-4 sm:p-6 lg:p-12 bg-gray-50">
         <div className="w-full max-w-md">
           <div className="mb-8">
             <h2 className="text-3xl font-bold text-gray-800">

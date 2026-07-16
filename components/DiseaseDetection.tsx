@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { toast } from 'react-hot-toast';
-import * as tf from '@tensorflow/tfjs';
 
 interface DiseaseInfo {
   name: string;
@@ -229,9 +228,9 @@ const DiseaseDetection: React.FC = () => {
   };
 
   return (
-    <section id="disease-detection" className="py-16 md:py-24 bg-gradient-to-b from-amber-50/40 to-white">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
+    <section id="disease-detection" className="py-20 md:py-28 bg-gradient-to-b from-amber-50/40 to-white">
+      <div className="max-w-7xl mx-auto px-6 lg:px-12">
+        <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 bg-amber-100 text-amber-700 rounded-full px-4 py-1.5 text-sm font-medium mb-4">
             <i className="fas fa-bug text-xs"></i>
             Crop Protection
@@ -242,7 +241,29 @@ const DiseaseDetection: React.FC = () => {
           <p className="text-gray-500 mt-3 max-w-lg mx-auto">Identify crop diseases and get expert treatment recommendations</p>
         </div>
 
-          <div className="max-w-5xl mx-auto">
+        {/* 3-Step Visual Guide */}
+        <div className="max-w-3xl mx-auto mb-12 px-2">
+          <div className="flex items-center justify-between">
+            {[
+              { step: '1', icon: 'fas fa-seedling', label: 'Select Crop', desc: 'Choose your crop type' },
+              { step: '2', icon: 'fas fa-list-ul', label: 'Describe Symptoms', desc: 'Pick the symptoms you see' },
+              { step: '3', icon: 'fas fa-clipboard-check', label: 'Get Treatment', desc: 'Receive expert advice' },
+            ].map((s, i) => (
+              <React.Fragment key={i}>
+                <div className="flex flex-col items-center text-center flex-1">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 rounded-full flex items-center justify-center mb-2">
+                    <i className={`${s.icon} text-green-600 text-sm sm:text-lg`}></i>
+                  </div>
+                  <p className="text-xs sm:text-sm font-bold text-gray-800">{s.label}</p>
+                  <p className="text-[10px] sm:text-xs text-gray-400 hidden md:block">{s.desc}</p>
+                </div>
+                {i < 2 && <div className="w-6 sm:w-12 md:w-20 h-0.5 bg-green-200 mx-1 mt-[-16px] md:mt-[-20px]"></div>}
+              </React.Fragment>
+            ))}
+          </div>
+        </div>
+
+          <div className="max-w-6xl mx-auto">
           <div className="bg-white rounded-xl shadow-xl overflow-hidden mb-8">
             <div className="p-6">
                 <div>
