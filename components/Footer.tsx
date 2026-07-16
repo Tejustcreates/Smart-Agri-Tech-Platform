@@ -41,30 +41,30 @@ const Footer: React.FC = () => {
         </div>
 
         {/* 3-Column */}
-        <div className="py-10 grid grid-cols-1 md:grid-cols-3 gap-8 border-b border-green-800/50">
+        <div className="py-10 grid grid-cols-1 md:grid-cols-3 gap-10 border-b border-green-800/50">
           <div>
-            <h3 className="text-white font-bold mb-4">Features</h3>
-            <ul className="space-y-2 text-sm">
+            <h3 className="text-white font-bold text-base mb-5">Features</h3>
+            <ul className="space-y-3 text-sm">
               {FOOTER_LINKS.map((link) => (
                 <li key={link.sectionId}>
                   <button
                     onClick={() => scrollToSection(link.sectionId)}
-                    className="text-green-300/70 hover:text-green-300 transition-colors text-left"
+                    className="text-green-300/70 hover:text-green-300 transition-colors text-left flex items-center gap-2"
                   >
-                    <i className={`${link.icon} mr-2 text-green-500/50`}></i>{link.name}
+                    <i className={`${link.icon} text-green-500/50 text-xs w-4 text-center`}></i>{link.name}
                   </button>
                 </li>
               ))}
             </ul>
           </div>
           <div>
-            <h3 className="text-white font-bold mb-4">Contact Us</h3>
+            <h3 className="text-white font-bold text-base mb-5">Contact Us</h3>
             <ul className="space-y-3 text-sm">
-              <li className="flex items-center gap-2 text-green-300/70"><i className="fas fa-envelope text-green-400"></i>support@growsmart.in</li>
-              <li className="flex items-center gap-2 text-green-300/70"><i className="fas fa-phone text-green-400"></i>1800-180-1551</li>
-              <li className="flex items-center gap-2 text-green-300/70"><i className="fas fa-map-marker-alt text-green-400"></i>Pune, Maharashtra</li>
+              <li className="flex items-center gap-2.5 text-green-300/70"><i className="fas fa-envelope text-green-400 text-xs w-4 text-center"></i>support@growsmart.in</li>
+              <li className="flex items-center gap-2.5 text-green-300/70"><i className="fas fa-phone text-green-400 text-xs w-4 text-center"></i>1800-180-1551</li>
+              <li className="flex items-center gap-2.5 text-green-300/70"><i className="fas fa-map-marker-alt text-green-400 text-xs w-4 text-center"></i>Pune, Maharashtra</li>
             </ul>
-            <div className="flex gap-3 mt-4">
+            <div className="flex gap-3 mt-5">
               <a href="https://facebook.com/growsmart" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="w-8 h-8 bg-green-800/50 rounded-full flex items-center justify-center hover:bg-green-600 transition-colors"><i className="fab fa-facebook-f text-xs text-green-300"></i></a>
               <a href="https://twitter.com/growsmart" target="_blank" rel="noopener noreferrer" aria-label="Twitter" className="w-8 h-8 bg-green-800/50 rounded-full flex items-center justify-center hover:bg-green-600 transition-colors"><i className="fab fa-twitter text-xs text-green-300"></i></a>
               <a href="https://instagram.com/growsmart" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="w-8 h-8 bg-green-800/50 rounded-full flex items-center justify-center hover:bg-green-600 transition-colors"><i className="fab fa-instagram text-xs text-green-300"></i></a>
@@ -72,8 +72,8 @@ const Footer: React.FC = () => {
             </div>
           </div>
           <div>
-            <h3 className="text-white font-bold mb-4">About</h3>
-            <p className="text-sm text-green-300/70 leading-relaxed mb-4">
+            <h3 className="text-white font-bold text-base mb-5">About</h3>
+            <p className="text-sm text-green-300/70 leading-relaxed mb-5">
               GROWSMART bridges the gap between technology and Indian agriculture. Free, AI-powered, available in 12+ languages.
             </p>
             <div className="flex flex-wrap gap-2">

@@ -149,7 +149,10 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, cartCount }) => {
 
           {/* Desktop Right Side */}
           <div className="hidden lg:flex items-center gap-3">
-            <div id="google_translate_element"></div>
+            <div className="translate-pill">
+              <i className="fas fa-globe text-green-600 text-xs" aria-hidden="true"></i>
+              <div id="google_translate_element"></div>
+            </div>
             <NavLink
               to={ROUTES.CART}
               aria-label="View cart"
@@ -227,7 +230,7 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, cartCount }) => {
               </button>
             ))}
             <div className="border-t border-gray-200 mt-2 pt-3">
-              <div id="google_translate_element_mobile" className="mb-3 px-4"></div>
+              <div id="google_translate_element_mobile" className="mobile-translate-widget mb-3 px-4"></div>
               {user ? (
                 <div className="space-y-2">
                   <p className="px-4 text-sm text-gray-500">Hi, {user.name}</p>

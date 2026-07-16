@@ -62,3 +62,103 @@ html {
   scroll-behavior: smooth;
   scroll-padding-top: 70px;
 }
+
+/* Google Translate Widget Overrides */
+.translate-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 9999px;
+  padding: 4px 12px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.translate-pill:hover {
+  background: #dcfce7;
+  border-color: #86efac;
+}
+
+.translate-pill .goog-te-gadget {
+  font-family: 'Poppins', sans-serif !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+}
+
+.translate-pill .goog-te-gadget > span {
+  display: none !important;
+}
+
+.translate-pill .goog-te-gadget .goog-te-combo {
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  border: none;
+  color: #15803d;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 2px 4px;
+  outline: none;
+}
+
+.translate-pill .goog-te-gadget .goog-te-combo option {
+  background: #ffffff;
+  color: #1f2937;
+  padding: 4px 8px;
+}
+
+.translate-pill .goog-te-banner-frame {
+  display: none !important;
+}
+
+body {
+  top: 0 !important;
+}
+
+.translate-pill .VIpgJd-ZVi9od-aZ2wEe-wOHMyf,
+.translate-pill .VIpgJd-ZVi9od-og3bYf,
+.translate-pill .skiptranslate {
+  display: none !important;
+}
+
+/* Mobile translate widget */
+.mobile-translate-widget .goog-te-gadget {
+  font-family: 'Poppins', sans-serif !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+}
+
+.mobile-translate-widget .goog-te-gadget > span:first-child {
+  display: none !important;
+}
+
+.mobile-translate-widget .goog-te-gadget .goog-te-combo {
+  appearance: none;
+  -webkit-appearance: none;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 0.5rem;
+  color: #15803d;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 10px 14px;
+  width: 100%;
+  outline: none;
+}
+
+.mobile-translate-widget .goog-te-gadget .goog-te-combo option {
+  background: #ffffff;
+  color: #1f2937;
+}
+
+.mobile-translate-widget .VIpgJd-ZVi9od-aZ2wEe-wOHMyf,
+.mobile-translate-widget .VIpgJd-ZVi9od-og3bYf,
+.mobile-translate-widget .skiptranslate {
+  display: none !important;
+}

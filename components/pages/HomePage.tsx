@@ -32,18 +32,18 @@ const HomePage: React.FC = () => {
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1920&q=80')", backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
         </div>
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-6">
+            <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-8">
               <i className="fas fa-leaf text-green-300 text-sm"></i>
               <span className="text-sm font-medium text-green-100">Eco-Friendly Smart Farming</span>
             </div>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-8">
               Everything a Farmer Needs,
               <br />
               <span className="text-green-300">One Smart Platform</span>
             </h1>
-            <p className="text-lg text-green-100/80 mb-8 max-w-xl">
+            <p className="text-lg sm:text-xl text-white/80 mb-10 max-w-xl leading-relaxed">
               Weather intelligence, crop disease detection, live mandi prices, and government schemes — all in one place, completely free.
             </p>
             <div className="flex flex-wrap gap-4">
@@ -57,10 +57,10 @@ const HomePage: React.FC = () => {
                 <i className="fas fa-play-circle"></i> Learn More
               </a>
             </div>
-            <div className="mt-12 flex flex-wrap gap-6 sm:gap-10">
-              <div><p className="text-2xl sm:text-3xl font-bold text-green-300">10K+</p><p className="text-xs sm:text-sm text-green-100/70">Farmers</p></div>
-              <div><p className="text-2xl sm:text-3xl font-bold text-green-300">50+</p><p className="text-xs sm:text-sm text-green-100/70">Districts</p></div>
-              <div><p className="text-2xl sm:text-3xl font-bold text-green-300">100%</p><p className="text-xs sm:text-sm text-green-100/70">Free</p></div>
+            <div className="mt-14 flex flex-wrap gap-6 sm:gap-10">
+              <div><p className="text-2xl sm:text-3xl font-bold text-green-300">10K+</p><p className="text-xs sm:text-sm text-white/60">Farmers</p></div>
+              <div><p className="text-2xl sm:text-3xl font-bold text-green-300">50+</p><p className="text-xs sm:text-sm text-white/60">Districts</p></div>
+              <div><p className="text-2xl sm:text-3xl font-bold text-green-300">100%</p><p className="text-xs sm:text-sm text-white/60">Free</p></div>
             </div>
           </div>
         </div>
@@ -79,14 +79,14 @@ const HomePage: React.FC = () => {
               <button
                 key={f.title}
                 onClick={() => scrollToSection(f.sectionId)}
-                className="group bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-xl hover:border-green-200 transition-all duration-300 hover:-translate-y-1 text-left"
+                className="group bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-xl hover:border-green-200 transition-all duration-300 hover:-translate-y-1 text-left flex flex-col"
               >
                 <div className={`w-14 h-14 ${f.bgColor} rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
                   <i className={`${f.icon} ${f.textColor} text-2xl`}></i>
                 </div>
                 <h3 className="text-lg font-bold text-gray-800 mb-2">{f.title}</h3>
-                <p className="text-sm text-gray-500 mb-4 leading-relaxed">{f.desc}</p>
-                <span className={`inline-flex items-center gap-1 text-sm font-semibold ${f.textColor}`}>
+                <p className="text-sm text-gray-500 mb-4 leading-relaxed flex-1">{f.desc}</p>
+                <span className={`inline-flex items-center gap-1 text-sm font-semibold ${f.textColor} group-hover:underline mt-auto`}>
                   Explore <i className="fas fa-arrow-right text-xs group-hover:translate-x-1 transition-transform"></i>
                 </span>
               </button>
