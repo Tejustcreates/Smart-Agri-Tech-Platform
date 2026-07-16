@@ -7,7 +7,7 @@ import HomePage from './components/pages/HomePage';
 import Weather from './components/Weather';
 import CropRecommender from './components/CropRecommender';
 import DiseaseDetection from './components/DiseaseDetection';
-import News from './components/News';
+import FarmerNewsSection from './components/farmer-news/FarmerNewsSection';
 import Schemes from './components/Schemes';
 import Mandi from './components/Mandi';
 import EquipmentRecommender from './components/EquipmentRecommender';
@@ -158,7 +158,7 @@ const AppContent: React.FC = () => {
               <Weather />
               <CropRecommender />
               <DiseaseDetection />
-              <News />
+              <FarmerNewsSection />
               <Schemes />
               <Mandi onAddToCart={addToCart} />
               <EquipmentRecommender onAddToCart={addToCart} />
