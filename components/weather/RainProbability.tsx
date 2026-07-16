@@ -27,7 +27,7 @@ const RainProbability: React.FC<RainProbabilityProps> = ({ prediction }) => {
           <div>
             <div className="flex items-center gap-2 mb-1">
               <CloudRain size={18} />
-              <h3 className="text-sm font-semibold uppercase tracking-wider opacity-90">ML Rain Prediction</h3>
+              <h3 className="text-sm font-semibold uppercase tracking-wider opacity-90">Rain Prediction</h3>
             </div>
             <p className="text-2xl font-bold">
               {prediction.willRain ? 'Rain Expected' : 'Clear Skies'}

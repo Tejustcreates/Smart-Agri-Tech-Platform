@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Brain, ShieldCheck, Leaf, Bug } from 'lucide-react';
+import { Leaf, Bug } from 'lucide-react';
 import { CropRecommendation, DiseaseRiskAssessment } from '../../types/weather';
 import AIConfidenceMeter from './AIConfidenceMeter';
 
@@ -22,7 +22,7 @@ const riskColor = {
   low: 'text-green-600',
 };
 
-const MLPredictions: React.FC<MLPredictionsProps> = ({ crops, diseases, rainConfidence }) => {
+const CropAndDiseasePanel: React.FC<MLPredictionsProps> = ({ crops, diseases }) => {
   return (
     <div className="space-y-4">
       {/* Crop Recommendations */}
@@ -98,4 +98,4 @@ const MLPredictions: React.FC<MLPredictionsProps> = ({ crops, diseases, rainConf
   );
 };
 
-export default MLPredictions;
+export default CropAndDiseasePanel;
