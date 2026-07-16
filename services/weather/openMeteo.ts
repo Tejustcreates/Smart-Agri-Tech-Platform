@@ -4,7 +4,7 @@ const BASE_URL = 'https://api.open-meteo.com/v1/forecast';
 const GEO_URL = 'https://geocoding-api.open-meteo.com/v1/search';
 
 export async function searchLocations(query: string): Promise<GeoLocation[]> {
-  const res = await fetch(`${GEO_URL}?name=${encodeURIComponent(query)}&count=5&language=en&format=json`);
+  const res = await fetch(`${GEO_URL}?name=${encodeURIComponent(query)}&count=8&language=en&format=json`);
   const data = await res.json();
   if (!data.results) return [];
   return data.results.map((r: any) => ({
@@ -15,6 +15,20 @@ export async function searchLocations(query: string): Promise<GeoLocation[]> {
     admin1: r.admin1 || '',
   }));
 }
+
+export const INDIAN_CITIES: GeoLocation[] = [
+  { name: 'Pune', latitude: 18.5204, longitude: 73.8567, country: 'India', admin1: 'Maharashtra' },
+  { name: 'Nashik', latitude: 19.9975, longitude: 73.7898, country: 'India', admin1: 'Maharashtra' },
+  { name: 'Kolhapur', latitude: 16.7050, longitude: 74.2433, country: 'India', admin1: 'Maharashtra' },
+  { name: 'Nagpur', latitude: 21.1458, longitude: 79.0882, country: 'India', admin1: 'Maharashtra' },
+  { name: 'Satara', latitude: 17.6808, longitude: 73.9885, country: 'India', admin1: 'Maharashtra' },
+  { name: 'Ahmednagar', latitude: 19.0948, longitude: 74.7480, country: 'India', admin1: 'Maharashtra' },
+  { name: 'Aurangabad', latitude: 19.8762, longitude: 75.3433, country: 'India', admin1: 'Maharashtra' },
+  { name: 'Sangli', latitude: 16.8524, longitude: 74.5636, country: 'India', admin1: 'Maharashtra' },
+  { name: 'Solapur', latitude: 17.6599, longitude: 75.9064, country: 'India', admin1: 'Maharashtra' },
+  { name: 'Indore', latitude: 22.7196, longitude: 75.8577, country: 'India', admin1: 'Madhya Pradesh' },
+  { name: 'Ludhiana', latitude: 30.9010, longitude: 75.8573, country: 'India', admin1: 'Punjab' },
+];
 
 function weatherCodeToDescription(code: number): string {
   const map: Record<number, string> = {
@@ -134,15 +148,4 @@ export async function fetchWeatherData(latitude: number, longitude: number): Pro
   };
 }
 
-export const INDIAN_CITIES: GeoLocation[] = [
-  { name: 'Pune', latitude: 18.5204, longitude: 73.8567, country: 'India', admin1: 'Maharashtra' },
-  { name: 'Delhi', latitude: 28.7041, longitude: 77.1025, country: 'India', admin1: 'Delhi' },
-  { name: 'Mumbai', latitude: 19.0760, longitude: 72.8777, country: 'India', admin1: 'Maharashtra' },
-  { name: 'Bangalore', latitude: 12.9716, longitude: 77.5946, country: 'India', admin1: 'Karnataka' },
-  { name: 'Chennai', latitude: 13.0827, longitude: 80.2707, country: 'India', admin1: 'Tamil Nadu' },
-  { name: 'Hyderabad', latitude: 17.3850, longitude: 78.4867, country: 'India', admin1: 'Telangana' },
-  { name: 'Kolkata', latitude: 22.5726, longitude: 88.3639, country: 'India', admin1: 'West Bengal' },
-  { name: 'Jaipur', latitude: 26.9124, longitude: 75.7873, country: 'India', admin1: 'Rajasthan' },
-  { name: 'Lucknow', latitude: 26.8467, longitude: 80.9462, country: 'India', admin1: 'Uttar Pradesh' },
-  { name: 'Nagpur', latitude: 21.1458, longitude: 79.0882, country: 'India', admin1: 'Maharashtra' },
-];
+

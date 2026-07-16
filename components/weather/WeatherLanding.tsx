@@ -1,27 +1,28 @@
 import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, MapPin, Locate, ArrowRight } from 'lucide-react';
+import { Search, MapPin, Locate, ArrowRight, Loader2 } from 'lucide-react';
 import { INDIAN_CITIES } from '../../services/weather/openMeteo';
 import { GeoLocation } from '../../types/weather';
 
 interface WeatherLandingProps {
   onSelectLocation: (lat: number, lon: number, name: string) => void;
   searchResults: GeoLocation[];
-  onSearch: (q: string) => Promise<void>;
-  locating: boolean;
+  onSearch: (q: string) => void;
+  searching: boolean;
 }
 
-const popularCities = INDIAN_CITIES.slice(0, 8);
+const popularCities = INDIAN_CITIES;
 
-const WeatherLanding: React.FC<WeatherLandingProps> = ({ onSelectLocation, searchResults, onSearch, locating }) => {
+const WeatherLanding: React.FC<WeatherLandingProps> = ({ onSelectLocation, searchResults, onSearch, searching }) => {
   const [query, setQuery] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
+  const [focused, setFocused] = useState(false);
 
-  const handleSearch = useCallback(async (value: string) => {
+  const handleSearch = useCallback((value: string) => {
     setQuery(value);
     if (value.length >= 2) {
       setShowDropdown(true);
-      await onSearch(value);
+      onSearch(value);
     } else {
       setShowDropdown(false);
     }
@@ -42,16 +43,16 @@ const WeatherLanding: React.FC<WeatherLandingProps> = ({ onSelectLocation, searc
   };
 
   return (
-    <div className="flex flex-col items-center justify-center py-8 sm:py-16">
-      {/* Weather Illustration */}
+    <div className="flex flex-col items-center justify-center py-10 sm:py-20">
+      {/* Weather Illustration — Breathing */}
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.6, ease: 'easeOut' }}
-        className="mb-6 sm:mb-8"
+        className="mb-8 sm:mb-10"
       >
-        <div className="w-36 h-36 sm:w-48 sm:h-48 rounded-full bg-gradient-to-br from-sky-200 via-blue-100 to-green-100 flex items-center justify-center shadow-lg shadow-blue-100/50 mx-auto">
-          <span className="text-6xl sm:text-7xl select-none">🌤️</span>
+        <div className="w-32 h-32 sm:w-44 sm:h-44 rounded-full bg-gradient-to-br from-sky-200 via-blue-100 to-green-100 flex items-center justify-center shadow-lg shadow-blue-100/50 mx-auto animate-breathe">
+          <span className="text-5xl sm:text-6xl select-none">🌤️</span>
         </div>
       </motion.div>
 
@@ -79,24 +80,33 @@ const WeatherLanding: React.FC<WeatherLandingProps> = ({ onSelectLocation, searc
       >
         <div className="flex items-center gap-3">
           <div className="flex-1 relative">
-            <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+            <div className="absolute left-4 top-1/2 -translate-y-1/2">
+              {searching && query.length >= 2 ? (
+                <Loader2 size={22} className="text-green-500 animate-spin" />
+              ) : (
+                <Search size={22} className="text-gray-400" />
+              )}
+            </div>
             <input
               type="text"
               value={query}
               onChange={(e) => handleSearch(e.target.value)}
-              onFocus={() => query.length >= 2 && setShowDropdown(true)}
-              onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
-              placeholder="Search your village, city or district..."
-              className="w-full pl-12 pr-4 py-4 sm:py-4.5 bg-white rounded-2xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all shadow-md hover:shadow-lg placeholder:text-gray-400"
+              onFocus={() => { setFocused(true); if (query.length >= 2) setShowDropdown(true); }}
+              onBlur={() => { setFocused(false); setTimeout(() => setShowDropdown(false), 250); }}
+              placeholder="Search Village, Taluka, District or City"
+              className={`w-full pl-12 pr-4 py-4.5 sm:py-5 bg-white rounded-2xl border text-base sm:text-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all shadow-md placeholder:text-gray-400 ${
+                focused
+                  ? 'border-green-400 shadow-lg ring-2 ring-green-100'
+                  : 'border-gray-200 hover:shadow-lg hover:border-gray-300'
+              }`}
             />
           </div>
           <button
             onClick={handleGeolocate}
-            disabled={locating}
-            className="p-4 bg-white rounded-2xl border border-gray-200 hover:bg-green-50 hover:border-green-300 transition-all shadow-md hover:shadow-lg flex-shrink-0"
+            className="p-4 sm:p-4.5 bg-white rounded-2xl border border-gray-200 hover:bg-green-50 hover:border-green-300 transition-all shadow-md hover:shadow-lg flex-shrink-0 active:scale-95"
             title="Use my current location"
           >
-            <Locate size={20} className={locating ? 'text-gray-400 animate-pulse' : 'text-green-600'} />
+            <Locate size={22} className="text-green-600" />
           </button>
         </div>
 
@@ -104,25 +114,40 @@ const WeatherLanding: React.FC<WeatherLandingProps> = ({ onSelectLocation, searc
         <AnimatePresence>
           {showDropdown && searchResults.length > 0 && (
             <motion.div
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
+              initial={{ opacity: 0, y: -8, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -8, scale: 0.98 }}
+              transition={{ duration: 0.2 }}
               className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50"
             >
-              {searchResults.slice(0, 5).map((loc, i) => (
+              {searchResults.slice(0, 6).map((loc, i) => (
                 <button
-                  key={`${loc.name}-${i}`}
+                  key={`${loc.name}-${loc.latitude}-${i}`}
                   onMouseDown={() => handleSelect(loc)}
-                  className="w-full flex items-center gap-3 px-5 py-4 hover:bg-green-50 transition-colors text-left border-b border-gray-50 last:border-0"
+                  className="w-full flex items-center gap-3 px-5 py-4 hover:bg-green-50 active:bg-green-100 transition-colors text-left border-b border-gray-50 last:border-0"
                 >
                   <MapPin size={18} className="text-gray-400 flex-shrink-0" />
                   <div className="flex-1 min-w-0">
                     <p className="text-base font-medium text-gray-800">{loc.name}</p>
-                    <p className="text-sm text-gray-500">{loc.admin1}, {loc.country}</p>
+                    <p className="text-sm text-gray-500">{loc.admin1 && `${loc.admin1}, `}{loc.country}</p>
                   </div>
                   <ArrowRight size={16} className="text-gray-300 flex-shrink-0" />
                 </button>
               ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* No results hint */}
+        <AnimatePresence>
+          {showDropdown && !searching && query.length >= 2 && searchResults.length === 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-gray-100 p-5 text-center z-50"
+            >
+              <p className="text-sm text-gray-500">No locations found. Try a different spelling.</p>
             </motion.div>
           )}
         </AnimatePresence>
@@ -149,7 +174,7 @@ const WeatherLanding: React.FC<WeatherLandingProps> = ({ onSelectLocation, searc
           <button
             key={city.name}
             onClick={() => onSelectLocation(city.latitude, city.longitude, `${city.name}, ${city.admin1 || city.country}`)}
-            className="px-5 py-2.5 rounded-full text-sm font-medium bg-white text-gray-600 border border-gray-200 hover:border-green-400 hover:text-green-700 hover:bg-green-50 transition-all shadow-sm hover:shadow-md"
+            className="px-5 py-2.5 rounded-full text-sm font-medium bg-white text-gray-600 border border-gray-200 hover:border-green-400 hover:text-green-700 hover:bg-green-50 transition-all shadow-sm hover:shadow-md active:scale-95"
           >
             {city.name}
           </button>

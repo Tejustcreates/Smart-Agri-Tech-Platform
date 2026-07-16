@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, MapPin, Locate, ArrowLeft, Loader2 } from 'lucide-react';
 import { useWeatherData } from '../../hooks/useWeatherData';
+import { useLocationSearch } from '../../hooks/useLocationSearch';
 import { useMLPredictions } from '../../hooks/useMLPredictions';
 import { GeoLocation } from '../../types/weather';
 import CurrentWeatherCard from './CurrentWeatherCard';
@@ -28,7 +29,8 @@ const fadeUp = {
 };
 
 const WeatherDashboard: React.FC = () => {
-  const { weatherData, loading, error, searchResults, fetchWeather, searchCity } = useWeatherData();
+  const { weatherData, loading, error, fetchWeather } = useWeatherData();
+  const { searchResults, searching, search, clearResults } = useLocationSearch();
   const mlPredictions = useMLPredictions(weatherData);
   const [query, setQuery] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
@@ -36,28 +38,30 @@ const WeatherDashboard: React.FC = () => {
   const [hasSearched, setHasSearched] = useState(false);
   const [dashboardLoading, setDashboardLoading] = useState(false);
 
-  const handleSearch = useCallback(async (value: string) => {
+  const handleSearch = useCallback((value: string) => {
     setQuery(value);
     if (value.length >= 2) {
       setShowDropdown(true);
-      await searchCity(value);
+      search(value);
     } else {
       setShowDropdown(false);
     }
-  }, [searchCity]);
+  }, [search]);
 
   const handleLandingSelect = useCallback(async (lat: number, lon: number, name: string) => {
     setDashboardLoading(true);
     setLocationName(name);
     setHasSearched(true);
     setShowDropdown(false);
+    clearResults();
     await fetchWeather(lat, lon);
     setDashboardLoading(false);
-  }, [fetchWeather]);
+  }, [fetchWeather, clearResults]);
 
   const handleDashboardSelect = async (loc: GeoLocation) => {
     setQuery('');
     setShowDropdown(false);
+    clearResults();
     setDashboardLoading(true);
     setLocationName(`${loc.name}, ${loc.admin1 || loc.country}`);
     await fetchWeather(loc.latitude, loc.longitude);
@@ -79,6 +83,8 @@ const WeatherDashboard: React.FC = () => {
 
   const handleBack = () => {
     setHasSearched(false);
+    setQuery('');
+    clearResults();
   };
 
   // ─── Landing State ───────────────────────────────────────────
@@ -87,8 +93,8 @@ const WeatherDashboard: React.FC = () => {
       <WeatherLanding
         onSelectLocation={handleLandingSelect}
         searchResults={searchResults}
-        onSearch={handleSearch}
-        locating={false}
+        onSearch={search}
+        searching={searching}
       />
     );
   }
@@ -129,30 +135,36 @@ const WeatherDashboard: React.FC = () => {
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex items-center gap-3"
+        className="flex items-center gap-3 relative"
       >
         <button
           onClick={handleBack}
-          className="p-3 bg-white rounded-xl border border-gray-200 hover:bg-green-50 hover:border-green-300 transition-all shadow-sm flex-shrink-0"
+          className="p-3 sm:p-3.5 bg-white rounded-xl border border-gray-200 hover:bg-green-50 hover:border-green-300 transition-all shadow-sm flex-shrink-0 active:scale-95"
           title="Back to search"
         >
           <ArrowLeft size={18} className="text-gray-600" />
         </button>
         <div className="flex-1 relative">
-          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+          <div className="absolute left-3.5 top-1/2 -translate-y-1/2">
+            {searching && query.length >= 2 ? (
+              <Loader2 size={18} className="text-green-500 animate-spin" />
+            ) : (
+              <Search size={18} className="text-gray-400" />
+            )}
+          </div>
           <input
             type="text"
             value={query}
             onChange={(e) => handleSearch(e.target.value)}
             onFocus={() => query.length >= 2 && setShowDropdown(true)}
-            onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+            onBlur={() => setTimeout(() => setShowDropdown(false), 250)}
             placeholder="Search another location..."
-            className="w-full pl-10 pr-4 py-3 bg-white rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all shadow-sm"
+            className="w-full pl-10 pr-4 py-3 sm:py-3.5 bg-white rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all shadow-sm"
           />
         </div>
         <button
           onClick={handleGeolocateDashboard}
-          className="p-3 bg-white rounded-xl border border-gray-200 hover:bg-green-50 hover:border-green-300 transition-all shadow-sm"
+          className="p-3 sm:p-3.5 bg-white rounded-xl border border-gray-200 hover:bg-green-50 hover:border-green-300 transition-all shadow-sm active:scale-95 flex-shrink-0"
           title="Use my location"
         >
           <Locate size={18} className="text-green-600" />
@@ -169,14 +181,14 @@ const WeatherDashboard: React.FC = () => {
             >
               {searchResults.slice(0, 5).map((loc, i) => (
                 <button
-                  key={`${loc.name}-${i}`}
+                  key={`${loc.name}-${loc.latitude}-${i}`}
                   onMouseDown={() => handleDashboardSelect(loc)}
                   className="w-full flex items-center gap-3 px-4 py-3 hover:bg-green-50 transition-colors text-left"
                 >
                   <MapPin size={14} className="text-gray-400 flex-shrink-0" />
                   <div>
                     <p className="text-sm font-medium text-gray-800">{loc.name}</p>
-                    <p className="text-xs text-gray-500">{loc.admin1}, {loc.country}</p>
+                    <p className="text-xs text-gray-500">{loc.admin1 && `${loc.admin1}, `}{loc.country}</p>
                   </div>
                 </button>
               ))}
@@ -219,19 +231,16 @@ const WeatherDashboard: React.FC = () => {
         animate="visible"
         className="space-y-4"
       >
-        {/* Alerts */}
         {mlPredictions.alerts.length > 0 && (
           <motion.div variants={fadeUp}>
             <WeatherAlerts alerts={mlPredictions.alerts} />
           </motion.div>
         )}
 
-        {/* Today's Farming Advice */}
         <motion.div variants={fadeUp}>
           <FarmingAdvice advisory={mlPredictions.advisory} />
         </motion.div>
 
-        {/* Current Weather + Rain + Health */}
         <motion.div variants={fadeUp} className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="lg:col-span-2">
             <CurrentWeatherCard data={weatherData.current} locationName={locationName} />
@@ -242,12 +251,10 @@ const WeatherDashboard: React.FC = () => {
           </div>
         </motion.div>
 
-        {/* 5-Day Forecast */}
         <motion.div variants={fadeUp}>
           <ForecastCards forecasts={weatherData.daily} />
         </motion.div>
 
-        {/* Crop Recommendations */}
         <motion.div variants={fadeUp}>
           <CropAndDiseasePanel
             crops={mlPredictions.cropRecommendations}
@@ -256,7 +263,6 @@ const WeatherDashboard: React.FC = () => {
           />
         </motion.div>
 
-        {/* Charts */}
         <motion.div variants={fadeUp}>
           <WeatherCharts hourly={weatherData.hourly} />
         </motion.div>
