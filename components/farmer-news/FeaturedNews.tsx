@@ -20,12 +20,18 @@ const FeaturedNews: React.FC<FeaturedNewsProps> = ({ article }) => {
   const timeAgo = getTimeAgo(article.pubDate);
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-6 border border-gray-100 hover:shadow-xl transition-shadow duration-300">
+    <div className="bg-white rounded-2xl shadow-sm overflow-hidden mb-6 border border-gray-100 hover:shadow-md transition-shadow duration-300">
       <div className="md:flex">
         <div className="md:w-2/5 h-56 md:h-auto bg-gradient-to-br from-green-100 to-emerald-50 flex items-center justify-center relative overflow-hidden">
           {article.image_url ? (
-            <img src={article.image_url} alt="" className="w-full h-full object-cover" />
-          ) : (
+            <img
+              src={article.image_url}
+              alt=""
+              className="w-full h-full object-cover"
+              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+            />
+          ) : null}
+          {(!article.image_url) && (
             <span className="text-7xl opacity-60">📰</span>
           )}
           <div className="absolute top-4 left-4">

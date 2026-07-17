@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { TrendingUp, ChevronRight } from 'lucide-react';
+import { TrendingUp, ChevronRight, Landmark, FileText } from 'lucide-react';
 import { Scheme } from '../../types/scheme';
 
 interface PopularSchemesProps {
@@ -25,22 +25,29 @@ const PopularSchemes: React.FC<PopularSchemesProps> = ({ schemes, onSelect }) =>
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.05 }}
             onClick={() => onSelect(scheme)}
-            className="text-left bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 border border-green-100 hover:border-green-300 hover:shadow-md transition-all group"
+            className="text-left bg-white rounded-xl p-4 border border-gray-100 hover:border-green-300 hover:shadow-md transition-all group"
           >
-            <div className="flex items-start justify-between gap-2 mb-2">
-              <h4 className="text-sm font-bold text-gray-800 leading-snug group-hover:text-green-700 transition-colors line-clamp-2">
-                {scheme.schemeName}
-              </h4>
-              <ChevronRight size={16} className="text-green-400 flex-shrink-0 mt-0.5 group-hover:translate-x-0.5 transition-transform" />
-            </div>
-            <p className="text-xs text-gray-500 line-clamp-1 mb-2">{scheme.ministry}</p>
-            <div className="flex items-center gap-2">
-              <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                scheme.level === 'Central' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'
-              }`}>
-                {scheme.level}
-              </span>
-              <span className="text-[10px] text-gray-400">{scheme.category}</span>
+            <div className="flex items-start gap-3">
+              <div className="w-9 h-9 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                <Landmark size={16} className="text-green-600" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h4 className="text-sm font-bold text-gray-800 leading-snug group-hover:text-green-700 transition-colors line-clamp-2 mb-1">
+                  {scheme.schemeName}
+                </h4>
+                <p className="text-xs text-gray-500 line-clamp-1 mb-2">{scheme.ministry}</p>
+                <div className="flex items-center gap-2">
+                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                    scheme.level === 'Central' ? 'bg-blue-50 text-blue-700' : 'bg-purple-50 text-purple-700'
+                  }`}>
+                    {scheme.level}
+                  </span>
+                  <span className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full text-[10px] font-semibold">
+                    {scheme.category}
+                  </span>
+                </div>
+              </div>
+              <ChevronRight size={16} className="text-gray-300 flex-shrink-0 mt-1 group-hover:text-green-500 group-hover:translate-x-0.5 transition-all" />
             </div>
           </motion.button>
         ))}

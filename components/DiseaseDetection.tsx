@@ -162,7 +162,18 @@ const SYMPTOM_CATEGORIES = [
   },
 ];
 
-const CROP_OPTIONS = ['Wheat', 'Rice', 'Cotton', 'Tomato', 'Potato', 'Onion', 'Maize', 'Sugarcane', 'Soybean', 'Other'];
+const CROP_OPTIONS = [
+  { name: 'Wheat', icon: '🌾' },
+  { name: 'Rice', icon: '🍚' },
+  { name: 'Cotton', icon: '☁️' },
+  { name: 'Tomato', icon: '🍅' },
+  { name: 'Potato', icon: '🥔' },
+  { name: 'Onion', icon: '🧅' },
+  { name: 'Maize', icon: '🌽' },
+  { name: 'Sugarcane', icon: '🎋' },
+  { name: 'Soybean', icon: '🫘' },
+  { name: 'Other', icon: '🌿' },
+];
 
 const STEPS = [
   { num: 1, label: 'Select Crop', shortLabel: 'Crop' },
@@ -220,15 +231,16 @@ const CropSelector: React.FC<{ selected: string; onSelect: (c: string) => void }
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
       {CROP_OPTIONS.map((crop) => (
         <button
-          key={crop}
-          onClick={() => onSelect(crop)}
-          className={`px-4 py-3 rounded-xl font-medium text-sm transition-all duration-200 ${
-            selected === crop
-              ? 'bg-green-600 text-white shadow-md shadow-green-200'
-              : 'bg-gray-50 text-gray-700 border border-gray-200 hover:border-green-300 hover:bg-green-50'
+          key={crop.name}
+          onClick={() => onSelect(crop.name)}
+          className={`flex flex-col items-center gap-1.5 px-4 py-4 rounded-xl font-medium text-sm transition-all duration-200 ${
+            selected === crop.name
+              ? 'bg-green-600 text-white shadow-md shadow-green-200 ring-2 ring-green-400'
+              : 'bg-gray-50 text-gray-700 border border-gray-200 hover:border-green-300 hover:bg-green-50 hover:shadow-sm'
           }`}
         >
-          {crop}
+          <span className="text-2xl">{crop.icon}</span>
+          <span>{crop.name}</span>
         </button>
       ))}
     </div>
@@ -329,7 +341,7 @@ const ResultReport: React.FC<{
 }> = ({ disease, confidence, matchedSymptoms }) => {
   if (!disease) {
     return (
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-2xl shadow-lg p-10 text-center">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-2xl shadow-sm p-10 text-center">
         <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5">
           <span className="text-4xl">✅</span>
         </div>
@@ -348,7 +360,7 @@ const ResultReport: React.FC<{
   };
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-2xl shadow-lg overflow-hidden">
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-2xl shadow-sm overflow-hidden">
       {/* Header */}
       <div className="bg-gradient-to-r from-red-500 to-red-600 p-6 text-white">
         <div className="flex items-center justify-between flex-wrap gap-3">
@@ -617,7 +629,7 @@ const DiseaseDetection: React.FC = () => {
                 <button
                   onClick={handleNext}
                   disabled={!canProceed}
-                  className="py-3.5 px-10 bg-green-600 text-white rounded-xl font-semibold hover:bg-green-700 disabled:bg-green-300 disabled:cursor-not-allowed transition-all text-sm shadow-sm shadow-green-200"
+                  className="py-3.5 px-10 bg-green-700 text-white rounded-xl font-semibold hover:bg-green-800 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed transition-all text-sm shadow-md shadow-green-200/50"
                 >
                   {currentStep === 2 ? 'Analyze Crop →' : 'Next Step →'}
                 </button>
@@ -645,7 +657,7 @@ const DiseaseDetection: React.FC = () => {
         </div>
 
         {/* Crop Care Tips */}
-        <div className="max-w-4xl mx-auto mt-12 bg-white rounded-2xl shadow-lg p-6 md:p-8">
+        <div className="max-w-4xl mx-auto mt-12 bg-white rounded-2xl shadow-sm p-6 md:p-8">
           <h3 className="text-lg font-bold text-gray-800 mb-5 flex items-center gap-2">
             <span className="text-lg">💚</span> Crop Care Tips
           </h3>

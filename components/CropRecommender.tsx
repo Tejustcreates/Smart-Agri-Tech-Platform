@@ -186,9 +186,9 @@ const CropRecommender: React.FC = () => {
           </div>
 
           {/* Right: Results */}
-          <div>
+          <div className="flex flex-col">
             {result ? (
-              <div className="space-y-4">
+              <div className="space-y-4 flex-1">
                 <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
                   🏆 Top Recommended Crops
                 </h3>
@@ -209,7 +209,7 @@ const CropRecommender: React.FC = () => {
                 </div>
               </div>
             ) : (
-              <div className="bg-white rounded-2xl shadow-lg p-12 text-center border border-gray-100">
+              <div className="bg-white rounded-2xl shadow-sm p-12 text-center border border-gray-100 flex-1 flex flex-col items-center justify-center">
                 <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
                   <span className="text-4xl">🌱</span>
                 </div>

@@ -37,8 +37,14 @@ const NewsCard: React.FC<NewsCardProps> = ({ article, index }) => {
       {/* Image */}
       <div className="h-44 bg-gradient-to-br from-green-50 to-emerald-50 relative overflow-hidden">
         {article.image_url ? (
-          <img src={article.image_url} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-        ) : (
+          <img
+            src={article.image_url}
+            alt=""
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+          />
+        ) : null}
+        {(!article.image_url) && (
           <div className="w-full h-full flex items-center justify-center">
             <span className="text-5xl opacity-40">📰</span>
           </div>

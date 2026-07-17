@@ -198,6 +198,9 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ filters, onFiltersChange, onS
             onChange={(e) => update('maxBudget', Number(e.target.value))}
             className="w-full accent-green-600"
           />
+          <p className="text-[10px] text-gray-400 mt-1">
+            {filters.maxBudget === 0 ? '↔ Drag to set a budget limit' : 'Drag left to clear budget limit'}
+          </p>
         </div>
       </div>
 

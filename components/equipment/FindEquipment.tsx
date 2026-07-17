@@ -67,9 +67,30 @@ const FindEquipment: React.FC = () => {
           <p className="text-gray-400 text-xs mt-1">Try increasing the radius or changing the category.</p>
         </div>
       ) : (
-        <div className="text-center py-16">
-          <Search size={40} className="text-gray-300 mx-auto mb-3" />
-          <p className="text-gray-500 text-sm">Allow GPS access or pick your location on the map, then search.</p>
+        <div className="text-center py-20 flex flex-col items-center justify-center">
+          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5">
+            <Search size={32} className="text-green-500" />
+          </div>
+          <h3 className="text-lg font-bold text-gray-700 mb-2">Find Equipment Near You</h3>
+          <p className="text-gray-500 text-sm max-w-md mb-6">
+            Rent tractors, harvesters, and other farming tools directly from nearby farmers in your area.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center gap-4 text-sm text-gray-500">
+            <div className="flex items-center gap-2">
+              <span className="w-6 h-6 bg-green-100 text-green-700 rounded-full flex items-center justify-center text-xs font-bold">1</span>
+              Allow GPS or pick location
+            </div>
+            <span className="hidden sm:block text-gray-300">→</span>
+            <div className="flex items-center gap-2">
+              <span className="w-6 h-6 bg-green-100 text-green-700 rounded-full flex items-center justify-center text-xs font-bold">2</span>
+              Pick category & radius
+            </div>
+            <span className="hidden sm:block text-gray-300">→</span>
+            <div className="flex items-center gap-2">
+              <span className="w-6 h-6 bg-green-100 text-green-700 rounded-full flex items-center justify-center text-xs font-bold">3</span>
+              Hit Search
+            </div>
+          </div>
         </div>
       )}
 
