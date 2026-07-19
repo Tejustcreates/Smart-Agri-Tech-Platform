@@ -4,13 +4,13 @@ import { toast } from 'react-hot-toast';
 import { ROUTES } from '../../constants';
 
 const FEATURES = [
-  { title: 'Weather Intelligence', desc: 'Real-time forecasts with ML rain predictions', icon: 'fas fa-cloud-sun', sectionId: 'weather', textColor: 'text-blue-600', bgColor: 'bg-blue-50' },
-  { title: 'Crop Advisor', desc: 'AI recommends best crops for your soil & season', icon: 'fas fa-seedling', sectionId: 'crop-recommender', textColor: 'text-green-600', bgColor: 'bg-green-50' },
-  { title: 'Disease Detection', desc: 'Identify crop diseases and get treatment advice', icon: 'fas fa-bug', sectionId: 'disease-detection', textColor: 'text-amber-600', bgColor: 'bg-amber-50' },
-  { title: 'Farmer News', desc: 'AI-curated news tailored to your crops & region', icon: 'fas fa-newspaper', sectionId: 'news', textColor: 'text-emerald-600', bgColor: 'bg-emerald-50' },
-  { title: 'Govt Schemes', desc: 'Personalized welfare scheme recommendations', icon: 'fas fa-landmark', sectionId: 'schemes', textColor: 'text-indigo-600', bgColor: 'bg-indigo-50' },
-  { title: 'Smart Mandi', desc: 'Live market prices and AI price predictions', icon: 'fas fa-store', sectionId: 'mandi', textColor: 'text-orange-600', bgColor: 'bg-orange-50' },
-  { title: 'Equipment Rental', desc: 'Find and rent farming equipment near you', icon: 'fas fa-tractor', sectionId: 'equipment-recommender', textColor: 'text-red-600', bgColor: 'bg-red-50' },
+  { label: 'Weather', desc: 'Forecasts & rain alerts', icon: 'fas fa-cloud-sun', sectionId: 'weather', bg: 'bg-brand-50', text: 'text-brand-800' },
+  { label: 'Crop advice', desc: 'AI crop recommendations', icon: 'fas fa-seedling', sectionId: 'crop-recommender', bg: 'bg-amber-50', text: 'text-amber-800' },
+  { label: 'Disease check', desc: 'Identify & treat issues', icon: 'fas fa-bug', sectionId: 'disease-detection', bg: 'bg-red-50', text: 'text-red-800' },
+  { label: 'News', desc: 'Curated farmer updates', icon: 'fas fa-newspaper', sectionId: 'news', bg: 'bg-emerald-50', text: 'text-emerald-800' },
+  { label: 'Schemes', desc: 'Govt welfare programs', icon: 'fas fa-landmark', sectionId: 'schemes', bg: 'bg-indigo-50', text: 'text-indigo-800' },
+  { label: 'Mandi price', desc: 'Live market prices', icon: 'fas fa-store', sectionId: 'mandi', bg: 'bg-teal-50', text: 'text-teal-800' },
+  { label: 'Equipment', desc: 'Rent farming tools', icon: 'fas fa-tractor', sectionId: 'equipment-recommender', bg: 'bg-orange-50', text: 'text-orange-800' },
 ];
 
 const HomePage: React.FC = () => {
@@ -104,25 +104,20 @@ const HomePage: React.FC = () => {
       <section id="features" className="snap-section py-16 md:py-20 bg-white border-t border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
-            <span className="inline-block px-4 py-1.5 bg-green-100 text-green-700 rounded-full text-sm font-semibold mb-4">Our Services</span>
+            <span className="inline-block px-4 py-1.5 bg-brand-50 text-brand-800 rounded-full text-sm font-semibold mb-4">Our Services</span>
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-800">Smart Tools for Every Farming Need</h2>
-            <p className="text-gray-500 mt-3 max-w-xl mx-auto">Choose a service below to get started — each tool is designed to help you farm smarter and earn more.</p>
+            <p className="text-gray-500 mt-3 max-w-xl mx-auto">Choose a tool below to get started — each is designed to help you farm smarter.</p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
             {FEATURES.map((f) => (
               <button
-                key={f.title}
+                key={f.label}
                 onClick={() => scrollToSection(f.sectionId)}
-                className="group bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-xl hover:border-green-200 transition-all duration-300 hover:-translate-y-1 text-left flex flex-col"
+                className={`${f.bg} rounded-2xl p-5 md:p-6 min-h-[100px] tap-target active:scale-95 transition-transform duration-150 text-left flex flex-col border border-transparent active:border-gray-300 active:shadow-md`}
               >
-                <div className={`w-14 h-14 ${f.bgColor} rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                  <i className={`${f.icon} ${f.textColor} text-2xl`}></i>
-                </div>
-                <h3 className="text-lg font-bold text-gray-800 mb-2">{f.title}</h3>
-                <p className="text-sm text-gray-500 mb-4 leading-relaxed flex-1">{f.desc}</p>
-                <span className={`inline-flex items-center gap-1 text-sm font-semibold ${f.textColor} group-hover:underline mt-auto`}>
-                  Explore <i className="fas fa-arrow-right text-xs group-hover:translate-x-1 transition-transform"></i>
-                </span>
+                <i className={`${f.icon} ${f.text} text-3xl md:text-4xl mb-3`}></i>
+                <h3 className={`text-base md:text-lg font-bold ${f.text}`}>{f.label}</h3>
+                <p className="text-xs md:text-sm text-gray-500 mt-1 leading-relaxed">{f.desc}</p>
               </button>
             ))}
           </div>
