@@ -53,20 +53,20 @@ const AnalyticsChart: React.FC<AnalyticsChartProps> = ({ data, currentPrice, lab
             <Line
               type="monotone"
               dataKey="price"
-              stroke="#16a34a"
+              stroke="#173404"
               strokeWidth={2}
               dot={false}
-              activeDot={{ r: 4, fill: '#16a34a' }}
+              activeDot={{ r: 4, fill: '#173404' }}
             />
           </LineChart>
         </ResponsiveContainer>
       </div>
       <div className="flex items-center gap-4 mt-3 text-xs text-gray-500">
         <span className="flex items-center gap-1.5">
-          <span className="w-3 h-0.5 bg-green-600 rounded" /> Historical
+          <span className="w-3 h-0.5 bg-brand-600 rounded" /> Historical
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="w-3 h-0.5 bg-green-600 rounded opacity-40" style={{ borderBottom: '2px dashed #16a34a' }} /> Predicted
+          <span className="w-3 h-0.5 bg-brand-600 rounded opacity-40" style={{ borderBottom: '2px dashed #173404' }} /> Predicted
         </span>
         <span className="flex items-center gap-1.5">
           <span className="w-3 h-px bg-gray-400" style={{ borderBottom: '1px dashed #9ca3af' }} /> Current Price

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { BarChart3, MapPin, TrendingUp, Sparkles, Store } from 'lucide-react';
+import { BarChart3, MapPin, TrendingUp, Sparkles, Store, Trophy } from 'lucide-react';
 import { MandiTab, MandiDashboardSummary } from '../../types/mandi';
 import { getDashboardSummary } from '../../services/mandi/mandiApi';
 import DashboardCards from './DashboardCards';
@@ -9,11 +9,11 @@ import NearbyMandis from './NearbyMandis';
 import PricePrediction from './PricePrediction';
 import BestRecommendation from './BestRecommendation';
 
-const TABS: { key: MandiTab; label: string; icon: React.ReactNode }[] = [
-  { key: 'prices', label: 'Live Mandi Prices', icon: <BarChart3 size={16} /> },
-  { key: 'nearby', label: 'Nearby Mandi Rates', icon: <MapPin size={16} /> },
-  { key: 'prediction', label: 'Price Prediction', icon: <TrendingUp size={16} /> },
-  { key: 'recommendation', label: 'Best Mandi Recommendation', icon: <Sparkles size={16} /> },
+const TABS: { key: MandiTab; label: string; shortLabel: string; icon: React.ReactNode }[] = [
+  { key: 'prices', label: 'Live Mandi Prices', shortLabel: 'Prices', icon: <BarChart3 size={14} /> },
+  { key: 'nearby', label: 'Nearby Mandi Rates', shortLabel: 'Nearby', icon: <MapPin size={14} /> },
+  { key: 'prediction', label: 'Price Prediction', shortLabel: 'Predict', icon: <TrendingUp size={14} /> },
+  { key: 'recommendation', label: 'Best Mandi', shortLabel: 'Best Mandi', icon: <Sparkles size={14} /> },
 ];
 
 const DigitalMandi: React.FC = () => {
@@ -35,12 +35,12 @@ const DigitalMandi: React.FC = () => {
           viewport={{ once: true }}
           className="text-center mb-10"
         >
-          <div className="inline-flex items-center gap-2 bg-green-50 text-green-700 rounded-full px-4 py-1.5 text-xs font-semibold mb-4">
+          <div className="inline-flex items-center gap-2 bg-brand-50 text-brand-700 rounded-full px-4 py-1.5 text-xs font-semibold mb-4">
             <Store size={14} />
             Digital Mandi Intelligence
           </div>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-800 mb-3">
-            Smart <span className="text-green-600">Mandi</span> Information System
+            Smart <span className="text-brand-600">Mandi</span> Information System
           </h1>
           <p className="text-gray-500 max-w-xl mx-auto text-sm">
             Smart market intelligence to help farmers sell their crops at the best possible mandi.
@@ -50,21 +50,46 @@ const DigitalMandi: React.FC = () => {
         {/* Dashboard Summary Cards */}
         <DashboardCards summary={summary} loading={summaryLoading} />
 
-        {/* Tab Navigation */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-100 shadow-sm mb-6 overflow-hidden">
-          <div className="flex overflow-x-auto scrollbar-hide">
+        {/* Best Recommendation — always visible as prominent card */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mb-8"
+        >
+          <div className="bg-gradient-to-br from-brand-600 to-brand-800 rounded-2xl p-5 sm:p-6 text-white shadow-xl">
+            <div className="flex items-center gap-2 mb-4">
+              <Trophy size={20} className="text-amber-300" />
+              <h3 className="text-base sm:text-lg font-bold">Where Should I Sell?</h3>
+            </div>
+            <p className="text-white/80 text-sm mb-4 max-w-lg">
+              Enter your crop and quantity to find the best mandi — we compare prices, transport costs, and distances to maximise your profit.
+            </p>
+            <button
+              onClick={() => setActiveTab('recommendation')}
+              className="tap-target px-6 py-3 bg-white text-brand-700 rounded-xl font-semibold text-sm hover:bg-white/90 transition-all shadow-sm flex items-center gap-2"
+            >
+              <Sparkles size={16} /> Get Best Mandi Recommendation
+            </button>
+          </div>
+        </motion.div>
+
+        {/* Tab Navigation — tap-target pills, scrollable */}
+        <div className="mb-6 -mx-1 px-1">
+          <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
             {TABS.map((tab) => (
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
-                className={`flex items-center gap-2 px-5 py-4 text-sm font-semibold whitespace-nowrap transition-all border-b-2 ${
+                className={`tap-target flex-shrink-0 flex items-center gap-1.5 px-4 rounded-xl text-sm font-semibold whitespace-nowrap transition-all ${
                   activeTab === tab.key
-                    ? 'border-green-600 text-green-700 bg-green-50/50'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                    ? 'bg-brand-600 text-white shadow-md shadow-brand-200'
+                    : 'bg-white text-gray-500 border border-gray-200 hover:border-brand-300 hover:text-brand-700'
                 }`}
               >
                 {tab.icon}
                 <span className="hidden sm:inline">{tab.label}</span>
+                <span className="sm:hidden">{tab.shortLabel}</span>
               </button>
             ))}
           </div>

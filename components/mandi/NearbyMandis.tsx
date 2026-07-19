@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, Wheat, Route, Loader2, SlidersHorizontal, Navigation, RefreshCw } from 'lucide-react';
+import { MapPin, Wheat, Route, Loader2, SlidersHorizontal, Navigation } from 'lucide-react';
 import { NearbyMandi, SortBy } from '../../types/mandi';
 import { getNearbyMandis } from '../../services/mandi/mandiApi';
 import { CROP_OPTIONS } from '../../constants';
@@ -49,16 +49,16 @@ const NearbyMandis: React.FC = () => {
             <button
               onClick={detect}
               disabled={gpsStatus === 'loading'}
-              className="w-full flex items-center gap-2 px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-left hover:bg-green-50 hover:border-green-300 transition-all active:scale-[0.98] disabled:opacity-60"
+              className="tap-target w-full flex items-center gap-2 px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-left hover:bg-brand-50 hover:border-brand-300 transition-all active:scale-[0.98] disabled:opacity-60"
             >
               {gpsStatus === 'loading' ? (
-                <Loader2 size={14} className="animate-spin text-green-500 flex-shrink-0" />
+                <Loader2 size={14} className="animate-spin text-brand-500 flex-shrink-0" />
               ) : gpsStatus === 'granted' && location ? (
-                <Navigation size={14} className="text-green-600 flex-shrink-0" />
+                <Navigation size={14} className="text-brand-600 flex-shrink-0" />
               ) : (
                 <MapPin size={14} className="text-gray-400 flex-shrink-0" />
               )}
-              <span className={`truncate text-xs font-medium ${gpsStatus === 'granted' && location ? 'text-green-700' : 'text-gray-500'}`}>
+              <span className={`truncate text-xs font-medium ${gpsStatus === 'granted' && location ? 'text-brand-700' : 'text-gray-500'}`}>
                 {gpsStatus === 'loading' ? 'Detecting...' : gpsStatus === 'granted' && location ? (location.village || location.district || location.state) : 'Detect my location'}
               </span>
             </button>
@@ -69,11 +69,11 @@ const NearbyMandis: React.FC = () => {
           <div>
             <label className="block text-xs font-semibold text-gray-500 uppercase mb-1.5">Crop</label>
             <div className="relative">
-              <Wheat size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <Wheat size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
               <select
                 value={crop}
                 onChange={(e) => setCrop(e.target.value)}
-                className="w-full pl-9 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="tap-target w-full pl-9 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 appearance-none"
               >
                 {CROP_OPTIONS.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
@@ -88,17 +88,17 @@ const NearbyMandis: React.FC = () => {
               step={50}
               value={radius}
               onChange={(e) => setRadius(Number(e.target.value))}
-              className="w-full mt-2 accent-green-600"
+              className="w-full mt-2 accent-brand-600"
             />
           </div>
           <div>
             <label className="block text-xs font-semibold text-gray-500 uppercase mb-1.5">Sort By</label>
             <div className="relative">
-              <SlidersHorizontal size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <SlidersHorizontal size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as SortBy)}
-                className="w-full pl-9 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="tap-target w-full pl-9 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 appearance-none"
               >
                 <option value="price-desc">Highest Price</option>
                 <option value="price-asc">Lowest Price</option>
@@ -113,7 +113,7 @@ const NearbyMandis: React.FC = () => {
       {/* Results */}
       {loading ? (
         <div className="flex items-center justify-center py-16">
-          <Loader2 size={28} className="animate-spin text-green-500" />
+          <Loader2 size={28} className="animate-spin text-brand-500" />
           <span className="ml-3 text-sm text-gray-500">Finding nearby mandis...</span>
         </div>
       ) : sorted.length === 0 ? (

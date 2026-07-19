@@ -60,7 +60,7 @@ const PricePrediction: React.FC = () => {
             <label className="block text-xs font-semibold text-gray-500 uppercase mb-1.5">Crop *</label>
             <div className="relative">
               <Sprout size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <select value={input.crop} onChange={(e) => update('crop', e.target.value)} className="w-full pl-9 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+              <select value={input.crop} onChange={(e) => update('crop', e.target.value)} className="tap-target w-full pl-9 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 appearance-none">
                 <option value="">Select Crop</option>
                 {CROP_OPTIONS.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
@@ -71,16 +71,16 @@ const PricePrediction: React.FC = () => {
             <button
               onClick={detect}
               disabled={gpsStatus === 'loading'}
-              className="w-full flex items-center gap-2 px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-left hover:bg-green-50 hover:border-green-300 transition-all active:scale-[0.98] disabled:opacity-60"
+              className="tap-target w-full flex items-center gap-2 px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-left hover:bg-brand-50 hover:border-brand-300 transition-all active:scale-[0.98] disabled:opacity-60"
             >
               {gpsStatus === 'loading' ? (
-                <Loader2 size={14} className="animate-spin text-green-500 flex-shrink-0" />
+                <Loader2 size={14} className="animate-spin text-brand-500 flex-shrink-0" />
               ) : gpsStatus === 'granted' && location ? (
-                <Navigation size={14} className="text-green-600 flex-shrink-0" />
+                <Navigation size={14} className="text-brand-600 flex-shrink-0" />
               ) : (
                 <MapPin size={14} className="text-gray-400 flex-shrink-0" />
               )}
-              <span className={`truncate text-xs font-medium ${gpsStatus === 'granted' && location ? 'text-green-700' : 'text-gray-500'}`}>
+              <span className={`truncate text-xs font-medium ${gpsStatus === 'granted' && location ? 'text-brand-700' : 'text-gray-500'}`}>
                 {gpsStatus === 'loading' ? 'Detecting...' : gpsStatus === 'granted' && location ? `${location.village || location.district || location.state}` : 'Auto-detect location'}
               </span>
             </button>
@@ -90,13 +90,13 @@ const PricePrediction: React.FC = () => {
           </div>
           <div>
             <label className="block text-xs font-semibold text-gray-500 uppercase mb-1.5">Current Market Price (₹/quintal) *</label>
-            <input type="number" value={input.currentPrice} onChange={(e) => update('currentPrice', e.target.value)} placeholder="e.g. 5500" className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500" />
+            <input type="number" value={input.currentPrice} onChange={(e) => update('currentPrice', e.target.value)} placeholder="e.g. 5500" className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
           </div>
           <div>
             <label className="block text-xs font-semibold text-gray-500 uppercase mb-1.5">Season</label>
             <div className="relative">
               <Calendar size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <select value={input.season} onChange={(e) => update('season', e.target.value)} className="w-full pl-9 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+              <select value={input.season} onChange={(e) => update('season', e.target.value)} className="w-full pl-9 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
                 <option value="">Select Season</option>
                 {SEASONS.map((s) => <option key={s} value={s}>{s}</option>)}
               </select>
@@ -104,7 +104,7 @@ const PricePrediction: React.FC = () => {
           </div>
           <div>
             <label className="block text-xs font-semibold text-gray-500 uppercase mb-1.5">Month</label>
-            <select value={input.month} onChange={(e) => update('month', e.target.value)} className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+            <select value={input.month} onChange={(e) => update('month', e.target.value)} className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
               <option value="">Select Month</option>
               {MONTHS.map((m) => <option key={m} value={m}>{m}</option>)}
             </select>
@@ -113,7 +113,7 @@ const PricePrediction: React.FC = () => {
             <label className="block text-xs font-semibold text-gray-500 uppercase mb-1.5">Rainfall (mm, optional)</label>
             <div className="relative">
               <CloudRain size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input type="number" value={input.rainfall} onChange={(e) => update('rainfall', e.target.value)} placeholder="e.g. 200" className="w-full pl-9 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500" />
+              <input type="number" value={input.rainfall} onChange={(e) => update('rainfall', e.target.value)} placeholder="e.g. 200" className="w-full pl-9 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
             </div>
           </div>
         </div>
@@ -121,7 +121,7 @@ const PricePrediction: React.FC = () => {
         <button
           onClick={handlePredict}
           disabled={loading || !input.crop || !input.currentPrice}
-          className="px-6 py-3 bg-green-600 text-white rounded-xl font-semibold text-sm hover:bg-green-700 disabled:bg-green-400 transition-all shadow-sm shadow-green-200 active:scale-[0.98] flex items-center gap-2"
+          className="tap-target px-6 py-3 bg-brand-600 text-white rounded-xl font-semibold text-sm hover:bg-brand-700 disabled:bg-brand-400 transition-all shadow-sm shadow-brand-200 active:scale-[0.98] flex items-center gap-2"
         >
           {loading ? <><Loader2 size={16} className="animate-spin" /> Predicting...</> : <><BarChart3 size={16} /> Predict Price</>}
         </button>
@@ -165,7 +165,7 @@ const PricePrediction: React.FC = () => {
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-100 p-5 mb-6 shadow-sm">
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs font-semibold text-gray-600">Prediction Confidence</span>
-              <span className="text-sm font-bold text-green-700">{result.confidence}%</span>
+              <span className="text-sm font-bold text-brand-700">{result.confidence}%</span>
             </div>
             <div className="w-full bg-gray-100 rounded-full h-2.5">
               <motion.div

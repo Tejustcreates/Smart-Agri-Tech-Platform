@@ -54,16 +54,16 @@ const BestRecommendation: React.FC = () => {
             <button
               onClick={detect}
               disabled={gpsStatus === 'loading'}
-              className="w-full flex items-center gap-2 px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-left hover:bg-green-50 hover:border-green-300 transition-all active:scale-[0.98] disabled:opacity-60"
+              className="tap-target w-full flex items-center gap-2 px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-left hover:bg-brand-50 hover:border-brand-300 transition-all active:scale-[0.98] disabled:opacity-60"
             >
               {gpsStatus === 'loading' ? (
-                <Loader2 size={14} className="animate-spin text-green-500 flex-shrink-0" />
+                <Loader2 size={14} className="animate-spin text-brand-500 flex-shrink-0" />
               ) : gpsStatus === 'granted' && location ? (
-                <Navigation size={14} className="text-green-600 flex-shrink-0" />
+                <Navigation size={14} className="text-brand-600 flex-shrink-0" />
               ) : (
                 <MapPin size={14} className="text-gray-400 flex-shrink-0" />
               )}
-              <span className={`truncate text-xs font-medium ${gpsStatus === 'granted' && location ? 'text-green-700' : 'text-gray-500'}`}>
+              <span className={`truncate text-xs font-medium ${gpsStatus === 'granted' && location ? 'text-brand-700' : 'text-gray-500'}`}>
                 {gpsStatus === 'loading' ? 'Detecting...' : gpsStatus === 'granted' && location ? (location.village || location.district || location.state) : 'Auto-detect location'}
               </span>
             </button>
@@ -74,8 +74,8 @@ const BestRecommendation: React.FC = () => {
           <div>
             <label className="block text-xs font-semibold text-gray-500 uppercase mb-1.5">Crop *</label>
             <div className="relative">
-              <Wheat size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <select value={input.crop} onChange={(e) => update('crop', e.target.value)} className="w-full pl-9 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+              <Wheat size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+              <select value={input.crop} onChange={(e) => update('crop', e.target.value)} className="tap-target w-full pl-9 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 appearance-none">
                 <option value="">Select Crop</option>
                 {CROP_OPTIONS.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
@@ -83,13 +83,13 @@ const BestRecommendation: React.FC = () => {
           </div>
           <div>
             <label className="block text-xs font-semibold text-gray-500 uppercase mb-1.5">Quantity (Quintals) *</label>
-            <input type="number" min={1} value={input.quantity} onChange={(e) => update('quantity', e.target.value)} placeholder="e.g. 10" className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500" />
+            <input type="number" min={1} value={input.quantity} onChange={(e) => update('quantity', e.target.value)} placeholder="e.g. 10" className="tap-target w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500" />
           </div>
           <div>
             <label className="block text-xs font-semibold text-gray-500 uppercase mb-1.5">Transport Budget (₹)</label>
             <div className="relative">
-              <Truck size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input type="number" value={input.transportCost} onChange={(e) => update('transportCost', e.target.value)} placeholder="e.g. 200" className="w-full pl-9 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500" />
+              <Truck size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+              <input type="number" value={input.transportCost} onChange={(e) => update('transportCost', e.target.value)} placeholder="e.g. 200" className="tap-target w-full pl-9 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500" />
             </div>
           </div>
         </div>
@@ -97,7 +97,7 @@ const BestRecommendation: React.FC = () => {
         <button
           onClick={handleSearch}
           disabled={loading || !input.crop || !input.quantity}
-          className="px-6 py-3 bg-green-600 text-white rounded-xl font-semibold text-sm hover:bg-green-700 disabled:bg-green-400 transition-all shadow-sm shadow-green-200 active:scale-[0.98] flex items-center gap-2"
+          className="tap-target px-6 py-3 bg-brand-600 text-white rounded-xl font-semibold text-sm hover:bg-brand-700 disabled:bg-brand-400 transition-all shadow-sm shadow-brand-200 active:scale-[0.98] flex items-center gap-2"
         >
           {loading ? <><Loader2 size={16} className="animate-spin" /> Analyzing...</> : <><Sparkles size={16} /> Find Best Mandi</>}
         </button>
@@ -108,7 +108,7 @@ const BestRecommendation: React.FC = () => {
         <motion.div
           initial={{ opacity: 0, scale: 0.97 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl p-6 mb-6 text-white shadow-xl"
+          className="bg-gradient-to-br from-brand-600 to-brand-800 rounded-2xl p-6 mb-6 text-white shadow-xl"
         >
           <div className="flex items-center gap-2 mb-4">
             <Trophy size={20} className="text-amber-300" />
@@ -165,7 +165,7 @@ const BestRecommendation: React.FC = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.06 }}
               className={`bg-white/80 backdrop-blur-sm rounded-2xl border p-5 shadow-sm transition-all ${
-                r.isRecommended ? 'border-green-300 ring-1 ring-green-200' : 'border-gray-100 hover:shadow-md'
+                r.isRecommended ? 'border-brand-300 ring-1 ring-brand-200' : 'border-gray-100 hover:shadow-md'
               }`}
             >
               <div className="flex items-start justify-between gap-4">
@@ -173,7 +173,7 @@ const BestRecommendation: React.FC = () => {
                   <div className="flex items-center gap-2 mb-1">
                     <h3 className="text-base font-bold text-gray-800">{r.name}</h3>
                     {r.isRecommended && (
-                      <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-[10px] font-bold">BEST</span>
+                      <span className="px-2 py-0.5 bg-brand-100 text-brand-700 rounded-full text-[10px] font-bold">BEST</span>
                     )}
                   </div>
                   <p className="text-xs text-gray-400 flex items-center gap-1">
@@ -181,7 +181,7 @@ const BestRecommendation: React.FC = () => {
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-lg font-extrabold text-green-700">₹{r.netPrice.toLocaleString()}</p>
+                  <p className="text-lg font-extrabold text-brand-700">₹{r.netPrice.toLocaleString()}</p>
                   <p className="text-[10px] text-gray-400">Net per quintal</p>
                 </div>
               </div>

@@ -27,7 +27,7 @@ const trendColor = (t: string) => {
 };
 
 const SkeletonCard = () => (
-  <div className="bg-white/60 backdrop-blur-sm rounded-2xl border border-gray-100 p-5 animate-pulse">
+  <div className="bg-white/60 backdrop-blur-sm rounded-2xl border border-gray-100 p-4 sm:p-5 animate-pulse">
     <div className="flex items-center gap-3 mb-3">
       <div className="w-10 h-10 bg-gray-200 rounded-xl" />
       <div className="h-3 bg-gray-200 rounded w-24" />
@@ -40,9 +40,9 @@ const SkeletonCard = () => (
 const CARDS = [
   {
     key: 'highest',
-    icon: <Wheat size={20} className="text-green-600" />,
-    bg: 'bg-green-50',
-    label: "Today's Highest Price Crop",
+    icon: <Wheat size={20} className="text-brand-600" />,
+    bg: 'bg-brand-50',
+    label: "Today's Highest",
     getValue: (s: MandiDashboardSummary) => `₹${s.highestPriceValue.toLocaleString()}`,
     getDesc: (s: MandiDashboardSummary) => `${s.highestPriceCrop} at ${s.highestPriceMandi}`,
   },
@@ -50,7 +50,7 @@ const CARDS = [
     key: 'avg',
     icon: <IndianRupee size={20} className="text-blue-600" />,
     bg: 'bg-blue-50',
-    label: 'Average Market Price',
+    label: 'Average Price',
     getValue: (s: MandiDashboardSummary) => `₹${s.avgMarketPrice.toLocaleString()}`,
     getDesc: (_s: MandiDashboardSummary) => 'Across all mandis today',
   },
@@ -58,7 +58,7 @@ const CARDS = [
     key: 'best',
     icon: <MapPin size={20} className="text-purple-600" />,
     bg: 'bg-purple-50',
-    label: 'Best Recommended Mandi',
+    label: 'Best Mandi',
     getValue: (s: MandiDashboardSummary) => s.bestMandi,
     getDesc: (_s: MandiDashboardSummary) => 'Highest average returns',
   },
@@ -82,32 +82,32 @@ const CARDS = [
 const DashboardCards: React.FC<DashboardCardsProps> = ({ summary, loading }) => {
   if (loading || !summary) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-8">
         {Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)}
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-8">
       {CARDS.map((card, i) => (
         <motion.div
           key={card.key}
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: i * 0.08 }}
-          className="bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all p-5"
+          className="bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all p-4 sm:p-5"
         >
-          <div className="flex items-center gap-3 mb-3">
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${card.bg}`}>
+          <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+            <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center ${card.bg}`}>
               {card.icon}
             </div>
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{card.label}</p>
+            <p className="text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wide leading-tight">{card.label}</p>
           </div>
-          <div className="text-xl font-extrabold text-gray-800 mb-1">
+          <div className="text-xl sm:text-2xl font-extrabold text-gray-800 mb-1">
             {card.getValue(summary, trendIcon(summary.priceTrend))}
           </div>
-          <p className="text-xs text-gray-400">{card.getDesc(summary)}</p>
+          <p className="text-[10px] sm:text-xs text-gray-400 truncate">{card.getDesc(summary)}</p>
         </motion.div>
       ))}
     </div>

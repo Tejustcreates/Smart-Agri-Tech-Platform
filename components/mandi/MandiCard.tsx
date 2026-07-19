@@ -15,7 +15,7 @@ const MandiCard: React.FC<MandiCardProps> = ({ mandi, sortBy }) => {
     <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 p-5 group">
       <div className="flex items-start justify-between mb-3">
         <div>
-          <h3 className="text-base font-bold text-gray-800 group-hover:text-green-700 transition-colors">
+          <h3 className="text-base font-bold text-gray-800 group-hover:text-brand-700 transition-colors">
             {mandi.name}
           </h3>
           <p className="text-xs text-gray-400 flex items-center gap-1 mt-0.5">
@@ -29,9 +29,9 @@ const MandiCard: React.FC<MandiCardProps> = ({ mandi, sortBy }) => {
       </div>
 
       <div className="grid grid-cols-2 gap-3 mb-3">
-        <div className="bg-green-50 rounded-xl p-3">
-          <p className="text-[10px] text-green-600 font-semibold uppercase">Today's Price</p>
-          <p className="text-lg font-bold text-green-700">₹{mandi.todayPrice.toLocaleString()}</p>
+        <div className="bg-brand-50 rounded-xl p-3">
+          <p className="text-[10px] text-brand-600 font-semibold uppercase">Today's Price</p>
+          <p className="text-lg font-bold text-brand-700">₹{mandi.todayPrice.toLocaleString()}</p>
         </div>
         <div className="bg-gray-50 rounded-xl p-3">
           <p className="text-[10px] text-gray-500 font-semibold uppercase">Avg Price</p>
