@@ -12,7 +12,7 @@ interface SensorCardProps {
 }
 
 const statusColor = {
-  Good: 'bg-green-100 text-green-700',
+  Good: 'bg-brand-100 text-brand-700',
   Low: 'bg-amber-100 text-amber-700',
   High: 'bg-red-100 text-red-700',
 };
