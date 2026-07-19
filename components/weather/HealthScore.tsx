@@ -6,8 +6,8 @@ interface HealthScoreProps {
 }
 
 const getScoreColor = (score: number) => {
-  if (score >= 80) return { ring: '#16a34a', bg: 'from-green-500 to-emerald-500', text: 'text-green-700', label: 'Excellent' };
-  if (score >= 60) return { ring: '#2563eb', bg: 'from-blue-500 to-cyan-500', text: 'text-blue-700', label: 'Good' };
+  if (score >= 80) return { ring: '#3B6D11', bg: 'from-brand-600 to-emerald-600', text: 'text-brand-800', label: 'Excellent' };
+  if (score >= 60) return { ring: '#639922', bg: 'from-brand-400 to-brand-200', text: 'text-brand-800', label: 'Good' };
   if (score >= 40) return { ring: '#d97706', bg: 'from-amber-500 to-orange-500', text: 'text-amber-700', label: 'Moderate' };
   return { ring: '#dc2626', bg: 'from-red-500 to-rose-500', text: 'text-red-700', label: 'Poor' };
 };

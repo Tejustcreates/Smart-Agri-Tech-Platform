@@ -1,6 +1,6 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, MapPin, Locate, ArrowRight, Loader2, Navigation } from 'lucide-react';
+import { Search, MapPin, Locate, ArrowRight, Loader2 } from 'lucide-react';
 import { INDIAN_CITIES } from '../../services/weather/openMeteo';
 import { GeoLocation } from '../../types/weather';
 import { reverseGeocode } from '../../services/shared/locationService';
@@ -70,8 +70,8 @@ const WeatherLanding: React.FC<WeatherLandingProps> = ({ onSelectLocation, searc
         transition={{ duration: 0.6, ease: 'easeOut' }}
         className="mb-8 sm:mb-10"
       >
-        <div className="w-32 h-32 sm:w-44 sm:h-44 rounded-full bg-gradient-to-br from-sky-200 via-blue-100 to-green-100 flex items-center justify-center shadow-lg shadow-blue-100/50 mx-auto animate-breathe">
-          <span className="text-5xl sm:text-6xl select-none">🌤️</span>
+        <div className="w-32 h-32 sm:w-44 sm:h-44 rounded-full bg-gradient-to-br from-brand-200 via-brand-100 to-emerald-100 flex items-center justify-center shadow-lg shadow-brand-100/50 mx-auto animate-breathe">
+          <i className="fas fa-cloud-sun text-5xl sm:text-6xl text-brand-600"></i>
         </div>
       </motion.div>
 
@@ -90,6 +90,48 @@ const WeatherLanding: React.FC<WeatherLandingProps> = ({ onSelectLocation, searc
         </p>
       </motion.div>
 
+      {/* GPS Button — Primary */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.25, duration: 0.5 }}
+        className="w-full max-w-xl mb-4"
+      >
+        <button
+          onClick={handleGeolocate}
+          disabled={gpsLoading}
+          className="w-full flex items-center justify-center gap-3 py-4 px-6 bg-brand-600 text-white rounded-2xl font-bold text-base shadow-lg hover:bg-brand-800 transition-all active:scale-[0.98] disabled:opacity-60"
+        >
+          {gpsLoading ? (
+            <Loader2 size={20} className="animate-spin" />
+          ) : (
+            <i className="fas fa-location-crosshairs text-lg"></i>
+          )}
+          {gpsLoading ? 'Detecting location...' : 'Use My Location'}
+        </button>
+      </motion.div>
+
+      {/* GPS Error */}
+      <AnimatePresence>
+        {gpsError && (
+          <motion.div
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="w-full max-w-xl mb-4 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-sm text-amber-700 text-center"
+          >
+            {gpsError}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Divider */}
+      <div className="flex items-center gap-3 w-full max-w-xl mb-4">
+        <div className="flex-1 h-px bg-gray-200"></div>
+        <span className="text-xs text-gray-400 font-medium">or search manually</span>
+        <div className="flex-1 h-px bg-gray-200"></div>
+      </div>
+
       {/* Search Bar */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
@@ -101,7 +143,7 @@ const WeatherLanding: React.FC<WeatherLandingProps> = ({ onSelectLocation, searc
           <div className="flex-1 relative">
             <div className="absolute left-4 top-1/2 -translate-y-1/2">
               {searching && query.length >= 2 ? (
-                <Loader2 size={22} className="text-green-500 animate-spin" />
+                <Loader2 size={22} className="text-brand-500 animate-spin" />
               ) : (
                 <Search size={22} className="text-gray-400" />
               )}
@@ -113,40 +155,14 @@ const WeatherLanding: React.FC<WeatherLandingProps> = ({ onSelectLocation, searc
               onFocus={() => { setFocused(true); if (query.length >= 2) setShowDropdown(true); }}
               onBlur={() => { setFocused(false); setTimeout(() => setShowDropdown(false), 250); }}
               placeholder="Search Village, Taluka, District or City"
-              className={`w-full pl-12 pr-4 py-4.5 sm:py-5 bg-white rounded-2xl border text-base sm:text-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all shadow-md placeholder:text-gray-400 ${
+              className={`w-full pl-12 pr-4 py-4 sm:py-5 bg-white rounded-2xl border text-base sm:text-lg focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all shadow-md placeholder:text-gray-400 ${
                 focused
-                  ? 'border-green-400 shadow-lg ring-2 ring-green-100'
+                  ? 'border-brand-400 shadow-lg ring-2 ring-brand-100'
                   : 'border-gray-200 hover:shadow-lg hover:border-gray-300'
               }`}
             />
           </div>
-          <button
-            onClick={handleGeolocate}
-            disabled={gpsLoading}
-            className="p-4 sm:p-4.5 bg-white rounded-2xl border border-gray-200 hover:bg-green-50 hover:border-green-300 transition-all shadow-md hover:shadow-lg flex-shrink-0 active:scale-95 disabled:opacity-60"
-            title="Use my current location"
-          >
-            {gpsLoading ? (
-              <Loader2 size={22} className="text-green-500 animate-spin" />
-            ) : (
-              <Locate size={22} className="text-green-600" />
-            )}
-          </button>
         </div>
-
-        {/* GPS Error */}
-        <AnimatePresence>
-          {gpsError && (
-            <motion.div
-              initial={{ opacity: 0, y: -4 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              className="mt-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-sm text-amber-700 text-center"
-            >
-              {gpsError}
-            </motion.div>
-          )}
-        </AnimatePresence>
 
         {/* Search Dropdown */}
         <AnimatePresence>
@@ -162,7 +178,7 @@ const WeatherLanding: React.FC<WeatherLandingProps> = ({ onSelectLocation, searc
                 <button
                   key={`${loc.name}-${loc.latitude}-${i}`}
                   onMouseDown={() => handleSelect(loc)}
-                  className="w-full flex items-center gap-3 px-5 py-4 hover:bg-green-50 active:bg-green-100 transition-colors text-left border-b border-gray-50 last:border-0"
+                  className="w-full flex items-center gap-3 px-5 py-4 hover:bg-brand-50 active:bg-brand-100 transition-colors text-left border-b border-gray-50 last:border-0"
                 >
                   <MapPin size={18} className="text-gray-400 flex-shrink-0" />
                   <div className="flex-1 min-w-0">
@@ -212,7 +228,7 @@ const WeatherLanding: React.FC<WeatherLandingProps> = ({ onSelectLocation, searc
           <button
             key={city.name}
             onClick={() => onSelectLocation(city.latitude, city.longitude, `${city.name}, ${city.admin1 || city.country}`)}
-            className="px-5 py-2.5 rounded-full text-sm font-medium bg-white text-gray-600 border border-gray-200 hover:border-green-400 hover:text-green-700 hover:bg-green-50 transition-all shadow-sm hover:shadow-md active:scale-95"
+            className="px-5 py-2.5 rounded-full text-sm font-medium bg-white text-gray-600 border border-gray-200 hover:border-brand-400 hover:text-brand-700 hover:bg-brand-50 transition-all shadow-sm hover:shadow-md active:scale-95"
           >
             {city.name}
           </button>

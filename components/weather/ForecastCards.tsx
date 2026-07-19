@@ -30,7 +30,7 @@ const ForecastCards: React.FC<ForecastCardsProps> = ({ forecasts }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.08 }}
-            className="flex-shrink-0 flex flex-col items-center gap-2 p-4 rounded-xl bg-gradient-to-b from-gray-50 to-white border border-gray-100 hover:border-blue-200 hover:shadow-md transition-all duration-300 min-w-[100px] cursor-default"
+            className="flex-shrink-0 flex flex-col items-center gap-2 p-4 rounded-xl bg-gradient-to-b from-brand-50 to-white border border-brand-100 hover:border-brand-200 hover:shadow-md transition-all duration-300 min-w-[100px] cursor-default"
           >
             <p className="text-xs font-semibold text-gray-500">{dayName(day.date, i)}</p>
             <div className="text-3xl">{weatherCodeToIcon(day.weatherCode, true)}</div>
@@ -38,8 +38,8 @@ const ForecastCards: React.FC<ForecastCardsProps> = ({ forecasts }) => {
               <p className="text-lg font-bold text-gray-800">{day.temperatureMax}°</p>
               <p className="text-xs text-gray-400">{day.temperatureMin}°</p>
             </div>
-            <div className="flex items-center gap-1 text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
-              <span>💧</span>
+            <div className="flex items-center gap-1 text-xs text-brand-700 bg-brand-100 px-2 py-0.5 rounded-full">
+              <i className="fas fa-droplet text-[10px]"></i>
               <span className="font-medium">{day.precipitationProbabilityMax}%</span>
             </div>
             <p className="text-[10px] text-gray-400 text-center leading-tight max-w-[90px]">

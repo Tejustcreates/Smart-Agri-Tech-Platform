@@ -124,13 +124,13 @@ const WeatherDashboard: React.FC = () => {
   if (error && !weatherData) {
     return (
       <div className="text-center py-20">
-        <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <div className="w-16 h-16 bg-brand-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <span className="text-2xl">⚠️</span>
         </div>
         <p className="text-gray-700 font-medium">{error}</p>
-        <button onClick={handleBack} className="mt-4 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold">
-          Try Again
-        </button>
+          <button onClick={handleBack} className="mt-4 px-6 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-800 transition-colors font-semibold">
+            Try Again
+          </button>
       </div>
     );
   }
@@ -147,7 +147,7 @@ const WeatherDashboard: React.FC = () => {
       >
         <button
           onClick={handleBack}
-          className="p-3 sm:p-3.5 bg-white rounded-xl border border-gray-200 hover:bg-green-50 hover:border-green-300 transition-all shadow-sm flex-shrink-0 active:scale-95"
+          className="p-3 sm:p-3.5 bg-white rounded-xl border border-gray-200 hover:bg-brand-50 hover:border-brand-300 transition-all shadow-sm flex-shrink-0 active:scale-95"
           title="Back to search"
         >
           <ArrowLeft size={18} className="text-gray-600" />
@@ -155,7 +155,7 @@ const WeatherDashboard: React.FC = () => {
         <div className="flex-1 relative">
           <div className="absolute left-3.5 top-1/2 -translate-y-1/2">
             {searching && query.length >= 2 ? (
-              <Loader2 size={18} className="text-green-500 animate-spin" />
+              <Loader2 size={18} className="text-brand-500 animate-spin" />
             ) : (
               <Search size={18} className="text-gray-400" />
             )}
@@ -172,10 +172,10 @@ const WeatherDashboard: React.FC = () => {
         </div>
         <button
           onClick={handleGeolocateDashboard}
-          className="p-3 sm:p-3.5 bg-white rounded-xl border border-gray-200 hover:bg-green-50 hover:border-green-300 transition-all shadow-sm active:scale-95 flex-shrink-0"
+          className="p-3 sm:p-3.5 bg-brand-600 rounded-xl text-white hover:bg-brand-800 transition-all shadow-sm active:scale-95 flex-shrink-0"
           title="Use my location"
         >
-          <Locate size={18} className="text-green-600" />
+          <Locate size={18} />
         </button>
 
         {/* Dropdown */}
@@ -191,7 +191,7 @@ const WeatherDashboard: React.FC = () => {
                 <button
                   key={`${loc.name}-${loc.latitude}-${i}`}
                   onMouseDown={() => handleDashboardSelect(loc)}
-                  className="w-full flex items-center gap-3 px-4 py-3 hover:bg-green-50 transition-colors text-left"
+                  className="w-full flex items-center gap-3 px-4 py-3 hover:bg-brand-50 transition-colors text-left"
                 >
                   <MapPin size={14} className="text-gray-400 flex-shrink-0" />
                   <div>
@@ -225,7 +225,7 @@ const WeatherDashboard: React.FC = () => {
             className="fixed inset-0 bg-white/60 z-50 flex items-center justify-center"
           >
             <div className="bg-white rounded-2xl px-6 py-4 shadow-xl flex items-center gap-3">
-              <Loader2 size={20} className="animate-spin text-green-600" />
+              <Loader2 size={20} className="animate-spin text-brand-600" />
               <span className="text-gray-700 font-medium text-sm">Updating weather data...</span>
             </div>
           </motion.div>
