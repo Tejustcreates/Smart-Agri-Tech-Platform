@@ -1,80 +1,28 @@
 import React from 'react';
-import { MapPin, Navigation } from 'lucide-react';
-import { EquipmentListing } from '../../types/equipment';
+import { MapPin } from 'lucide-react';
 
 interface MapPlaceholderProps {
-  listings: EquipmentListing[];
+  listings: { id: string; name: string; lat: number; lng: number; distance: number; verified: boolean }[];
   userLat: number;
   userLng: number;
 }
 
-const MapPlaceholder: React.FC<MapPlaceholderProps> = ({ listings, userLat, userLng }) => {
-  // Calculate relative positions for markers
-  const allLats = [userLat, ...listings.map((l) => l.lat)];
-  const allLngs = [userLng, ...listings.map((l) => l.lng)];
-  const minLat = Math.min(...allLats);
-  const maxLat = Math.max(...allLats);
-  const minLng = Math.min(...allLngs);
-  const maxLng = Math.max(...allLngs);
-  const latRange = Math.max(maxLat - minLat, 0.5);
-  const lngRange = Math.max(maxLng - minLng, 0.5);
-
-  const getPos = (lat: number, lng: number) => ({
-    x: ((lng - minLng) / lngRange) * 80 + 10,
-    y: ((maxLat - lat) / latRange) * 80 + 10,
-  });
-
-  const userPos = getPos(userLat, userLng);
-
+const MapPlaceholder: React.FC<MapPlaceholderProps> = ({ listings }) => {
   return (
-    <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl border border-green-100 h-48 sm:h-64 mb-6 overflow-hidden relative">
-      {/* Grid pattern */}
-      <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'linear-gradient(#16a34a 1px, transparent 1px), linear-gradient(90deg, #16a34a 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
-
-      {/* User location marker */}
-      {userLat !== 0 && userLng !== 0 && (
-        <div
-          className="absolute z-20 flex flex-col items-center"
-          style={{ left: `${userPos.x}%`, top: `${userPos.y}%`, transform: 'translate(-50%, -100%)' }}
-        >
-          <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center shadow-lg border-2 border-white">
-            <Navigation size={14} className="text-white" />
-          </div>
-          <span className="mt-1 text-[9px] font-bold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded shadow-sm whitespace-nowrap">
-            You
-          </span>
+    <div className="bg-gradient-to-br from-brand-50 to-emerald-50 rounded-2xl border border-brand-100 mb-6 overflow-hidden relative">
+      {/* Static illustration */}
+      <div className="flex flex-col items-center justify-center py-10 px-6 text-center">
+        <div className="w-16 h-16 bg-brand-100 rounded-full flex items-center justify-center mb-4">
+          <MapPin size={28} className="text-brand-600" />
         </div>
-      )}
-
-      {/* Equipment markers */}
-      {listings.slice(0, 8).map((l, i) => {
-        const pos = getPos(l.lat, l.lng);
-        return (
-          <div
-            key={l.id}
-            className="absolute z-10 flex flex-col items-center"
-            style={{ left: `${pos.x}%`, top: `${pos.y}%`, transform: 'translate(-50%, -100%)' }}
-          >
-            <div className={`w-6 h-6 rounded-full flex items-center justify-center shadow-lg ${l.verified ? 'bg-green-500' : 'bg-orange-500'}`}>
-              <MapPin size={12} className="text-white" />
-            </div>
-            <span className="mt-1 text-[8px] font-bold text-gray-700 bg-white/80 px-1 py-0.5 rounded shadow-sm whitespace-nowrap max-w-[80px] truncate">
-              {l.distance} KM • {l.name.split(' ')[0]}
-            </span>
-          </div>
-        );
-      })}
-
-      {/* Legend */}
-      <div className="absolute bottom-2 left-2 bg-white/90 backdrop-blur-sm px-2.5 py-1.5 rounded-lg shadow text-[10px] font-semibold text-gray-600 flex items-center gap-3">
-        <span className="flex items-center gap-1"><span className="w-2 h-2 bg-blue-500 rounded-full" /> You</span>
-        <span className="flex items-center gap-1"><span className="w-2 h-2 bg-green-500 rounded-full" /> Verified</span>
-        <span className="flex items-center gap-1"><span className="w-2 h-2 bg-orange-500 rounded-full" /> Other</span>
+        <h4 className="text-sm font-bold text-gray-700 mb-1">Map View Coming Soon</h4>
+        <p className="text-xs text-gray-500 max-w-xs">
+          Showing {listings.length} equipment in list view below. Interactive map with directions will be available in a future update.
+        </p>
       </div>
 
-      <div className="absolute bottom-2 right-2 bg-white/90 backdrop-blur-sm px-2.5 py-1.5 rounded-lg shadow text-[10px] font-semibold text-gray-600">
-        📍 {listings.length} equipment • Map integration coming soon
-      </div>
+      {/* Subtle dot pattern */}
+      <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(#173404 1px, transparent 1px)', backgroundSize: '12px 12px' }} />
     </div>
   );
 };

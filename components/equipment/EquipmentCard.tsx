@@ -27,7 +27,7 @@ const EquipmentCard: React.FC<EquipmentCardProps> = ({ listing, onViewDetails, i
         {/* Badges overlay */}
         <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
           {listing.verified && (
-            <span className="flex items-center gap-1 bg-green-600 text-white px-2 py-0.5 rounded-full text-[10px] font-bold shadow">
+            <span className="flex items-center gap-1 bg-brand-600 text-white px-2 py-0.5 rounded-full text-[10px] font-bold shadow">
               <Shield size={9} /> Verified
             </span>
           )}
@@ -49,11 +49,11 @@ const EquipmentCard: React.FC<EquipmentCardProps> = ({ listing, onViewDetails, i
         </div>
         {/* Match Score */}
         <div className="absolute top-3 right-3 w-11 h-11 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow">
-          <span className="text-xs font-extrabold text-green-700">{listing.matchScore}%</span>
+          <span className="text-xs font-extrabold text-brand-700">{listing.matchScore}%</span>
         </div>
         {/* Price */}
         <div className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-xl shadow">
-          <span className="text-sm font-extrabold text-green-700">₹{listing.pricePerDay.toLocaleString()}</span>
+          <span className="text-sm font-extrabold text-brand-700">₹{listing.pricePerDay.toLocaleString()}</span>
           <span className="text-[10px] text-gray-500">/day</span>
         </div>
       </div>
@@ -62,7 +62,7 @@ const EquipmentCard: React.FC<EquipmentCardProps> = ({ listing, onViewDetails, i
       <div className="p-4">
         <div className="flex items-start justify-between gap-2 mb-2">
           <div className="min-w-0">
-            <h3 className="text-base font-bold text-gray-800 truncate group-hover:text-green-700 transition-colors">
+            <h3 className="text-base font-bold text-gray-800 truncate group-hover:text-brand-700 transition-colors">
               {listing.name}
             </h3>
             <p className="text-xs text-gray-400">{listing.brand} • {listing.horsepower} HP • {listing.year}</p>
@@ -76,22 +76,22 @@ const EquipmentCard: React.FC<EquipmentCardProps> = ({ listing, onViewDetails, i
         <p className="text-xs text-gray-500 mb-3 line-clamp-2">{listing.description}</p>
 
         {/* Location & Distance */}
-        <div className="bg-green-50 rounded-xl px-3 py-2.5 mb-3">
+        <div className="bg-brand-50 rounded-xl px-3 py-2.5 mb-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Navigation size={12} className="text-green-600" />
-              <span className="text-sm font-bold text-green-700">{listing.distance} KM Away</span>
+              <Navigation size={12} className="text-brand-600" />
+              <span className="text-sm font-bold text-brand-700">{listing.distance} KM Away</span>
             </div>
-            <span className="text-[10px] text-green-600 font-medium">~{listing.travelTime}</span>
+            <span className="text-[10px] text-brand-600 font-medium">~{listing.travelTime}</span>
           </div>
-          <p className="text-[10px] text-green-600 mt-1 flex items-center gap-1">
+          <p className="text-[10px] text-brand-600 mt-1 flex items-center gap-1">
             <MapPin size={9} /> Near {listing.village}
           </p>
         </div>
 
         {/* Info Row */}
         <div className="flex items-center gap-3 text-xs text-gray-500 mb-3">
-          {listing.operatorIncluded && <span className="flex items-center gap-1 text-green-600"><UserCheck size={11} /> Operator</span>}
+          {listing.operatorIncluded && <span className="flex items-center gap-1 text-brand-600"><UserCheck size={11} /> Operator</span>}
           {listing.fuelIncluded && <span className="flex items-center gap-1 text-blue-600"><Fuel size={11} /> Fuel</span>}
         </div>
 
@@ -104,19 +104,19 @@ const EquipmentCard: React.FC<EquipmentCardProps> = ({ listing, onViewDetails, i
           <span className="text-[10px] text-gray-400">Deposit: ₹{listing.deposit.toLocaleString()}</span>
         </div>
 
-        {/* Action Buttons */}
+        {/* Action Buttons — Call is primary, large */}
         <div className="flex gap-2">
           <a
             href={`tel:${listing.ownerPhone}`}
-            className="flex-1 py-2.5 bg-green-600 text-white rounded-xl text-xs font-semibold text-center hover:bg-green-700 transition-all flex items-center justify-center gap-1"
+            className="tap-target flex-[2] py-3 bg-brand-600 text-white rounded-xl text-sm font-bold text-center hover:bg-brand-700 transition-all flex items-center justify-center gap-2 shadow-sm shadow-brand-200 active:scale-[0.98]"
           >
-            <Phone size={12} /> Call
+            <Phone size={16} /> Call Owner
           </a>
           <a
             href={`https://wa.me/${listing.ownerPhone.replace('+', '')}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 py-2.5 bg-emerald-500 text-white rounded-xl text-xs font-semibold text-center hover:bg-emerald-600 transition-all flex items-center justify-center gap-1"
+            className="tap-target flex-1 py-3 bg-emerald-500 text-white rounded-xl text-xs font-semibold text-center hover:bg-emerald-600 transition-all flex items-center justify-center gap-1"
           >
             <MessageCircle size={12} /> WhatsApp
           </a>
@@ -124,14 +124,14 @@ const EquipmentCard: React.FC<EquipmentCardProps> = ({ listing, onViewDetails, i
             href={`https://www.google.com/maps/dir/?api=1&destination=${listing.lat},${listing.lng}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="py-2.5 px-2.5 bg-gray-100 text-gray-600 rounded-xl text-xs font-semibold hover:bg-gray-200 transition-all flex items-center justify-center"
+            className="tap-target py-3 px-3 bg-gray-100 text-gray-600 rounded-xl text-xs font-semibold hover:bg-gray-200 transition-all flex items-center justify-center"
             title="Open in Google Maps"
           >
             <ExternalLink size={12} />
           </a>
           <button
             onClick={() => onViewDetails(listing)}
-            className="py-2.5 px-2.5 bg-gray-100 text-gray-600 rounded-xl text-xs font-semibold hover:bg-gray-200 transition-all flex items-center justify-center"
+            className="tap-target py-3 px-3 bg-gray-100 text-gray-600 rounded-xl text-xs font-semibold hover:bg-gray-200 transition-all flex items-center justify-center"
           >
             <Eye size={12} />
           </button>

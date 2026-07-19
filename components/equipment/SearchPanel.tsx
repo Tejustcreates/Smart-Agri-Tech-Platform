@@ -1,10 +1,20 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, Search, SlidersHorizontal, Loader2, Navigation, RefreshCw } from 'lucide-react';
+import { MapPin, Search, SlidersHorizontal, Loader2, Navigation, RefreshCw, Tractor, Wheat, Wrench, Droplets, Sprout, MoreHorizontal } from 'lucide-react';
 import { SearchFilters, EquipmentCategory, AvailabilityFilter, GpsLocation } from '../../types/equipment';
 import { reverseGeocode } from '../../services/equipment/equipmentService';
 
-const CATEGORIES: EquipmentCategory[] = ['Tractor', 'Harvester', 'Rotavator', 'Seeder', 'Sprayer', 'Cultivator', 'Thresher', 'Plough', 'Others'];
+const TOP_CATEGORIES: { icon: React.ReactNode; label: string; value: EquipmentCategory }[] = [
+  { icon: <Tractor size={14} />, label: 'Tractor', value: 'Tractor' },
+  { icon: <Wheat size={14} />, label: 'Harvester', value: 'Harvester' },
+  { icon: <Wrench size={14} />, label: 'Rotavator', value: 'Rotavator' },
+  { icon: <Sprout size={14} />, label: 'Seeder', value: 'Seeder' },
+  { icon: <Droplets size={14} />, label: 'Sprayer', value: 'Sprayer' },
+  { icon: <MoreHorizontal size={14} />, label: 'Others', value: '' },
+];
+
+const ALL_CATEGORIES: EquipmentCategory[] = ['Tractor', 'Harvester', 'Rotavator', 'Seeder', 'Sprayer', 'Cultivator', 'Thresher', 'Plough', 'Others'];
+
 const AVAILABILITY: { value: AvailabilityFilter; label: string }[] = [
   { value: 'today', label: 'Today' },
   { value: 'tomorrow', label: 'Tomorrow' },
@@ -61,7 +71,6 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ filters, onFiltersChange, onS
     const rect = e.currentTarget.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width;
     const y = (e.clientY - rect.top) / rect.height;
-    // Map bounds roughly Maharashtra area
     const lat = 19.5 - y * 5;
     const lng = 73.0 + x * 5;
     onFiltersChange({ ...filters, lat: Math.round(lat * 1000) / 1000, lng: Math.round(lng * 1000) / 1000 });
@@ -75,6 +84,10 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ filters, onFiltersChange, onS
     onFiltersChange({ ...filters, [key]: val });
   };
 
+  const budgetLabel = filters.maxBudget > 0
+    ? `Up to ₹${filters.maxBudget.toLocaleString()}/day`
+    : 'No limit';
+
   return (
     <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-100 shadow-sm p-6 mb-6">
       {/* Location Status */}
@@ -84,13 +97,13 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ filters, onFiltersChange, onS
           <div className="flex gap-2">
             <button
               onClick={detectLocation}
-              className="flex items-center gap-1 px-2.5 py-1 bg-green-50 text-green-700 rounded-lg text-[10px] font-semibold hover:bg-green-100 transition-all"
+              className="tap-target flex items-center gap-1 px-2.5 py-1 bg-brand-50 text-brand-700 rounded-lg text-[10px] font-semibold hover:bg-brand-100 transition-all"
             >
               <RefreshCw size={10} /> {gpsStatus === 'loading' ? 'Detecting...' : 'Auto-Detect GPS'}
             </button>
             <button
               onClick={() => { setMapClickEnabled(!mapClickEnabled); setGpsStatus('manual'); }}
-              className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-all ${
+              className={`tap-target flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-all ${
                 mapClickEnabled ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
@@ -107,16 +120,16 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ filters, onFiltersChange, onS
         )}
 
         {gpsStatus === 'granted' && locationInfo && (
-          <div className="bg-green-50 rounded-xl px-4 py-3">
+          <div className="bg-brand-50 rounded-xl px-4 py-3">
             <div className="flex items-center gap-2 mb-1">
-              <Navigation size={14} className="text-green-600" />
-              <span className="text-sm font-bold text-green-700">
+              <Navigation size={14} className="text-brand-600" />
+              <span className="text-sm font-bold text-brand-700">
                 {locationInfo.village || 'Location Detected'}
               </span>
-              {locationInfo.pincode && <span className="text-[10px] text-green-600 bg-green-100 px-1.5 py-0.5 rounded-full">{locationInfo.pincode}</span>}
+              {locationInfo.pincode && <span className="text-[10px] text-brand-600 bg-brand-100 px-1.5 py-0.5 rounded-full">{locationInfo.pincode}</span>}
             </div>
-            <p className="text-xs text-green-600 line-clamp-1">{locationInfo.address}</p>
-            <p className="text-[10px] text-green-500 mt-1">Lat: {filters.lat.toFixed(4)}, Lng: {filters.lng.toFixed(4)}</p>
+            <p className="text-xs text-brand-600 line-clamp-1">{locationInfo.address}</p>
+            <p className="text-[10px] text-brand-500 mt-1">Lat: {filters.lat.toFixed(4)}, Lng: {filters.lng.toFixed(4)}</p>
           </div>
         )}
 
@@ -142,53 +155,63 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ filters, onFiltersChange, onS
         {(gpsStatus === 'denied' || mapClickEnabled) && (
           <div
             onClick={handleMapClick}
-            className={`mt-3 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border-2 h-40 overflow-hidden relative transition-all ${
-              mapClickEnabled ? 'border-dashed border-green-400 cursor-crosshair' : 'border-green-100'
+            className={`mt-3 bg-gradient-to-br from-brand-50 to-emerald-50 rounded-xl border-2 h-40 overflow-hidden relative transition-all ${
+              mapClickEnabled ? 'border-dashed border-brand-400 cursor-crosshair' : 'border-brand-100'
             }`}
           >
-            <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'linear-gradient(#16a34a 1px, transparent 1px), linear-gradient(90deg, #16a34a 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
+            <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'linear-gradient(#173404 1px, transparent 1px), linear-gradient(90deg, #173404 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
             {filters.lat !== 0 && filters.lng !== 0 && (
               <div className="absolute" style={{ left: `${((filters.lng - 73) / 5) * 100}%`, top: `${((19.5 - filters.lat) / 5) * 100}%`, transform: 'translate(-50%, -100%)' }}>
-                <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center shadow-lg">
+                <div className="w-6 h-6 bg-brand-600 rounded-full flex items-center justify-center shadow-lg">
                   <MapPin size={12} className="text-white" />
                 </div>
               </div>
             )}
             <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-white/90 px-3 py-1 rounded-full text-[10px] font-semibold text-gray-600 shadow">
-              {mapClickEnabled ? '📍 Tap anywhere to drop a pin' : '🗺️ Map Preview — Google Maps integration coming soon'}
+              {mapClickEnabled ? 'Tap anywhere to drop a pin' : 'Map Preview — Google Maps integration coming soon'}
             </div>
           </div>
         )}
       </div>
 
-      {/* Filters Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-        <div>
-          <label className="block text-xs font-semibold text-gray-500 uppercase mb-1.5">Category</label>
-          <div className="relative">
-            <SlidersHorizontal size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <select
-              value={filters.category}
-              onChange={(e) => update('category', e.target.value)}
-              className="w-full pl-9 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+      {/* Category Icon Pills */}
+      <div className="mb-4">
+        <label className="block text-xs font-semibold text-gray-500 uppercase mb-2">Category</label>
+        <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1 -mx-1 px-1">
+          {TOP_CATEGORIES.map((cat) => (
+            <button
+              key={cat.label}
+              onClick={() => update('category', cat.value)}
+              className={`tap-target flex-shrink-0 flex items-center gap-1.5 px-3.5 rounded-xl text-xs font-semibold transition-all ${
+                filters.category === cat.value || (cat.value === '' && filters.category === '')
+                  ? 'bg-brand-600 text-white shadow-md shadow-brand-200'
+                  : 'bg-white text-gray-600 border border-gray-200 hover:border-brand-300 hover:text-brand-700'
+              }`}
             >
-              <option value="">All Categories</option>
-              {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-            </select>
-          </div>
+              {cat.icon}
+              {cat.label}
+            </button>
+          ))}
         </div>
+      </div>
+
+      {/* Filters Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
         <div>
           <label className="block text-xs font-semibold text-gray-500 uppercase mb-1.5">Availability</label>
           <select
             value={filters.availability}
             onChange={(e) => update('availability', e.target.value as AvailabilityFilter)}
-            className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="tap-target w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
           >
             {AVAILABILITY.map((a) => <option key={a.value} value={a.value}>{a.label}</option>)}
           </select>
         </div>
         <div>
-          <label className="block text-xs font-semibold text-gray-500 uppercase mb-1.5">Max Budget: {filters.maxBudget > 0 ? `₹${filters.maxBudget.toLocaleString()}/day` : 'No limit'}</label>
+          <label className="block text-xs font-semibold text-gray-500 uppercase mb-1.5">Max Budget</label>
+          {filters.maxBudget > 0 && (
+            <p className="text-xl font-extrabold text-brand-700 mb-1">Up to ₹{filters.maxBudget.toLocaleString()}<span className="text-sm font-semibold text-gray-400">/day</span></p>
+          )}
           <input
             type="range"
             min={0}
@@ -196,15 +219,15 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ filters, onFiltersChange, onS
             step={500}
             value={filters.maxBudget}
             onChange={(e) => update('maxBudget', Number(e.target.value))}
-            className="w-full accent-green-600"
+            className="w-full accent-brand-600"
           />
           <p className="text-[10px] text-gray-400 mt-1">
-            {filters.maxBudget === 0 ? '↔ Drag to set a budget limit' : 'Drag left to clear budget limit'}
+            {filters.maxBudget === 0 ? 'Drag to set a budget limit' : budgetLabel + ' — drag left to clear'}
           </p>
         </div>
       </div>
 
-      {/* Radius Chips */}
+      {/* Radius Chips — tap-target, strong active */}
       <div className="mb-5">
         <label className="block text-xs font-semibold text-gray-500 uppercase mb-2">Search Radius</label>
         <div className="flex flex-wrap gap-2">
@@ -212,9 +235,9 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ filters, onFiltersChange, onS
             <button
               key={r}
               onClick={() => update('radius', r)}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${
+              className={`tap-target px-3.5 rounded-xl text-xs font-semibold transition-all ${
                 filters.radius === r
-                  ? 'bg-green-600 text-white shadow-sm'
+                  ? 'bg-brand-600 text-white shadow-md shadow-brand-200'
                   : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
               }`}
             >
@@ -228,7 +251,7 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ filters, onFiltersChange, onS
       <button
         onClick={onSearch}
         disabled={loading || (filters.lat === 0 && filters.lng === 0)}
-        className="w-full py-3.5 bg-green-600 text-white rounded-xl font-semibold text-sm hover:bg-green-700 disabled:bg-green-400 transition-all shadow-sm shadow-green-200 active:scale-[0.98] flex items-center justify-center gap-2"
+        className="w-full py-3.5 bg-brand-600 text-white rounded-xl font-semibold text-sm hover:bg-brand-700 disabled:bg-brand-400 transition-all shadow-sm shadow-brand-200 active:scale-[0.98] flex items-center justify-center gap-2"
       >
         {loading ? (
           <><Loader2 size={16} className="animate-spin" /> Searching...</>

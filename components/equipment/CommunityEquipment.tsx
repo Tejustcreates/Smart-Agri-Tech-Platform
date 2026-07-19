@@ -28,7 +28,7 @@ const CommunityEquipment: React.FC = () => {
             Community Marketplace
           </div>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-800 mb-3">
-            Community Equipment <span className="text-green-600">Rental Marketplace</span>
+            Community Equipment <span className="text-brand-600">Rental Marketplace</span>
           </h1>
           <p className="text-gray-500 max-w-xl mx-auto text-sm">
             Rent farming equipment directly from nearby farmers in your area.
@@ -44,7 +44,7 @@ const CommunityEquipment: React.FC = () => {
                 onClick={() => setActiveTab(tab.key)}
                 className={`flex-1 flex items-center justify-center gap-2 py-4 text-sm font-semibold transition-all border-b-2 ${
                   activeTab === tab.key
-                    ? 'border-green-600 text-green-700 bg-green-50/50'
+                    ? 'border-brand-600 text-brand-700 bg-brand-50/50'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
                 }`}
               >

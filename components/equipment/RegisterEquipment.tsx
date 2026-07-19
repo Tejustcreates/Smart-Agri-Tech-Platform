@@ -21,8 +21,6 @@ const RegisterEquipment: React.FC = () => {
   const [success, setSuccess] = useState(false);
   const [gpsStatus, setGpsStatus] = useState<'idle' | 'loading' | 'granted' | 'denied'>('idle');
   const [locationInfo, setLocationInfo] = useState<GpsLocation | null>(null);
-  const [markerPos, setMarkerPos] = useState<{ lat: number; lng: number }>({ lat: 0, lng: 0 });
-  const [dragging, setDragging] = useState(false);
 
   const update = <K extends keyof RegistrationForm>(key: K, val: RegistrationForm[K]) => {
     setForm((prev) => ({ ...prev, [key]: val }));
@@ -37,7 +35,6 @@ const RegisterEquipment: React.FC = () => {
         const lng = pos.coords.longitude;
         update('lat', lat);
         update('lng', lng);
-        setMarkerPos({ lat, lng });
         const geo = await reverseGeocode(lat, lng);
         setLocationInfo(geo);
         update('village', geo.village);
@@ -60,7 +57,6 @@ const RegisterEquipment: React.FC = () => {
     const lng = Math.round((73.0 + x * 5) * 1000) / 1000;
     update('lat', lat);
     update('lng', lng);
-    setMarkerPos({ lat, lng });
     const geo = await reverseGeocode(lat, lng);
     setLocationInfo(geo);
     update('village', geo.village);
@@ -84,7 +80,7 @@ const RegisterEquipment: React.FC = () => {
     <div className="max-w-3xl mx-auto">
       <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
         {/* Owner Details */}
-        <SectionHeader icon={<User size={18} />} title="Owner Details" color="bg-green-50 text-green-600" />
+        <SectionHeader icon={<User size={18} />} title="Owner Details" color="bg-brand-50 text-brand-600" />
         <div className="px-6 pb-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Input icon={<User size={14} />} label="Full Name *" value={form.ownerName} onChange={(v) => update('ownerName', v)} placeholder="e.g. Rajesh Patil" />
           <Input icon={<Phone size={14} />} label="Mobile Number *" value={form.phone} onChange={(v) => update('phone', v)} placeholder="+91 98765 43210" type="tel" />
@@ -97,47 +93,45 @@ const RegisterEquipment: React.FC = () => {
             <button
               onClick={detectLocation}
               disabled={gpsStatus === 'loading'}
-              className="flex items-center gap-1.5 px-3 py-2 bg-green-50 text-green-700 rounded-xl text-xs font-semibold hover:bg-green-100 transition-all"
+              className="tap-target flex items-center gap-1.5 px-3 py-2 bg-brand-50 text-brand-700 rounded-xl text-xs font-semibold hover:bg-brand-100 transition-all"
             >
               {gpsStatus === 'loading' ? <Loader2 size={12} className="animate-spin" /> : <Navigation size={12} />}
               {gpsStatus === 'loading' ? 'Detecting GPS...' : 'Auto-Detect My Location'}
             </button>
             <button
               onClick={detectLocation}
-              className="flex items-center gap-1.5 px-3 py-2 bg-gray-100 text-gray-600 rounded-xl text-xs font-semibold hover:bg-gray-200 transition-all"
+              className="tap-target flex items-center gap-1.5 px-3 py-2 bg-gray-100 text-gray-600 rounded-xl text-xs font-semibold hover:bg-gray-200 transition-all"
             >
               <RefreshCw size={12} /> Retry
             </button>
           </div>
 
           {locationInfo && (
-            <div className="bg-green-50 rounded-xl px-4 py-3 mb-3">
-              <p className="text-sm font-bold text-green-700">{locationInfo.village || 'Location Detected'}</p>
-              <p className="text-xs text-green-600 line-clamp-1">{locationInfo.address}</p>
-              <p className="text-[10px] text-green-500 mt-1">Lat: {form.lat.toFixed(4)}, Lng: {form.lng.toFixed(4)} {locationInfo.pincode && `• PIN: ${locationInfo.pincode}`}</p>
+            <div className="bg-brand-50 rounded-xl px-4 py-3 mb-3">
+              <p className="text-sm font-bold text-brand-700">{locationInfo.village || 'Location Detected'}</p>
+              <p className="text-xs text-brand-600 line-clamp-1">{locationInfo.address}</p>
+              <p className="text-[10px] text-brand-500 mt-1">Lat: {form.lat.toFixed(4)}, Lng: {form.lng.toFixed(4)} {locationInfo.pincode && `• PIN: ${locationInfo.pincode}`}</p>
             </div>
           )}
 
-          {/* Map with draggable marker */}
+          {/* Map with clickable marker */}
           <div
             onClick={handleMapClick}
-            className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border border-green-100 h-40 overflow-hidden relative cursor-crosshair"
+            className="bg-gradient-to-br from-brand-50 to-emerald-50 rounded-xl border border-brand-100 h-40 overflow-hidden relative cursor-crosshair"
           >
-            <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'linear-gradient(#16a34a 1px, transparent 1px), linear-gradient(90deg, #16a34a 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
+            <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'linear-gradient(#173404 1px, transparent 1px), linear-gradient(90deg, #173404 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
             {form.lat !== 0 && form.lng !== 0 && (
               <div
                 className="absolute z-10"
                 style={{ left: `${((form.lng - 73) / 5) * 100}%`, top: `${((19.5 - form.lat) / 5) * 100}%`, transform: 'translate(-50%, -100%)', cursor: 'grab' }}
-                onMouseDown={(e) => { e.stopPropagation(); setDragging(true); }}
-                onMouseUp={() => setDragging(false)}
               >
-                <div className="w-7 h-7 bg-green-500 rounded-full flex items-center justify-center shadow-lg border-2 border-white">
+                <div className="w-7 h-7 bg-brand-600 rounded-full flex items-center justify-center shadow-lg border-2 border-white">
                   <MapPin size={14} className="text-white" />
                 </div>
               </div>
             )}
             <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-white/90 px-3 py-1 rounded-full text-[10px] font-semibold text-gray-600 shadow">
-              📍 Click map to adjust location — drag pin to fine-tune
+              Click map to adjust location — drag pin to fine-tune
             </div>
           </div>
 
@@ -171,7 +165,7 @@ const RegisterEquipment: React.FC = () => {
         </div>
 
         {/* Rental Details */}
-        <SectionHeader icon={<IndianRupee size={18} />} title="Rental Details" color="bg-green-50 text-green-600" />
+        <SectionHeader icon={<IndianRupee size={18} />} title="Rental Details" color="bg-brand-50 text-brand-600" />
         <div className="px-6 pb-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Input icon={<IndianRupee size={14} />} label="Price Per Hour (₹)" value={form.pricePerHour} onChange={(v) => update('pricePerHour', v)} placeholder="e.g. 500" type="number" />
           <Input icon={<IndianRupee size={14} />} label="Price Per Day (₹) *" value={form.pricePerDay} onChange={(v) => update('pricePerDay', v)} placeholder="e.g. 3500" type="number" />
@@ -188,7 +182,7 @@ const RegisterEquipment: React.FC = () => {
         <div className="px-6 pb-6">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
             {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((d) => (
-              <button key={d} className="py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-semibold text-gray-600 hover:bg-green-50 hover:border-green-300 hover:text-green-700 transition-all">
+              <button key={d} className="tap-target bg-gray-50 border border-gray-200 rounded-xl text-xs font-semibold text-gray-600 hover:bg-brand-50 hover:border-brand-300 hover:text-brand-700 transition-all">
                 {d}
               </button>
             ))}
@@ -201,19 +195,19 @@ const RegisterEquipment: React.FC = () => {
             step={5}
             value={form.workingRadius}
             onChange={(e) => update('workingRadius', Number(e.target.value))}
-            className="w-full accent-green-600"
+            className="w-full accent-brand-600"
           />
           <div className="flex justify-between text-[10px] text-gray-400">
             <span>5 km</span><span>100 km</span>
           </div>
         </div>
 
-        {/* Submit */}
-        <div className="px-6 pb-6">
+        {/* Submit — solid brand button, full-width */}
+        <div className="px-6 pb-6 sticky bottom-0 bg-white/80 backdrop-blur-sm pt-2">
           <button
             onClick={handleSubmit}
             disabled={loading || !form.ownerName || !form.phone || !form.equipmentName || !form.category || !form.pricePerDay || !form.condition || form.lat === 0}
-            className="w-full py-3.5 bg-green-600 text-white rounded-xl font-semibold text-sm hover:bg-green-700 disabled:bg-green-400 transition-all shadow-sm shadow-green-200 active:scale-[0.98] flex items-center justify-center gap-2"
+            className="w-full py-3.5 bg-brand-600 text-white rounded-xl font-semibold text-sm hover:bg-brand-700 disabled:bg-brand-400 transition-all shadow-sm shadow-brand-200 active:scale-[0.98] flex items-center justify-center gap-2"
           >
             {loading ? <><Loader2 size={16} className="animate-spin" /> Registering...</> : 'Register Equipment'}
           </button>
@@ -243,7 +237,7 @@ const Input: React.FC<{
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className={`w-full ${icon ? 'pl-9' : 'pl-3'} pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500 transition-all`}
+        className={`tap-target w-full ${icon ? 'pl-9' : 'pl-3'} pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all`}
       />
     </div>
   </div>
@@ -258,7 +252,7 @@ const Select: React.FC<{
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+      className="tap-target w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
     >
       <option value="">{placeholder}</option>
       {options.map((o) => <option key={o} value={o}>{o}</option>)}
@@ -270,7 +264,7 @@ const Toggle: React.FC<{
   label: string; checked: boolean; onChange: (v: boolean) => void; icon?: React.ReactNode;
 }> = ({ label, checked, onChange, icon }) => (
   <label className="flex items-center gap-2 cursor-pointer">
-    <div className={`relative w-10 h-5 rounded-full transition-colors ${checked ? 'bg-green-500' : 'bg-gray-300'}`} onClick={() => onChange(!checked)}>
+    <div className={`relative w-10 h-5 rounded-full transition-colors ${checked ? 'bg-brand-500' : 'bg-gray-300'}`} onClick={() => onChange(!checked)}>
       <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${checked ? 'translate-x-5' : 'translate-x-0.5'}`} />
     </div>
     <span className="text-xs font-semibold text-gray-600 flex items-center gap-1">{icon} {label}</span>
@@ -278,7 +272,7 @@ const Toggle: React.FC<{
 );
 
 const UploadBox: React.FC<{ label: string; required?: boolean }> = ({ label, required }) => (
-  <div className="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center hover:border-green-400 hover:bg-green-50/50 transition-all cursor-pointer">
+  <div className="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center hover:border-brand-400 hover:bg-brand-50/50 transition-all cursor-pointer">
     <Upload size={20} className="text-gray-400 mx-auto mb-2" />
     <p className="text-xs font-semibold text-gray-600">{label}</p>
     <p className="text-[10px] text-gray-400 mt-1">{required ? 'Required' : 'Optional'}</p>
