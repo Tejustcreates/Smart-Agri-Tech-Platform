@@ -101,11 +101,11 @@ const FarmerNewsSection: React.FC = () => {
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-16">
         {/* Header */}
         <div className="text-center mb-10">
-          <div className="inline-flex items-center gap-2 bg-emerald-100 text-emerald-700 rounded-full px-4 py-1.5 text-sm font-medium mb-4">
-            📰 Personalized Farmer News
+          <div className="inline-flex items-center gap-2 bg-brand-100 text-brand-700 rounded-full px-4 py-1.5 text-sm font-medium mb-4">
+            <i className="fas fa-newspaper" /> Personalized Farmer News
           </div>
           <h2 className="text-3xl md:text-4xl font-bold text-gray-800">
-            Personalized <span className="text-green-600">Farmer News</span>
+            Personalized <span className="text-brand-600">Farmer News</span>
           </h2>
           <p className="text-gray-500 mt-3 max-w-xl mx-auto text-sm sm:text-base">
             Stay updated with the latest agriculture, farming, crop, market, weather and government scheme news tailored to your interests.
@@ -158,7 +158,7 @@ const FarmerNewsSection: React.FC = () => {
                   <button
                     onClick={handleLoadMore}
                     disabled={loadingMore}
-                    className="px-8 py-3 bg-green-600 text-white rounded-xl font-semibold text-sm hover:bg-green-700 transition-all shadow-sm shadow-green-200 disabled:opacity-60"
+                    className="tap-target px-8 py-3 bg-brand-600 text-white rounded-xl font-semibold text-sm hover:bg-brand-700 transition-all shadow-sm shadow-brand-200 disabled:opacity-60"
                   >
                     {loadingMore ? 'Loading...' : 'Load More News'}
                   </button>
