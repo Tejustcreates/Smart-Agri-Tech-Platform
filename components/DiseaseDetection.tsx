@@ -119,7 +119,8 @@ const DISEASES: Record<string, DiseaseInfo> = {
 const SYMPTOM_CATEGORIES = [
   {
     name: 'Leaf Symptoms',
-    icon: '🍃',
+    iconClass: 'fas fa-leaf',
+    color: 'bg-emerald-100 text-emerald-700',
     symptoms: [
       { id: 'yellow-spots', label: 'Yellow spots on leaves' },
       { id: 'brown-lesions', label: 'Brown lesions' },
@@ -132,7 +133,8 @@ const SYMPTOM_CATEGORIES = [
   },
   {
     name: 'Stem & Root Symptoms',
-    icon: '🌱',
+    iconClass: 'fas fa-seedling',
+    color: 'bg-amber-100 text-amber-700',
     symptoms: [
       { id: 'soft-roots', label: 'Soft or mushy roots' },
       { id: 'brown-roots', label: 'Brown discoloration of roots' },
@@ -142,7 +144,8 @@ const SYMPTOM_CATEGORIES = [
   },
   {
     name: 'Fruit & Yield Symptoms',
-    icon: '🍅',
+    iconClass: 'fas fa-apple-alt',
+    color: 'bg-red-100 text-red-700',
     symptoms: [
       { id: 'fruit-rot', label: 'Fruit rot or spots' },
       { id: 'sunken-spots', label: 'Sunken spots on fruit' },
@@ -152,7 +155,8 @@ const SYMPTOM_CATEGORIES = [
   },
   {
     name: 'General Symptoms',
-    icon: '⚠️',
+    iconClass: 'fas fa-exclamation-triangle',
+    color: 'bg-orange-100 text-orange-700',
     symptoms: [
       { id: 'stunted', label: 'General stunting' },
       { id: 'one-sided-wilt', label: 'One-sided wilting' },
@@ -163,16 +167,16 @@ const SYMPTOM_CATEGORIES = [
 ];
 
 const CROP_OPTIONS = [
-  { name: 'Wheat', icon: '🌾' },
-  { name: 'Rice', icon: '🍚' },
-  { name: 'Cotton', icon: '☁️' },
-  { name: 'Tomato', icon: '🍅' },
-  { name: 'Potato', icon: '🥔' },
-  { name: 'Onion', icon: '🧅' },
-  { name: 'Maize', icon: '🌽' },
-  { name: 'Sugarcane', icon: '🎋' },
-  { name: 'Soybean', icon: '🫘' },
-  { name: 'Other', icon: '🌿' },
+  { name: 'Wheat', iconClass: 'fas fa-wheat-awn' },
+  { name: 'Rice', iconClass: 'fas fa-seedling' },
+  { name: 'Cotton', iconClass: 'fas fa-cloud' },
+  { name: 'Tomato', iconClass: 'fas fa-apple-alt' },
+  { name: 'Potato', iconClass: 'fas fa-circle' },
+  { name: 'Onion', iconClass: 'fas fa-circle-half-stroke' },
+  { name: 'Maize', iconClass: 'fas fa-wheat-awn' },
+  { name: 'Sugarcane', iconClass: 'fas fa-tree' },
+  { name: 'Soybean', iconClass: 'fas fa-leaf' },
+  { name: 'Other', iconClass: 'fas fa-ellipsis-h' },
 ];
 
 const STEPS = [
@@ -194,17 +198,17 @@ const StepIndicator: React.FC<{ currentStep: number }> = ({ currentStep }) => (
           <React.Fragment key={step.num}>
             <div className="flex flex-col items-center text-center flex-1">
               <div
-                className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 ${
+                className={`min-w-[40px] min-h-[40px] w-10 h-10 sm:min-w-[48px] sm:min-h-[48px] sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 ${
                   isDone
-                    ? 'bg-green-600 text-white'
+                    ? 'bg-brand-600 text-white'
                     : isActive
-                    ? 'bg-green-600 text-white ring-4 ring-green-100'
+                    ? 'bg-brand-600 text-white ring-4 ring-brand-100'
                     : 'bg-gray-100 text-gray-400'
                 }`}
               >
-                {isDone ? '✓' : step.num}
+                {isDone ? <i className="fas fa-check text-xs" /> : step.num}
               </div>
-              <p className={`text-[10px] sm:text-xs font-semibold mt-2 ${isActive || isDone ? 'text-green-700' : 'text-gray-400'}`}>
+              <p className={`text-[10px] sm:text-xs font-semibold mt-2 ${isActive || isDone ? 'text-brand-700' : 'text-gray-400'}`}>
                 <span className="hidden sm:inline">{step.label}</span>
                 <span className="sm:hidden">{step.shortLabel}</span>
               </p>
@@ -212,7 +216,7 @@ const StepIndicator: React.FC<{ currentStep: number }> = ({ currentStep }) => (
             {i < STEPS.length - 1 && (
               <div
                 className={`flex-1 h-0.5 mx-1 mt-[-16px] sm:mt-[-20px] transition-colors duration-300 ${
-                  currentStep > step.num ? 'bg-green-500' : 'bg-gray-200'
+                  currentStep > step.num ? 'bg-brand-600' : 'bg-gray-200'
                 }`}
               />
             )}
@@ -226,23 +230,26 @@ const StepIndicator: React.FC<{ currentStep: number }> = ({ currentStep }) => (
 const CropSelector: React.FC<{ selected: string; onSelect: (c: string) => void }> = ({ selected, onSelect }) => (
   <div>
     <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-      <span className="text-xl">🌿</span> Select Your Crop
+      <i className="fas fa-seedling text-brand-600" /> Select Your Crop
     </h3>
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-      {CROP_OPTIONS.map((crop) => (
-        <button
-          key={crop.name}
-          onClick={() => onSelect(crop.name)}
-          className={`flex flex-col items-center gap-1.5 px-4 py-4 rounded-xl font-medium text-sm transition-all duration-200 ${
-            selected === crop.name
-              ? 'bg-green-600 text-white shadow-md shadow-green-200 ring-2 ring-green-400'
-              : 'bg-gray-50 text-gray-700 border border-gray-200 hover:border-green-300 hover:bg-green-50 hover:shadow-sm'
-          }`}
-        >
-          <span className="text-2xl">{crop.icon}</span>
-          <span>{crop.name}</span>
-        </button>
-      ))}
+      {CROP_OPTIONS.map((crop) => {
+        const isSelected = selected === crop.name;
+        return (
+          <button
+            key={crop.name}
+            onClick={() => onSelect(crop.name)}
+            className={`active:scale-95 flex flex-col items-center gap-2 min-h-[90px] px-4 py-4 rounded-xl font-medium text-sm transition-all duration-200 ${
+              isSelected
+                ? 'border-2 border-brand-600 bg-brand-50 text-brand-700 shadow-sm shadow-brand-200/50'
+                : 'border-2 border-gray-100 bg-white text-gray-600 hover:border-brand-300 hover:bg-brand-50/40 hover:shadow-sm'
+            }`}
+          >
+            <i className={`${crop.iconClass} text-xl ${isSelected ? 'text-brand-600' : 'text-gray-400'}`} />
+            <span>{crop.name}</span>
+          </button>
+        );
+      })}
     </div>
   </div>
 );
@@ -262,7 +269,7 @@ const SymptomSelector: React.FC<{
   return (
     <div>
       <h3 className="text-lg font-bold text-gray-800 mb-5 flex items-center gap-2">
-        <span className="text-xl">🔍</span> Select Observed Symptoms
+        <i className="fas fa-search text-brand-600" /> Select Observed Symptoms
       </h3>
       <div className="space-y-4">
         {SYMPTOM_CATEGORIES.map((category) => {
@@ -272,13 +279,15 @@ const SymptomSelector: React.FC<{
             <div key={category.name} className="border border-gray-100 rounded-2xl overflow-hidden">
               <button
                 onClick={() => toggleCategory(category.name)}
-                className="w-full flex items-center justify-between px-5 py-3.5 bg-gray-50 hover:bg-gray-100 transition-colors"
+                className="tap-target w-full flex items-center justify-between px-5 py-3.5 bg-gray-50 hover:bg-gray-100 transition-colors"
               >
                 <div className="flex items-center gap-2.5">
-                  <span className="text-base">{category.icon}</span>
+                  <span className={`w-7 h-7 rounded-lg flex items-center justify-center ${category.color}`}>
+                    <i className={`${category.iconClass} text-xs`} />
+                  </span>
                   <span className="text-sm font-bold text-gray-700">{category.name}</span>
                   {selectedInCat > 0 && (
-                    <span className="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-semibold">
+                    <span className="text-[10px] bg-brand-100 text-brand-700 px-2 py-0.5 rounded-full font-semibold">
                       {selectedInCat} selected
                     </span>
                   )}
@@ -301,21 +310,19 @@ const SymptomSelector: React.FC<{
                           <button
                             key={symptom.id}
                             onClick={() => onToggle({ ...symptom, category: category.name })}
-                            className={`flex items-center gap-3 px-4 py-3 rounded-xl border-2 text-left text-sm transition-all duration-200 ${
+                            className={`active:scale-[0.97] tap-target flex items-center gap-3 px-4 py-3 rounded-xl border-2 text-left text-sm transition-all duration-200 ${
                               isSelected
-                                ? 'border-green-500 bg-green-50 text-green-800 shadow-sm'
+                                ? 'border-brand-500 bg-brand-50 text-brand-800 shadow-sm'
                                 : 'border-gray-100 bg-white text-gray-600 hover:border-gray-200 hover:bg-gray-50'
                             }`}
                           >
                             <div
-                              className={`w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-all ${
-                                isSelected ? 'bg-green-500 border-green-500' : 'border-gray-300'
+                              className={`min-w-[20px] w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-all ${
+                                isSelected ? 'bg-brand-500 border-brand-500' : 'border-gray-300'
                               }`}
                             >
                               {isSelected && (
-                                <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-                                  <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                </svg>
+                                <i className="fas fa-check text-[10px] text-white" />
                               )}
                             </div>
                             <span>{symptom.label}</span>
@@ -339,11 +346,17 @@ const ResultReport: React.FC<{
   confidence: number;
   matchedSymptoms: string[];
 }> = ({ disease, confidence, matchedSymptoms }) => {
+  const [expandedSection, setExpandedSection] = useState<string | null>('treatment');
+
+  const toggleSection = (section: string) => {
+    setExpandedSection((prev) => (prev === section ? null : section));
+  };
+
   if (!disease) {
     return (
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-2xl shadow-sm p-10 text-center">
-        <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5">
-          <span className="text-4xl">✅</span>
+        <div className="w-20 h-20 bg-brand-100 rounded-full flex items-center justify-center mx-auto mb-5">
+          <i className="fas fa-check text-3xl text-brand-600" />
         </div>
         <h3 className="text-xl font-bold text-gray-800 mb-2">Healthy Crop</h3>
         <p className="text-gray-500 max-w-md mx-auto">
@@ -353,10 +366,25 @@ const ResultReport: React.FC<{
     );
   }
 
-  const severityColor = {
-    High: 'bg-red-100 text-red-700',
-    Medium: 'bg-amber-100 text-amber-700',
-    Low: 'bg-green-100 text-green-700',
+  const severityConfig = {
+    High: { bg: 'bg-red-100', text: 'text-red-700', border: 'border-red-200', icon: 'fas fa-exclamation-circle' },
+    Medium: { bg: 'bg-amber-100', text: 'text-amber-700', border: 'border-amber-200', icon: 'fas fa-exclamation' },
+    Low: { bg: 'bg-emerald-100', text: 'text-emerald-700', border: 'border-emerald-200', icon: 'fas fa-info-circle' },
+  };
+  const sev = severityConfig[disease.severity];
+
+  const actionSentence = {
+    High: 'Immediate treatment required — apply recommended products within 24 hours.',
+    Medium: 'Monitor closely and begin treatment within the next few days.',
+    Low: 'Minor issue — preventive measures should be sufficient.',
+  };
+
+  const treatmentEntries = Object.entries(disease.treatment).filter(([_, v]) => v) as [string, string][];
+  const treatmentMeta: Record<string, { label: string; color: string; icon: string }> = {
+    organic: { label: 'Organic Treatment', color: 'bg-emerald-50 border-emerald-100 text-emerald-700', icon: 'fas fa-leaf' },
+    fungicide: { label: 'Fungicide', color: 'bg-purple-50 border-purple-100 text-purple-700', icon: 'fas fa-flask' },
+    pesticide: { label: 'Pesticide', color: 'bg-amber-50 border-amber-100 text-amber-700', icon: 'fas fa-bug' },
+    fertilizer: { label: 'Recommended Fertilizer', color: 'bg-blue-50 border-blue-100 text-blue-700', icon: 'fas fa-tint' },
   };
 
   return (
@@ -373,18 +401,22 @@ const ResultReport: React.FC<{
             <p className="text-3xl font-bold">{confidence}%</p>
           </div>
         </div>
-        <div className="mt-3">
-          <span className={`px-3 py-1 rounded-full text-sm font-semibold ${severityColor[disease.severity]}`}>
-            {disease.severity} Severity
-          </span>
-        </div>
       </div>
 
-      <div className="p-6 space-y-6">
+      <div className="p-6 space-y-5">
+        {/* Severity badge + action sentence — shown first */}
+        <div className={`flex items-center gap-3 p-4 rounded-xl border ${sev.bg} ${sev.border}`}>
+          <i className={`${sev.icon} text-lg ${sev.text}`} />
+          <div>
+            <span className={`text-sm font-bold ${sev.text}`}>{disease.severity} Severity</span>
+            <p className="text-sm text-gray-600 mt-0.5">{actionSentence[disease.severity]}</p>
+          </div>
+        </div>
+
         {/* Observed Symptoms */}
         <div>
           <h4 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
-            <span className="text-base">🔎</span> Observed Symptoms
+            <i className="fas fa-search text-brand-600 text-sm" /> Observed Symptoms
           </h4>
           <div className="flex flex-wrap gap-2">
             {matchedSymptoms.map((s, i) => (
@@ -396,7 +428,7 @@ const ResultReport: React.FC<{
         {/* Likely Causes */}
         <div>
           <h4 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
-            <span className="text-base">💡</span> Likely Causes
+            <i className="fas fa-lightbulb text-amber-500 text-sm" /> Likely Causes
           </h4>
           <ul className="space-y-2">
             {disease.causes.map((cause, i) => (
@@ -408,51 +440,74 @@ const ResultReport: React.FC<{
           </ul>
         </div>
 
-        {/* Treatments */}
+        {/* Treatments — expandable */}
         <div>
-          <h4 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
-            <span className="text-base">💊</span> Recommended Treatment
-          </h4>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {disease.treatment.organic && (
-              <div className="bg-green-50 rounded-xl p-4 border border-green-100">
-                <p className="text-xs uppercase text-green-600 font-bold mb-1">Organic Treatment</p>
-                <p className="text-sm font-medium text-gray-800">{disease.treatment.organic}</p>
-              </div>
+          <button
+            onClick={() => toggleSection('treatment')}
+            className="tap-target w-full font-bold text-gray-800 mb-3 flex items-center justify-between"
+          >
+            <span className="flex items-center gap-2">
+              <i className="fas fa-pills text-brand-600 text-sm" /> Recommended Treatment
+            </span>
+            <i className={`fas fa-chevron-down text-gray-400 text-xs transition-transform ${expandedSection === 'treatment' ? 'rotate-180' : ''}`} />
+          </button>
+          <AnimatePresence>
+            {expandedSection === 'treatment' && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="overflow-hidden"
+              >
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {treatmentEntries.map(([key, value]) => {
+                    const meta = treatmentMeta[key] || { label: key, color: 'bg-gray-50 border-gray-100 text-gray-700', icon: 'fas fa-pills' };
+                    return (
+                      <div key={key} className={`rounded-xl p-4 border ${meta.color}`}>
+                        <p className="flex items-center gap-1.5 text-xs uppercase font-bold mb-1">
+                          <i className={meta.icon} /> {meta.label}
+                        </p>
+                        <p className="text-sm font-medium text-gray-800">{value}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </motion.div>
             )}
-            {disease.treatment.fungicide && (
-              <div className="bg-purple-50 rounded-xl p-4 border border-purple-100">
-                <p className="text-xs uppercase text-purple-600 font-bold mb-1">Fungicide</p>
-                <p className="text-sm font-medium text-gray-800">{disease.treatment.fungicide}</p>
-              </div>
-            )}
-            {disease.treatment.pesticide && (
-              <div className="bg-amber-50 rounded-xl p-4 border border-amber-100">
-                <p className="text-xs uppercase text-amber-600 font-bold mb-1">Pesticide</p>
-                <p className="text-sm font-medium text-gray-800">{disease.treatment.pesticide}</p>
-              </div>
-            )}
-            {disease.treatment.fertilizer && (
-              <div className="bg-blue-50 rounded-xl p-4 border border-blue-100">
-                <p className="text-xs uppercase text-blue-600 font-bold mb-1">Recommended Fertilizer</p>
-                <p className="text-sm font-medium text-gray-800">{disease.treatment.fertilizer}</p>
-              </div>
-            )}
-          </div>
+          </AnimatePresence>
         </div>
 
-        {/* Prevention */}
+        {/* Prevention — expandable */}
         <div>
-          <h4 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
-            <span className="text-base">🛡️</span> Prevention Tips
-          </h4>
-          <div className="flex flex-wrap gap-2">
-            {disease.prevention.map((tip, i) => (
-              <span key={i} className="px-3 py-1.5 bg-gray-50 text-gray-700 rounded-full text-sm border border-gray-100">
-                ✅ {tip}
-              </span>
-            ))}
-          </div>
+          <button
+            onClick={() => toggleSection('prevention')}
+            className="tap-target w-full font-bold text-gray-800 mb-3 flex items-center justify-between"
+          >
+            <span className="flex items-center gap-2">
+              <i className="fas fa-shield-alt text-brand-600 text-sm" /> Prevention Tips
+            </span>
+            <i className={`fas fa-chevron-down text-gray-400 text-xs transition-transform ${expandedSection === 'prevention' ? 'rotate-180' : ''}`} />
+          </button>
+          <AnimatePresence>
+            {expandedSection === 'prevention' && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="overflow-hidden"
+              >
+                <div className="flex flex-wrap gap-2">
+                  {disease.prevention.map((tip, i) => (
+                    <span key={i} className="px-3 py-1.5 bg-gray-50 text-gray-700 rounded-full text-sm border border-gray-100">
+                      {tip}
+                    </span>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </motion.div>
@@ -556,11 +611,11 @@ const DiseaseDetection: React.FC = () => {
       <div className="w-full max-w-7xl mx-auto px-6 lg:px-12 py-16">
         {/* Header */}
         <div className="text-center mb-10">
-          <div className="inline-flex items-center gap-2 bg-amber-100 text-amber-700 rounded-full px-4 py-1.5 text-sm font-medium mb-4">
-            🌿 Crop Protection
+          <div className="inline-flex items-center gap-2 bg-brand-100 text-brand-700 rounded-full px-4 py-1.5 text-sm font-medium mb-4">
+            <i className="fas fa-shield-alt" /> Crop Protection
           </div>
           <h2 className="text-3xl md:text-4xl font-bold text-gray-800">
-            Crop Disease <span className="text-green-600">Advisor</span>
+            Crop Disease <span className="text-brand-600">Advisor</span>
           </h2>
           <p className="text-gray-500 mt-3 max-w-lg mx-auto">
             Identify crop diseases and receive treatment and prevention recommendations for healthier crops.
@@ -591,7 +646,7 @@ const DiseaseDetection: React.FC = () => {
               {/* Step 3: Analyzing */}
               {currentStep === 3 && (
                 <motion.div key="step3" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.25 }} className="py-16 text-center">
-                  <div className="w-16 h-16 border-4 border-green-200 border-t-green-600 rounded-full animate-spin mx-auto mb-5" />
+                  <div className="w-16 h-16 border-4 border-brand-200 border-t-brand-600 rounded-full animate-spin mx-auto mb-5" />
                   <p className="text-lg font-semibold text-gray-700">Analyzing your crop...</p>
                   <p className="text-sm text-gray-400 mt-1">Comparing symptoms against known conditions</p>
                 </motion.div>
@@ -620,25 +675,25 @@ const DiseaseDetection: React.FC = () => {
               {currentStep > 1 && (
                 <button
                   onClick={handleBack}
-                  className="py-3.5 px-8 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-all text-sm"
+                  className="tap-target py-3.5 px-8 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-all text-sm"
                 >
-                  ← Back
+                  <i className="fas fa-arrow-left mr-1" /> Back
                 </button>
               )}
               {currentStep < 3 && (
                 <button
                   onClick={handleNext}
                   disabled={!canProceed}
-                  className="py-3.5 px-10 bg-green-700 text-white rounded-xl font-semibold hover:bg-green-800 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed transition-all text-sm shadow-md shadow-green-200/50"
+                  className="tap-target py-3.5 px-10 bg-brand-600 text-white rounded-xl font-semibold hover:bg-brand-700 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed transition-all text-sm shadow-md shadow-brand-200/50"
                 >
-                  {currentStep === 2 ? 'Analyze Crop →' : 'Next Step →'}
+                  {currentStep === 2 ? 'Analyze Crop' : 'Next Step'} <i className="fas fa-arrow-right ml-1" />
                 </button>
               )}
               <button
                 onClick={resetAll}
-                className="py-3.5 px-8 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-all text-sm"
+                className="tap-target py-3.5 px-8 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-all text-sm"
               >
-                ↺ Reset
+                <i className="fas fa-redo mr-1" /> Reset
               </button>
             </div>
           )}
@@ -648,9 +703,9 @@ const DiseaseDetection: React.FC = () => {
             <div className="flex justify-center">
               <button
                 onClick={resetAll}
-                className="py-3.5 px-10 bg-green-600 text-white rounded-xl font-semibold hover:bg-green-700 transition-all text-sm shadow-sm shadow-green-200"
+                className="tap-target py-3.5 px-10 bg-brand-600 text-white rounded-xl font-semibold hover:bg-brand-700 transition-all text-sm shadow-sm shadow-brand-200"
               >
-                Check Another Crop
+                <i className="fas fa-redo mr-1" /> Check Another Crop
               </button>
             </div>
           )}
@@ -659,17 +714,17 @@ const DiseaseDetection: React.FC = () => {
         {/* Crop Care Tips */}
         <div className="max-w-4xl mx-auto mt-12 bg-white rounded-2xl shadow-sm p-6 md:p-8">
           <h3 className="text-lg font-bold text-gray-800 mb-5 flex items-center gap-2">
-            <span className="text-lg">💚</span> Crop Care Tips
+            <i className="fas fa-heart text-brand-600" /> Crop Care Tips
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { icon: '💧', title: 'Proper Watering', desc: 'Water early morning to reduce fungal growth' },
-              { icon: '🌬️', title: 'Good Air Circulation', desc: 'Space plants properly to prevent disease spread' },
-              { icon: '🔄', title: 'Crop Rotation', desc: 'Rotate crops yearly to break disease cycles' },
-              { icon: '🧹', title: 'Field Hygiene', desc: 'Remove crop debris and clean tools regularly' },
+              { icon: 'fas fa-tint', title: 'Proper Watering', desc: 'Water early morning to reduce fungal growth' },
+              { icon: 'fas fa-wind', title: 'Good Air Circulation', desc: 'Space plants properly to prevent disease spread' },
+              { icon: 'fas fa-sync-alt', title: 'Crop Rotation', desc: 'Rotate crops yearly to break disease cycles' },
+              { icon: 'fas fa-broom', title: 'Field Hygiene', desc: 'Remove crop debris and clean tools regularly' },
             ].map((tip) => (
-              <div key={tip.title} className="bg-green-50 rounded-xl p-4">
-                <span className="text-2xl mb-2 block">{tip.icon}</span>
+              <div key={tip.title} className="tap-target bg-brand-50 rounded-xl p-4 min-h-[100px] flex flex-col">
+                <i className={`${tip.icon} text-brand-600 text-xl mb-2`} />
                 <h4 className="font-semibold text-gray-800 mb-1 text-sm">{tip.title}</h4>
                 <p className="text-xs text-gray-600">{tip.desc}</p>
               </div>
