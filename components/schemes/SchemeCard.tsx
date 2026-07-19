@@ -14,7 +14,7 @@ const levelColor = {
 };
 
 const matchColor = (score: number) => {
-  if (score >= 85) return 'bg-green-500';
+  if (score >= 85) return 'bg-brand-600';
   if (score >= 70) return 'bg-emerald-500';
   if (score >= 55) return 'bg-amber-500';
   return 'bg-gray-400';
@@ -71,7 +71,7 @@ const SchemeCard: React.FC<SchemeCardProps> = ({ scheme, rank }) => {
       <div className="px-5">
         <button
           onClick={() => setExpanded(!expanded)}
-          className="w-full flex items-center justify-between py-2.5 text-xs font-semibold text-green-600 hover:text-green-700 transition-colors"
+          className="tap-target w-full flex items-center justify-between py-2.5 text-xs font-semibold text-brand-600 hover:text-brand-700 transition-colors"
         >
           {expanded ? 'Hide Details' : 'View Eligibility & Benefits'}
           {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
@@ -83,8 +83,8 @@ const SchemeCard: React.FC<SchemeCardProps> = ({ scheme, rank }) => {
             animate={{ height: 'auto', opacity: 1 }}
             className="pb-4 space-y-3"
           >
-            <div className="bg-green-50 rounded-xl p-3.5">
-              <p className="text-xs font-bold text-green-700 uppercase mb-1">Eligibility</p>
+            <div className="bg-brand-50 rounded-xl p-3.5">
+              <p className="text-xs font-bold text-brand-700 uppercase mb-1">Eligibility</p>
               <p className="text-sm text-gray-700">{scheme.eligibility}</p>
             </div>
             <div className="bg-blue-50 rounded-xl p-3.5">
@@ -113,7 +113,7 @@ const SchemeCard: React.FC<SchemeCardProps> = ({ scheme, rank }) => {
           href={scheme.website}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex-1 py-2.5 bg-green-600 text-white rounded-xl text-xs font-semibold text-center hover:bg-green-700 transition-all flex items-center justify-center gap-1.5"
+          className="flex-1 py-2.5 bg-brand-600 text-white rounded-xl text-xs font-semibold text-center hover:bg-brand-700 transition-all flex items-center justify-center gap-1.5"
         >
           Apply Now <ExternalLink size={12} />
         </a>
@@ -121,13 +121,13 @@ const SchemeCard: React.FC<SchemeCardProps> = ({ scheme, rank }) => {
           href={scheme.website}
           target="_blank"
           rel="noopener noreferrer"
-          className="py-2.5 px-3 bg-gray-100 text-gray-600 rounded-xl text-xs font-semibold hover:bg-gray-200 transition-all"
+          className="tap-target py-2.5 px-3 bg-gray-100 text-gray-600 rounded-xl text-xs font-semibold hover:bg-gray-200 transition-all"
         >
           <Globe size={14} />
         </a>
         <button
           onClick={() => setSaved(!saved)}
-          className={`py-2.5 px-3 rounded-xl text-xs font-semibold transition-all ${
+          className={`tap-target py-2.5 px-3 rounded-xl text-xs font-semibold transition-all ${
             saved ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
           }`}
         >
@@ -135,7 +135,7 @@ const SchemeCard: React.FC<SchemeCardProps> = ({ scheme, rank }) => {
         </button>
         <button
           onClick={handleShare}
-          className="py-2.5 px-3 bg-gray-100 text-gray-600 rounded-xl text-xs font-semibold hover:bg-gray-200 transition-all"
+          className="tap-target py-2.5 px-3 bg-gray-100 text-gray-600 rounded-xl text-xs font-semibold hover:bg-gray-200 transition-all"
         >
           <Share2 size={14} />
         </button>

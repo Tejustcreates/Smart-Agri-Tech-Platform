@@ -29,12 +29,12 @@ const SearchBar: React.FC<SearchBarProps> = ({ filters, onFiltersChange, resultC
             value={filters.search}
             onChange={(e) => onFiltersChange({ ...filters, search: e.target.value })}
             placeholder="Search schemes by name, ministry, or keyword..."
-            className="w-full pl-11 pr-4 py-3 bg-white rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all shadow-sm"
+            className="w-full pl-11 pr-4 py-3 bg-white rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all shadow-sm"
           />
           {filters.search && (
             <button
               onClick={() => onFiltersChange({ ...filters, search: '' })}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              className="tap-target absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
             >
               <X size={16} />
             </button>
@@ -43,7 +43,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ filters, onFiltersChange, resultC
         <div className="relative">
           <button
             onClick={() => setShowSort(!showSort)}
-            className="p-3 bg-white rounded-xl border border-gray-200 hover:bg-green-50 hover:border-green-300 transition-all shadow-sm flex items-center gap-2"
+            className="tap-target p-3 bg-white rounded-xl border border-gray-200 hover:bg-brand-50 hover:border-brand-300 transition-all shadow-sm flex items-center gap-2"
           >
             <SlidersHorizontal size={16} className="text-gray-500" />
             <span className="text-sm font-medium text-gray-600 hidden sm:inline">
@@ -62,8 +62,8 @@ const SearchBar: React.FC<SearchBarProps> = ({ filters, onFiltersChange, resultC
                   <button
                     key={opt.value}
                     onClick={() => { onFiltersChange({ ...filters, sort: opt.value }); setShowSort(false); }}
-                    className={`w-full px-4 py-2.5 text-left text-sm hover:bg-green-50 transition-colors ${
-                      filters.sort === opt.value ? 'bg-green-50 text-green-700 font-semibold' : 'text-gray-600'
+                    className={`w-full px-4 py-2.5 text-left text-sm hover:bg-brand-50 transition-colors ${
+                      filters.sort === opt.value ? 'bg-brand-50 text-brand-700 font-semibold' : 'text-gray-600'
                     }`}
                   >
                     {opt.label}
@@ -83,7 +83,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ filters, onFiltersChange, resultC
             onClick={() => onFiltersChange({ ...filters, level })}
             className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${
               filters.level === level
-                ? 'bg-green-600 text-white shadow-sm'
+                ? 'bg-brand-600 text-white shadow-sm'
                 : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
             }`}
           >

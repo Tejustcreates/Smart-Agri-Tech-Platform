@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Search, ShieldCheck, AlertTriangle, Loader2 } from 'lucide-react';
-import { FarmerProfile, SchemeFilters, Scheme, SortOption } from '../../types/scheme';
+import { FarmerProfile, SchemeFilters, Scheme } from '../../types/scheme';
 import { searchSchemes, getPopularSchemes } from '../../services/schemeService';
 import SchemeFilter from './SchemeFilter';
 import SearchBar from './SearchBar';
@@ -41,7 +41,6 @@ const GovernmentSchemes: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Load popular schemes on mount
   useEffect(() => {
     setPopular(getPopularSchemes('Maharashtra'));
   }, []);
@@ -96,12 +95,12 @@ const GovernmentSchemes: React.FC = () => {
           viewport={{ once: true }}
           className="text-center mb-10"
         >
-          <div className="inline-flex items-center gap-2 bg-green-50 text-green-700 rounded-full px-4 py-1.5 text-xs font-semibold mb-4">
+          <div className="inline-flex items-center gap-2 bg-brand-50 text-brand-700 rounded-full px-4 py-1.5 text-xs font-semibold mb-4">
             <ShieldCheck size={14} />
             Government Scheme Finder
           </div>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-800 mb-3">
-            Find Schemes You <span className="text-green-600">Qualify For</span>
+            Find Schemes You <span className="text-brand-600">Qualify For</span>
           </h1>
           <p className="text-gray-500 max-w-xl mx-auto text-sm">
             Complete your profile below and we will match you with central and state government schemes, subsidies, and grants tailored to your farm.
@@ -135,7 +134,7 @@ const GovernmentSchemes: React.FC = () => {
 
             {loading ? (
               <div className="flex items-center justify-center py-20">
-                <Loader2 size={32} className="animate-spin text-green-500" />
+                <Loader2 size={32} className="animate-spin text-brand-500" />
                 <span className="ml-3 text-gray-500 text-sm">Searching schemes...</span>
               </div>
             ) : results.length === 0 ? (
