@@ -201,7 +201,7 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, cartCount }) => {
                       onClick={() => { setIsMoreOpen(false); scrollToSection(item.sectionId); }}
                       className={`w-full text-left px-4 py-2.5 text-sm font-medium flex items-center gap-3 transition-colors ${
                         isOnHomePage && activeSection === item.sectionId
-                          ? 'bg-green-50 text-green-700'
+                          ? 'bg-brand-50 text-brand-700'
                           : 'text-gray-700 hover:bg-gray-50'
                       }`}
                     >
@@ -215,7 +215,7 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, cartCount }) => {
 
             {/* Language pill */}
             <div className="translate-pill ml-1">
-              <i className="fas fa-globe text-green-600 text-xs" aria-hidden="true"></i>
+              <i className="fas fa-globe text-brand-400 text-xs" aria-hidden="true"></i>
               <div id="google_translate_element"></div>
             </div>
 

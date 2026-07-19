@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-ro
 import { Toaster, toast } from 'react-hot-toast';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import BottomNav from './components/BottomNav';
 import HomePage from './components/pages/HomePage';
 import Weather from './components/Weather';
 import CropRecommender from './components/CropRecommender';
@@ -22,12 +23,12 @@ import { ROUTES } from './constants';
 const NotFound: React.FC = () => (
   <section className="py-20 bg-gray-50 flex items-center justify-center min-h-[calc(100vh-64px)]">
     <div className="text-center">
-      <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-        <i className="fas fa-question text-green-600 text-4xl"></i>
+      <div className="w-24 h-24 bg-brand-100 rounded-full flex items-center justify-center mx-auto mb-6">
+        <i className="fas fa-question text-brand-600 text-4xl"></i>
       </div>
       <h2 className="text-3xl font-bold text-gray-800">Page Not Found</h2>
       <p className="text-gray-600 mt-2 mb-6">The page you're looking for doesn't exist.</p>
-      <a href="/" className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold transition-colors">
+      <a href="/" className="px-6 py-3 bg-brand-600 text-white rounded-lg hover:bg-brand-700 font-semibold transition-colors">
         <i className="fas fa-home mr-2"></i>Go Home
       </a>
     </div>
@@ -172,6 +173,7 @@ const AppContent: React.FC = () => {
         </Routes>
       </main>
       {isHomePage && <Footer />}
+      <BottomNav user={user} onLogout={handleLogout} cartCount={cartCount} />
     </div>
   );
 };
