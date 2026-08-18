@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Signup from '../Signup';
 
 interface SignupPageProps {
-  user: any;
+  user: { name: string } | null;
   onSignup: (user: { name: string }) => void;
 }
 

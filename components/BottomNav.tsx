@@ -13,6 +13,7 @@ const NAV_ITEMS = [
   { to: ROUTES.HOME, icon: 'fas fa-home', label: 'Home' },
   { to: '/?scrollTo=weather', icon: 'fas fa-cloud-sun', label: 'Weather', sectionId: 'weather' },
   { to: '/?scrollTo=mandi', icon: 'fas fa-store', label: 'Mandi', sectionId: 'mandi' },
+  { to: ROUTES.DASHBOARD, icon: 'fas fa-chart-line', label: 'Dashboard' },
   { to: ROUTES.CART, icon: 'fas fa-shopping-cart', label: 'Cart', badge: true },
   { to: ROUTES.LOGIN, icon: 'fas fa-user', label: 'Login', authOnly: true },
 ];

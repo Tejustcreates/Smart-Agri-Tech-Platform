@@ -28,6 +28,11 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, cartCount }) => {
   const moreRef = useRef<HTMLDivElement>(null);
 
   const scrollToSection = useCallback((sectionId: string) => {
+    const navItem = NAV_ITEMS.find((item) => item.sectionId === sectionId);
+    if (navItem && 'route' in navItem && (navItem as any).route) {
+      navigate((navItem as any).route);
+      return;
+    }
     if (location.pathname !== ROUTES.HOME) {
       navigate(ROUTES.HOME, { state: { scrollTo: sectionId } });
       return;

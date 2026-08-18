@@ -4,6 +4,7 @@ export const ROUTES = {
   SIGNUP: '/signup',
   CART: '/cart',
   PAYMENT: '/payment',
+  DASHBOARD: '/dashboard',
 } as const;
 
 export const NAV_ITEMS = [
@@ -11,6 +12,7 @@ export const NAV_ITEMS = [
   { name: 'Weather', sectionId: 'weather', icon: 'fas fa-cloud-sun' },
   { name: 'Crop Advisor', sectionId: 'crop-recommender', icon: 'fas fa-seedling' },
   { name: 'Disease Detection', sectionId: 'disease-detection', icon: 'fas fa-bug' },
+  { name: 'Dashboard', sectionId: 'dashboard', icon: 'fas fa-chart-line', route: '/dashboard' },
   { name: 'News', sectionId: 'news', icon: 'fas fa-newspaper' },
   { name: 'Schemes', sectionId: 'schemes', icon: 'fas fa-landmark' },
   { name: 'Mandi', sectionId: 'mandi', icon: 'fas fa-store' },

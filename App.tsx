@@ -16,6 +16,7 @@ import LoginPage from './components/pages/LoginPage';
 import SignupPage from './components/pages/SignupPage';
 import CartPage from './components/pages/CartPage';
 import PaymentPage from './components/pages/PaymentPage';
+import FarmerDashboard from './components/pages/FarmerDashboard';
 import { exportToExcel } from './services/sheetService';
 import { User, CartItem, Product } from './types';
 import { ROUTES } from './constants';
@@ -169,6 +170,7 @@ const AppContent: React.FC = () => {
           <Route path="/signup" element={<SignupPage user={user} onSignup={handleSignup} />} />
           <Route path="/cart" element={<CartPage cartItems={cart} onUpdateQuantity={updateQuantity} onRemoveItem={removeFromCart} onProceedToCheckout={handleProceedToCheckout} />} />
           <Route path="/payment" element={<PaymentPage total={paymentTotal} onPaymentSuccess={handlePaymentSuccess} />} />
+          <Route path="/dashboard" element={<FarmerDashboard />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

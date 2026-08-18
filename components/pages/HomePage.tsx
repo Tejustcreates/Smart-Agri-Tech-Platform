@@ -7,6 +7,7 @@ const FEATURES = [
   { label: 'Weather', desc: 'Forecasts & rain alerts', icon: 'fas fa-cloud-sun', sectionId: 'weather', bg: 'bg-brand-50', text: 'text-brand-800' },
   { label: 'Crop advice', desc: 'AI crop recommendations', icon: 'fas fa-seedling', sectionId: 'crop-recommender', bg: 'bg-amber-50', text: 'text-amber-800' },
   { label: 'Disease check', desc: 'Identify & treat issues', icon: 'fas fa-bug', sectionId: 'disease-detection', bg: 'bg-red-50', text: 'text-red-800' },
+  { label: 'Dashboard', desc: 'Your farming command center', icon: 'fas fa-chart-line', route: '/dashboard', bg: 'bg-purple-50', text: 'text-purple-800' },
   { label: 'News', desc: 'Curated farmer updates', icon: 'fas fa-newspaper', sectionId: 'news', bg: 'bg-emerald-50', text: 'text-emerald-800' },
   { label: 'Schemes', desc: 'Govt welfare programs', icon: 'fas fa-landmark', sectionId: 'schemes', bg: 'bg-indigo-50', text: 'text-indigo-800' },
   { label: 'Mandi price', desc: 'Live market prices', icon: 'fas fa-store', sectionId: 'mandi', bg: 'bg-teal-50', text: 'text-teal-800' },
@@ -24,6 +25,14 @@ const HomePage: React.FC = () => {
     }
     const el = document.getElementById(sectionId);
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const handleFeatureClick = (f: typeof FEATURES[0]) => {
+    if ('route' in f && f.route) {
+      navigate(f.route);
+    } else if ('sectionId' in f && f.sectionId) {
+      scrollToSection(f.sectionId);
+    }
   };
 
   return (
@@ -112,7 +121,7 @@ const HomePage: React.FC = () => {
             {FEATURES.map((f) => (
               <button
                 key={f.label}
-                onClick={() => scrollToSection(f.sectionId)}
+                onClick={() => handleFeatureClick(f)}
                 className={`${f.bg} rounded-2xl p-5 md:p-6 min-h-[100px] tap-target active:scale-95 transition-transform duration-150 text-left flex flex-col border border-transparent active:border-gray-300 active:shadow-md`}
               >
                 <i className={`${f.icon} ${f.text} text-3xl md:text-4xl mb-3`}></i>

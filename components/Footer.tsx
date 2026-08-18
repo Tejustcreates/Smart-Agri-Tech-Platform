@@ -6,6 +6,7 @@ const FOOTER_LINKS = [
   { name: 'Weather', sectionId: 'weather', icon: 'fas fa-cloud-sun' },
   { name: 'Crop Advisor', sectionId: 'crop-recommender', icon: 'fas fa-seedling' },
   { name: 'Disease Detection', sectionId: 'disease-detection', icon: 'fas fa-bug' },
+  { name: 'Dashboard', route: '/dashboard', icon: 'fas fa-chart-line' },
   { name: 'Smart Mandi', sectionId: 'mandi', icon: 'fas fa-store' },
   { name: 'Govt Schemes', sectionId: 'schemes', icon: 'fas fa-landmark' },
   { name: 'Equipment Rental', sectionId: 'equipment-recommender', icon: 'fas fa-tractor' },
@@ -22,6 +23,14 @@ const Footer: React.FC = () => {
     }
     const el = document.getElementById(sectionId);
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const handleFooterLink = (link: typeof FOOTER_LINKS[0]) => {
+    if ('route' in link && link.route) {
+      navigate(link.route);
+    } else if ('sectionId' in link && link.sectionId) {
+      scrollToSection(link.sectionId);
+    }
   };
 
   return (
@@ -46,9 +55,9 @@ const Footer: React.FC = () => {
             <h3 className="text-white font-bold text-base mb-5">Features</h3>
             <ul className="space-y-3 text-sm">
               {FOOTER_LINKS.map((link) => (
-                <li key={link.sectionId}>
+                <li key={link.name}>
                   <button
-                    onClick={() => scrollToSection(link.sectionId)}
+                    onClick={() => handleFooterLink(link)}
                     className="text-brand-300/70 hover:text-brand-300 transition-colors text-left flex items-center gap-2"
                   >
                     <i className={`${link.icon} text-brand-400 text-xs w-4 text-center`}></i>{link.name}
