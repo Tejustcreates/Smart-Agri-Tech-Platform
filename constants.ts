@@ -5,6 +5,7 @@ export const ROUTES = {
   CART: '/cart',
   PAYMENT: '/payment',
   DASHBOARD: '/dashboard',
+  NEWS: '/news',
 } as const;
 
 export const NAV_ITEMS = [
