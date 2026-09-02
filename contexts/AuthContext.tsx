@@ -16,8 +16,8 @@ interface User {
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (mobileNumber: string, otp: string) => Promise<void>;
-  signup: (data: any) => Promise<void>;
+  login: (mobileNumber: string, otp: string) => Promise<User | null>;
+  signup: (data: any) => Promise<User | null>;
   pinLogin: (mobileNumber: string, pin: string) => Promise<void>;
   logout: () => Promise<void>;
   updateUser: (user: User) => void;
@@ -59,16 +59,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await api.requestOtp(mobileNumber);
   }, []);
 
-  const login = useCallback(async (mobileNumber: string, otp: string) => {
+  const login = useCallback(async (mobileNumber: string, otp: string): Promise<User | null> => {
     const data = await api.verifyOtp(mobileNumber, otp, 'LOGIN');
     if (data.user) {
       setUser(data.user);
       localStorage.setItem('growsmart_user', JSON.stringify(data.user));
       setLanguage(data.user.preferredLanguage || 'en');
+      return data.user;
     }
+    return null;
   }, []);
 
-  const signup = useCallback(async (data: any) => {
+  const signup = useCallback(async (data: any): Promise<User | null> => {
     // First verify OTP
     await api.verifyOtp(data.mobileNumber, data.otp, 'SIGNUP');
     // Then create account
@@ -76,6 +78,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(result.user);
     localStorage.setItem('growsmart_user', JSON.stringify(result.user));
     setLanguage(result.user.preferredLanguage || 'en');
+    return result.user;
   }, []);
 
   const pinLogin = useCallback(async (mobileNumber: string, pin: string) => {

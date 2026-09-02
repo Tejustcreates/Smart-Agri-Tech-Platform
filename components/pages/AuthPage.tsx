@@ -1,6 +1,7 @@
 import React, { useState, FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import api from '../../services/api';
 import LanguageSwitcher from '../LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
 
@@ -55,17 +56,16 @@ export default function AuthPage() {
 
     setLoading(true);
     try {
-      const apiModule = await import('../../services/api');
-      const apiClient = apiModule.default;
-      const data = await apiClient.verifyOtp(mobileNumber, otp, mode === 'login' ? 'LOGIN' : 'SIGNUP');
-
-      if (mode === 'login' && data.user) {
-        // Login success
-        const userData = data.user;
-        localStorage.setItem('growsmart_user', JSON.stringify(userData));
-        navigate(userData.isOnboarded ? '/dashboard' : '/onboarding');
-      } else if (mode === 'signup') {
-        // OTP verified, now show signup form
+      if (mode === 'login') {
+        const user = await login(mobileNumber, otp);
+        if (user) {
+          navigate(user.isOnboarded ? '/dashboard' : '/onboarding');
+        } else {
+          setError('Verification failed');
+        }
+      } else {
+        // signup: OTP verified, now show signup form
+        await api.verifyOtp(mobileNumber, otp, 'SIGNUP');
         setStep('signup');
       }
     } catch (err: any) {
@@ -86,7 +86,6 @@ export default function AuthPage() {
 
     setLoading(true);
     try {
-      const { api } = await import('../../services/api');
       const result = await api.signup({
         mobileNumber,
         otp,
