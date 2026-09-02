@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster, toast } from 'react-hot-toast';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import './i18n';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import BottomNav from './components/BottomNav';
+import ProtectedRoute from './components/ProtectedRoute';
 import HomePage from './components/pages/HomePage';
 import Weather from './components/Weather';
 import CropRecommender from './components/CropRecommender';
@@ -12,15 +16,26 @@ import FarmerNewsSection from './components/farmer-news/FarmerNewsSection';
 import GovernmentSchemes from './components/schemes/GovernmentSchemes';
 import DigitalMandi from './components/mandi/DigitalMandi';
 import CommunityEquipment from './components/equipment/CommunityEquipment';
-import LoginPage from './components/pages/LoginPage';
-import SignupPage from './components/pages/SignupPage';
+import AuthPage from './components/pages/AuthPage';
+import Onboarding from './components/pages/Onboarding';
 import CartPage from './components/pages/CartPage';
 import PaymentPage from './components/pages/PaymentPage';
 import FarmerDashboard from './components/pages/FarmerDashboard';
 import FarmerNews from './components/farmer-news/FarmerNews';
+import AdminPanel from './components/pages/AdminPanel';
 import { exportToExcel } from './services/sheetService';
-import { User, CartItem, Product } from './types';
+import { User as UserType, CartItem, Product } from './types';
 import { ROUTES } from './constants';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const NotFound: React.FC = () => (
   <section className="py-20 bg-gray-50 flex items-center justify-center min-h-[calc(100vh-64px)]">
@@ -49,31 +64,17 @@ const loadFromStorage = <T,>(key: string, fallback: T): T => {
 const AppContent: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [user, setUser] = useState<User | null>(() => loadFromStorage<User | null>('growsmart_user', null));
+  const { user, logout } = useAuth();
   const [cart, setCart] = useState<CartItem[]>(() => loadFromStorage<CartItem[]>('growsmart_cart', []));
   const [paymentTotal, setPaymentTotal] = useState<number>(0);
-
-  useEffect(() => {
-    localStorage.setItem('growsmart_user', JSON.stringify(user));
-  }, [user]);
 
   useEffect(() => {
     localStorage.setItem('growsmart_cart', JSON.stringify(cart));
   }, [cart]);
 
-  const handleLogin = (loggedInUser: { name: string }) => {
-    setUser(loggedInUser as User);
+  const handleLogout = async () => {
+    await logout();
     navigate('/');
-  };
-
-  const handleSignup = (signedUpUser: { name: string }) => {
-    setUser(signedUpUser as User);
-    navigate('/');
-  };
-
-  const handleLogout = () => {
-    setUser(null);
-    setCart([]);
   };
 
   const addToCart = (product: Product, type: CartItem['type']) => {
@@ -137,7 +138,6 @@ const AppContent: React.FC = () => {
   }, [user]);
 
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
-
   const isHomePage = location.pathname === ROUTES.HOME;
 
   return (
@@ -152,7 +152,9 @@ const AppContent: React.FC = () => {
           error: { position: 'top-center' },
         }}
       />
-      <Header user={user} onLogout={handleLogout} cartCount={cartCount} />
+      {!location.pathname.startsWith('/auth') && !location.pathname.startsWith('/onboarding') && (
+        <Header user={user as unknown as UserType | null} onLogout={handleLogout} cartCount={cartCount} />
+      )}
       <main className="flex-1 overflow-x-hidden">
         <Routes>
           <Route path="/" element={
@@ -167,26 +169,47 @@ const AppContent: React.FC = () => {
               <CommunityEquipment />
             </>
           } />
-          <Route path="/login" element={<LoginPage user={user} onLogin={handleLogin} />} />
-          <Route path="/signup" element={<SignupPage user={user} onSignup={handleSignup} />} />
+          <Route path="/login" element={<AuthPage />} />
+          <Route path="/signup" element={<AuthPage />} />
+          <Route path="/auth" element={<AuthPage />} />
+          <Route path="/onboarding" element={
+            <ProtectedRoute requireOnboarding>
+              <Onboarding />
+            </ProtectedRoute>
+          } />
           <Route path="/cart" element={<CartPage cartItems={cart} onUpdateQuantity={updateQuantity} onRemoveItem={removeFromCart} onProceedToCheckout={handleProceedToCheckout} />} />
           <Route path="/payment" element={<PaymentPage total={paymentTotal} onPaymentSuccess={handlePaymentSuccess} />} />
-          <Route path="/dashboard" element={<FarmerDashboard />} />
+          <Route path="/dashboard" element={
+            <ProtectedRoute>
+              <FarmerDashboard />
+            </ProtectedRoute>
+          } />
           <Route path="/news" element={<FarmerNews />} />
+          <Route path="/admin" element={
+            <ProtectedRoute requiredRole={['ADMIN', 'FIELD_OFFICER']}>
+              <AdminPanel />
+            </ProtectedRoute>
+          } />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
       {isHomePage && <Footer />}
-      <BottomNav user={user} onLogout={handleLogout} cartCount={cartCount} />
+      {!location.pathname.startsWith('/auth') && !location.pathname.startsWith('/onboarding') && (
+        <BottomNav user={user as unknown as UserType | null} onLogout={handleLogout} cartCount={cartCount} />
+      )}
     </div>
   );
 };
 
 const App: React.FC = () => {
   return (
-    <BrowserRouter>
-      <AppContent />
-    </BrowserRouter>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <AuthProvider>
+          <AppContent />
+        </AuthProvider>
+      </BrowserRouter>
+    </QueryClientProvider>
   );
 };
 

@@ -208,11 +208,14 @@ function buildTree(features: number[][], labels: number[], featureIndices: numbe
 }
 
 function predictTree(tree: DecisionNode, sample: number[]): PredictionLeaf {
-  if (tree.isLeaf) return tree;
-  if (sample[tree.featureIndex] <= tree.threshold) {
-    return predictTree(tree.left as DecisionNode, sample);
+  const node = tree as TreeNode;
+  if (node.isLeaf) return node as unknown as PredictionLeaf;
+  const leftBranch = node.left as DecisionNode;
+  const rightBranch = node.right as DecisionNode;
+  if (sample[node.featureIndex] <= node.threshold) {
+    return predictTree(leftBranch, sample);
   }
-  return predictTree(tree.right as DecisionNode, sample);
+  return predictTree(rightBranch, sample);
 }
 
 // --- Feature Engineering ---

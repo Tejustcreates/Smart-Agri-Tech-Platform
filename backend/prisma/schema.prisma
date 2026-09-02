@@ -1,0 +1,323 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Auth & Users ───────────────────────────────────────────
+
+model User {
+  id               String    @id @default(uuid())
+  name             String
+  mobileNumber     String    @unique
+  email            String?
+  passwordHash     String?
+  pinHash          String?
+  role             UserRole  @default(FARMER)
+  preferredLanguage String   @default("en")
+  village          String?
+  taluka           String?
+  district         String?
+  state            String?
+  landholdingSize  Float?
+  farmerCategory   FarmerCategory?
+  isOnboarded      Boolean   @default(false)
+  isActive         Boolean   @default(true)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  authSessions         AuthSession[]
+  farms                Farm[]
+  diseaseDetections    DiseaseDetection[]
+  schemeMatches        SchemeMatch[]
+  equipmentBookings    EquipmentBooking[]
+  equipmentListings    EquipmentListing[]
+  notifications        Notification[]
+
+  @@map("users")
+}
+
+enum UserRole {
+  FARMER
+  DEALER
+  FIELD_OFFICER
+  ADMIN
+}
+
+enum FarmerCategory {
+  SMALL
+  MARGINAL
+  LARGE
+}
+
+model AuthSession {
+  id                String    @id @default(uuid())
+  userId            String
+  refreshTokenHash  String
+  deviceInfo        String?
+  ipAddress         String?
+  isRevoked         Boolean   @default(false)
+  createdAt         DateTime  @default(now())
+  expiresAt         DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("auth_sessions")
+}
+
+model OtpRequest {
+  id            String    @id @default(uuid())
+  mobileNumber  String
+  otpHash       String
+  purpose       OtpPurpose
+  attempts      Int       @default(0)
+  maxAttempts   Int       @default(5)
+  isVerified    Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  expiresAt     DateTime
+  verifiedAt    DateTime?
+
+  @@map("otp_requests")
+}
+
+enum OtpPurpose {
+  LOGIN
+  SIGNUP
+  PIN_RESET
+}
+
+// ─── Farming ────────────────────────────────────────────────
+
+model Farm {
+  id              String    @id @default(uuid())
+  userId          String
+  farmName        String
+  areaAcres       Float
+  soilType        String?
+  latitude        Float?
+  longitude       Float?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cropRecords     CropRecord[]
+  sensorData      SensorData[]
+  diseaseDetections DiseaseDetection[]
+
+  @@map("farms")
+}
+
+model CropRecord {
+  id                  String    @id @default(uuid())
+  farmId              String
+  cropName            String
+  sowingDate          DateTime?
+  expectedHarvestDate DateTime?
+  status              CropStatus @default(PLANTED)
+  createdAt           DateTime  @default(now())
+
+  farm Farm @relation(fields: [farmId], references: [id], onDelete: Cascade)
+
+  @@map("crop_records")
+}
+
+enum CropStatus {
+  PLANTED
+  GROWING
+  READY_TO_HARVEST
+  HARVESTED
+}
+
+model SensorData {
+  id           String   @id @default(uuid())
+  farmId       String
+  deviceId     String?
+  nitrogen     Float?
+  phosphorus   Float?
+  potassium    Float?
+  temperature  Float?
+  humidity     Float?
+  soilPh       Float?
+  rainfall     Float?
+  recordedAt   DateTime @default(now())
+
+  farm Farm @relation(fields: [farmId], references: [id], onDelete: Cascade)
+
+  @@map("sensor_data")
+}
+
+// ─── Disease Detection ──────────────────────────────────────
+
+model DiseaseDetection {
+  id                   String   @id @default(uuid())
+  userId               String
+  farmId               String?
+  imageUrl             String
+  predictedDisease     String?
+  confidenceScore      Float?
+  recommendedTreatment String?
+  preventionTips       String?
+  createdAt            DateTime @default(now())
+
+  user User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  farm Farm?  @relation(fields: [farmId], references: [id], onDelete: SetNull)
+
+  @@map("disease_detections")
+}
+
+// ─── Mandi / Marketplace ────────────────────────────────────
+
+model MandiPrice {
+  id              String   @id @default(uuid())
+  cropName        String
+  mandiName       String
+  district        String
+  state           String
+  pricePerQuintal Float
+  minPrice        Float?
+  maxPrice        Float?
+  priceDate       DateTime
+  source          String   @default("seed_data")
+
+  @@map("mandi_prices")
+}
+
+// ─── Equipment Rental ───────────────────────────────────────
+
+model EquipmentListing {
+  id                 String          @id @default(uuid())
+  ownerId            String
+  equipmentName      String
+  category           String
+  rentalRate         Float
+  rentalUnit         String          @default("day")
+  availabilityStatus AvailabilityStatus @default(AVAILABLE)
+  latitude           Float?
+  longitude          Float?
+  description        String?
+  imageUrl           String?
+  contactPhone       String?
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+
+  owner    User              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  bookings EquipmentBooking[]
+
+  @@map("equipment_listings")
+}
+
+enum AvailabilityStatus {
+  AVAILABLE
+  RENTED_OUT
+  MAINTENANCE
+  UNAVAILABLE
+}
+
+model EquipmentBooking {
+  id            String        @id @default(uuid())
+  equipmentId   String
+  farmerId      String
+  startDate     DateTime
+  endDate       DateTime
+  status        BookingStatus @default(PENDING)
+  notes         String?
+  createdAt     DateTime      @default(now())
+
+  equipment EquipmentListing @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+  farmer    User             @relation(fields: [farmerId], references: [id], onDelete: Cascade)
+
+  @@map("equipment_bookings")
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+// ─── Government Schemes ─────────────────────────────────────
+
+model GovernmentScheme {
+  id                 String   @id @default(uuid())
+  schemeName         String
+  description        String
+  eligibilityJson    Json
+  benefits           String
+  requiredDocuments  String
+  state              String?  // null = national scheme
+  applicationLink    String?
+  isActive           Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  matches SchemeMatch[]
+
+  @@map("government_schemes")
+}
+
+model SchemeMatch {
+  id         String   @id @default(uuid())
+  userId     String
+  schemeId   String
+  matchScore Float
+  matchReasons String?
+  viewedAt   DateTime?
+  appliedAt  DateTime?
+
+  user   User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  scheme GovernmentScheme  @relation(fields: [schemeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, schemeId])
+  @@map("scheme_matches")
+}
+
+// ─── News ───────────────────────────────────────────────────
+
+model NewsArticle {
+  id          String   @id @default(uuid())
+  title       String
+  summary     String
+  content     String?
+  category    String
+  language    String   @default("en")
+  source      String?
+  imageUrl    String?
+  publishedAt DateTime @default(now())
+
+  @@map("news_articles")
+}
+
+// ─── Weather Cache ──────────────────────────────────────────
+
+model WeatherCache {
+  id          String   @id @default(uuid())
+  latitude    Float
+  longitude   Float
+  forecastJson Json
+  fetchedAt   DateTime @default(now())
+  expiresAt   DateTime
+
+  @@map("weather_cache")
+}
+
+// ─── Notifications ──────────────────────────────────────────
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  type      String
+  title     String
+  body      String
+  language  String   @default("en")
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}

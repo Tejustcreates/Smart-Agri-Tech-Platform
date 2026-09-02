@@ -10,7 +10,7 @@ const TOP_CATEGORIES: { icon: React.ReactNode; label: string; value: EquipmentCa
   { icon: <Wrench size={14} />, label: 'Rotavator', value: 'Rotavator' },
   { icon: <Sprout size={14} />, label: 'Seeder', value: 'Seeder' },
   { icon: <Droplets size={14} />, label: 'Sprayer', value: 'Sprayer' },
-  { icon: <MoreHorizontal size={14} />, label: 'Others', value: '' },
+  { icon: <MoreHorizontal size={14} />, label: 'Others', value: 'Others' as EquipmentCategory },
 ];
 
 const ALL_CATEGORIES: EquipmentCategory[] = ['Tractor', 'Harvester', 'Rotavator', 'Seeder', 'Sprayer', 'Cultivator', 'Thresher', 'Plough', 'Others'];
@@ -183,7 +183,7 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ filters, onFiltersChange, onS
               key={cat.label}
               onClick={() => update('category', cat.value)}
               className={`tap-target flex-shrink-0 flex items-center gap-1.5 px-3.5 rounded-xl text-xs font-semibold transition-all ${
-                filters.category === cat.value || (cat.value === '' && filters.category === '')
+                filters.category === cat.value || (cat.value === 'Others' as EquipmentCategory && filters.category === '')
                   ? 'bg-brand-600 text-white shadow-md shadow-brand-200'
                   : 'bg-white text-gray-600 border border-gray-200 hover:border-brand-300 hover:text-brand-700'
               }`}

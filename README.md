@@ -1,222 +1,294 @@
-<div align="center">
+# GrowSmart - Smart Agriculture Platform
 
-# 🌾 GrowSmart
+A comprehensive full-stack web application for Indian farmers — featuring weather intelligence, crop recommendations, disease detection, live mandi prices, equipment rental, government scheme information, and multi-language support.
 
-### *Everything a Farmer Needs, One Smart Platform*
-
-A comprehensive AI-powered web application for Indian farmers — featuring weather intelligence, crop disease detection, live agricultural news, digital mandi prices, government scheme recommendations, crop advisory, and a community equipment rental marketplace.
-
-![React](https://img.shields.io/badge/React-19-61DAFB?style=flat&logo=react&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=flat&logo=typescript&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.2-06B6D4?style=flat&logo=tailwindcss&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?style=flat&logo=vite&logoColor=white)
-
-</div>
-
----
-
-## Features
-
-### 1. Weather Intelligence
-Real-time weather dashboard with ML-powered farming advisories powered by Open-Meteo API.
-- Current conditions (temperature, humidity, wind, UV, cloud cover)
-- 48-hour hourly forecast with charts
-- 7-day daily forecast
-- AI rain probability prediction using custom Random Forest model
-- Smart farming advisories (irrigation, spraying, harvesting, planting)
-- Automatic weather alerts (heavy rain, frost, high UV, disease risk)
-- Agricultural health score (0–100)
-- GPS auto-detection with search fallback for villages/small towns
-
-### 2. Smart Crop Recommendation
-AI-powered crop recommendation based on soil and climate data with IoT sensor integration.
-- **Manual Mode** — Input N/P/K, pH, temperature, humidity, rainfall, moisture, light, EC
-- **IoT Smart Farm Mode** — Simulated ESP32 sensor hub with live-updating data
-- Custom Random Forest classifier (25 trees, 13 crop profiles)
-- Confidence scores, yield estimates, and water requirements
-- NPK balance radar charts and feature importance analysis
-
-### 3. Crop Disease Detection
-Multi-step wizard to identify crop diseases from observed symptoms.
-- 10 crop options, 24 symptoms across 4 categories
-- Matches against 8 diseases (Leaf Blight, Powdery Mildew, Bacterial Spot, Root Rot, Rust Fungus, Mosaic Virus, Anthracnose, Fusarium Wilt)
-- Severity assessment with confidence scores
-- Detailed treatment recommendations (organic, fungicide, pesticide, fertilizer)
-- Prevention tips and crop care guidelines
-
-### 4. Personalized Farmer News
-AI-curated agricultural news with multi-level personalization.
-- 7 categories: Market Prices, Weather, Government Schemes, Crops, Disease, Technology, MSP
-- Filter by state, crop, and category
-- Live news from NewsData.io API with 5-minute cache
-- Fallback to Gemini AI-generated news
-- Relevance scoring based on selected filters
-
-### 5. Government Scheme Recommender
-Personalized government scheme recommendations based on farmer profile.
-- 10+ popular schemes (PM-KISAN, PMFBY, KCC, Soil Health Card, etc.)
-- Match scoring algorithm (category, irrigation, income, crop type)
-- Farmer categories: Small, Marginal, Medium, Large
-- Farmer types: Individual, FPO, SHG, Organic, Tenant
-- Integration with data.gov.in API
-- Gemini AI-generated state-specific schemes
-
-### 6. Digital Mandi (Market Intelligence)
-Live agricultural market prices with AI-powered predictions.
-- Live prices across 14+ mandis (Pune, Nashik, Delhi, Rajkot, etc.)
-- 30-day price history with 7-day forecast charts
-- Smart mandi recommendation (crop, quantity, transport budget)
-- Transport cost estimation and net price calculation
-- Best deal finder with extra profit estimation
-
-### 7. Community Equipment Rental
-GPS-based farming equipment marketplace.
-- 9 equipment categories (Tractor, Harvester, Rotavator, Seeder, Sprayer, etc.)
-- Haversine distance-based proximity matching
-- Multi-factor scoring (40% distance, 20% availability, 15% price, 10% rating, etc.)
-- Equipment registration for owners
-- Availability calendar and contact info
-
-### 8. Agri-Market Hub
-E-commerce marketplace with cart and checkout.
-- Equipment Rentals, Fertilizers, Seeds, Pesticides
-- Cart with quantity management and 5% tax calculation
-- Sandbox payment flow
-- localStorage persistence
-
-### 9. Multi-Language Support
-Google Translate integration supporting 12+ Indian languages:
-Hindi, Bengali, Telugu, Marathi, Tamil, Gujarati, Kannada, Malayalam, Punjabi, Urdu, Odia
-
----
-
-## Tech Stack
-
-| Category | Technology |
-|---|---|
-| Framework | React 19 + TypeScript |
-| Build Tool | Vite 6.2 |
-| Styling | Tailwind CSS 4.2 |
-| Routing | React Router DOM 7.18 |
-| Animation | Framer Motion 12.42 |
-| Charts | Recharts 3.9 |
-| AI/ML | Google Gemini 2.5 Flash, TensorFlow.js, Custom Random Forest |
-| HTTP | Axios |
-| Notifications | React Hot Toast |
-| Excel Export | xlsx |
-| Icons | Lucide React, Font Awesome |
-
-### APIs & Services
-
-| API | Purpose |
-|---|---|
-| Open-Meteo | Real-time weather data + geocoding |
-| Google Gemini 2.5 Flash | AI news & scheme generation |
-| NewsData.io | Live agricultural news |
-| data.gov.in | Government scheme data |
-| Nominatim / OpenStreetMap | Reverse geocoding (village-level) |
-| Geoapify | Fallback geocoding provider |
-| Google Translate Widget | Multi-language support |
-
----
-
-## Project Structure
+## Architecture
 
 ```
 Smart-Agri-Tech-Platform/
-├── components/
-│   ├── pages/          # HomePage, LoginPage, SignupPage, CartPage, PaymentPage
-│   ├── weather/        # Weather dashboard & sub-components
-│   ├── crop/           # Crop recommendation & IoT dashboard
-│   ├── mandi/          # Digital Mandi & price prediction
-│   ├── schemes/        # Government scheme recommender
-│   ├── equipment/      # Community equipment rental
-│   ├── farmer-news/    # Personalized news section
-│   └── img/            # Product images
+├── backend/                    # Node.js + Express API
+│   ├── src/
+│   │   ├── config/             # DB, Redis, environment config
+│   │   ├── middleware/          # Auth (JWT), RBAC, validation
+│   │   ├── routes/             # All API endpoints
+│   │   │   ├── auth.ts         # OTP login, JWT, PIN, refresh
+│   │   │   ├── weather.ts      # Open-Meteo integration + insights
+│   │   │   ├── crops.ts        # Crop recommendation + IoT data
+│   │   │   ├── disease.ts      # Disease detection (mock ML)
+│   │   │   ├── mandi.ts        # Mandi price comparison
+│   │   │   ├── equipment.ts    # Equipment rental
+│   │   │   ├── schemes.ts      # Govt scheme matching
+│   │   │   ├── news.ts         # Agri news feed
+│   │   │   ├── dashboard.ts    # Dashboard summary
+│   │   │   └── admin.ts        # Admin CRUD
+│   │   ├── services/           # OTP, JWT services
+│   │   └── app.ts / index.ts   # Express server
+│   ├── prisma/
+│   │   ├── schema.prisma       # 15 tables, full schema
+│   │   └── seed.ts             # Demo data (3 farmers, prices, etc.)
+│   └── Dockerfile
+├── components/                  # React frontend (Vite + TypeScript)
+│   ├── pages/
+│   │   ├── AuthPage.tsx        # OTP-based login/signup
+│   │   ├── Onboarding.tsx      # New user profile setup
+│   │   ├── FarmerDashboard.tsx  # Dashboard with charts
+│   │   └── AdminPanel.tsx       # Admin CRUD interface
+│   ├── i18n/                    # react-i18next setup
+│   │   ├── locales/en.json      # English
+│   │   ├── locales/hi.json      # Hindi (हिन्दी)
+│   │   └── locales/mr.json      # Marathi (मराठी)
+│   ├── weather/                  # Weather intelligence
+│   ├── crop/                     # Crop recommendation
+│   ├── mandi/                    # Digital mandi prices
+│   ├── equipment/                # Equipment rental
+│   ├── schemes/                  # Govt scheme recommender
+│   └── farmer-news/              # Agri news
+├── contexts/
+│   └── AuthContext.tsx            # Auth state management
 ├── services/
-│   ├── weather/        # Open-Meteo API, geocoding (3-tier cascade)
-│   ├── ml/             # Random Forest, rain prediction, disease risk
-│   ├── cropRecommendation/  # Crop RF model, IoT service
-│   ├── mandi/          # Mandi prices, predictions, recommendations
-│   ├── equipment/      # Equipment search, Haversine matching
-│   └── news/           # NewsData.io integration
-├── hooks/              # useWeatherData, useGpsLocation, useLocationSearch, useMLPredictions
-├── types/              # TypeScript types (weather, mandi, equipment, scheme, etc.)
-├── constants.ts        # Routes, crop data, equipment data
-├── types.ts            # Shared types
-└── App.tsx             # Root with routing
+│   └── api.ts                    # Typed API client
+├── i18n/                         # i18next configuration
+├── docker-compose.yml            # Postgres + Redis + Backend + Frontend
+└── scripts/setup.sh              # One-command setup
 ```
 
----
+## Tech Stack
 
-## Getting Started
-
-### Prerequisites
-
-- **Node.js** (v18 or higher)
-- **npm** or **yarn**
-
-### Installation
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/your-username/Smart-Agri-Tech-Platform.git
-   cd Smart-Agri-Tech-Platform
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Set up environment variables in `.env.local`:
-   ```env
-   GEMINI_API_KEY=your_google_gemini_api_key
-   NEWSDATA_API_KEY=your_newsdata_api_key
-   DATA_GOV_IN_API_KEY=your_data_gov_in_api_key
-   ```
-
-4. Run the development server:
-   ```bash
-   npm run dev
-   ```
-
-5. Open [http://localhost:5173](http://localhost:5173) in your browser.
-
-### Available Scripts
-
-| Command | Description |
+| Layer | Technology |
 |---|---|
-| `npm run dev` | Start development server |
-| `npm run build` | Build for production |
-| `npm run preview` | Preview production build |
+| Frontend | React 19 + TypeScript + Vite |
+| Styling | Tailwind CSS 4.2 |
+| i18n | react-i18next (English, Hindi, Marathi) |
+| Data Fetching | React Query (TanStack Query) |
+| Charts | Recharts |
+| Animations | Framer Motion |
+| Backend | Node.js + Express + TypeScript |
+| Database | PostgreSQL (via Prisma ORM) |
+| Cache | Redis (weather, mandi price caching) |
+| Auth | JWT (access + refresh tokens) + OTP (mock) |
+| File Storage | Local disk (S3-ready abstraction) |
+| Deployment | Docker Compose |
 
----
+## Quick Start
 
-## How It Works
+### Option 1: Full Setup (Recommended)
 
-- **Mock-first architecture** — Every feature works fully offline with mock data. Real APIs activate when keys are configured in `.env.local`.
-- **Dual Random Forest models** — One for crop recommendation (25 trees, 13 crops, 10 features) and one for rain prediction (15 trees, 18 features), both trained entirely in the browser on synthetic data.
-- **3-tier geocoding cascade** — Location search gracefully falls back through Open-Meteo → Nominatim → Geoapify for village-level coverage across India.
-- **localStorage persistence** — User sessions, cart, and user data persist across page refreshes.
-- **Sandbox payment** — Checkout flow is for demonstration purposes only; no real payment processing occurs.
+```bash
+# Clone and run setup script (installs deps, creates DB, seeds data)
+chmod +x scripts/setup.sh
+./scripts/setup.sh
 
----
+# Start backend (Terminal 1)
+cd backend && npm run dev
 
-## Keyboard Shortcuts
+# Start frontend (Terminal 2)
+npm run dev
+```
 
-| Shortcut | Action |
-|---|---|
-| `Ctrl + Shift + A` | Export registered users to Excel (GrowSmart_Registered_Users.xlsx) |
+### Option 2: Docker Compose
 
----
+```bash
+# Start everything with one command
+docker-compose up -d
+
+# Run migrations + seed
+docker-compose exec backend npx prisma db push
+docker-compose exec backend npx tsx prisma/seed.ts
+```
+
+### Option 3: Manual Setup
+
+```bash
+# Install frontend dependencies
+npm install
+
+# Install backend dependencies
+cd backend && npm install
+
+# Set up database (requires PostgreSQL running)
+cp backend/.env.example backend/.env
+npx prisma generate
+npx prisma db push
+npx tsx prisma/seed.ts
+
+# Start services
+cd .. && npm run dev  # Frontend on :3000
+cd backend && npm run dev  # Backend on :4000
+```
+
+## Demo Accounts
+
+After running the seed script:
+
+| Role | Mobile | 4-digit PIN | Name |
+|---|---|---|---|
+| Farmer | `9876543210` | `1234` | Rajesh Patil (Pune) |
+| Farmer | `9876543211` | `1234` | Suresh Kumar (Pune) |
+| Farmer | `9876543212` | `1234` | Priya Deshmukh (Sindhudurg) |
+| Admin | `9000000001` | `0001` | Admin User |
+| Field Officer | `9000000002` | `0002` | Field Officer Sharma |
+
+> **OTP Login:** In development, OTPs are logged to the server console (look for the box in terminal output). No SMS provider is configured — the code is structured so Twilio/MSG91 can be plugged in by updating `backend/src/services/otp.ts`.
+
+## Features
+
+### Authentication
+- Mobile number + OTP login (mock — logs OTP to console)
+- JWT access tokens (15min) + refresh tokens (30 days, httpOnly)
+- 4-digit PIN for quick repeat login
+- Role-based access: `farmer`, `dealer`, `field_officer`, `admin`
+- Onboarding flow for first-time users
+
+### Weather Intelligence
+- Real-time data from Open-Meteo API (free, no API key)
+- 7-day forecast with hourly breakdowns
+- Rule-based farming insights (delay spraying, frost alerts, irrigation advice)
+- Cached in Redis (1hr TTL)
+- Browser geolocation or manual village/district search
+
+### Crop Recommendation
+- Input: N/P/K, temperature, humidity, pH, rainfall
+- Rule-based scoring against 15 crop profiles
+- Ranked list with suitability scores and breakdown
+- IoT sensor data endpoint ready (ESP32/Blynk integration)
+
+### Disease Detection
+- Image upload (camera or file picker)
+- Mock disease prediction (6 diseases) — structured for CNN model swap
+- Treatment recommendations and prevention tips
+- Full i18n support (disease names in English, Hindi, Marathi)
+
+### Mandi Prices
+- Realistic seeded data for Indian mandis (Pune, Nashik, Nagpur)
+- Cross-mandi price comparison
+- Best price highlighting
+- 30-day historical price data
+
+### Equipment Rental
+- Equipment listings with rental rates, availability, GPS location
+- Haversine distance-based proximity matching
+- Booking flow (creates pending booking)
+
+### Government Schemes
+- 10 seeded schemes (PM-KISAN, PMFBY, KCC, etc.)
+- Eligibility matching based on farmer profile
+- Match score and personalized reasons
+- Required documents checklist
+
+### News Feed
+- Agricultural news articles
+- Filter by category and language
+- 12 seeded articles in English, Hindi, and Marathi
+
+### Admin Panel
+- User management (read-only in v1)
+- Scheme CRUD
+- News CRUD
+- Equipment management
+
+## API Endpoints
+
+```
+POST   /api/auth/request-otp      # Send OTP to mobile
+POST   /api/auth/verify-otp       # Verify OTP code
+POST   /api/auth/signup           # Create new account
+POST   /api/auth/pin-login        # Login with 4-digit PIN
+POST   /api/auth/set-pin          # Set PIN for quick login
+POST   /api/auth/refresh          # Refresh access token
+POST   /api/auth/logout           # Revoke session
+GET    /api/auth/me                # Get current user
+PUT    /api/auth/profile           # Update profile
+
+GET    /api/weather                # Current weather + forecast
+GET    /api/weather/insights       # Farming insights
+
+POST   /api/crops/recommend        # Crop recommendation
+GET    /api/crops/profiles         # Crop requirement profiles
+POST   /api/crops/farms            # Create farm
+GET    /api/crops/farms            # List user's farms
+POST   /api/crops/sensor-data      # Store IoT sensor data
+
+POST   /api/disease/detect         # Upload image, get prediction
+GET    /api/disease/history        # User's detection history
+
+GET    /api/mandi/prices           # List mandi prices
+GET    /api/mandi/compare/:crop    # Compare prices across mandis
+GET    /api/mandi/crops            # List available crops
+
+GET    /api/equipment              # List equipment
+GET    /api/equipment/:id          # Equipment details
+POST   /api/equipment              # Create listing (owner)
+POST   /api/equipment/:id/book     # Request rental
+
+GET    /api/schemes                # List all schemes
+GET    /api/schemes/match          # Personalized scheme matches
+GET    /api/schemes/:id            # Scheme details
+
+GET    /api/news                   # List news articles
+GET    /api/news/categories        # Available categories
+
+GET    /api/dashboard              # Dashboard summary
+
+GET    /api/admin/users            # [Admin] List users
+GET    /api/admin/stats            # [Admin] Platform stats
+CRUD   /api/admin/schemes          # [Admin] Scheme management
+CRUD   /api/admin/news             # [Admin] News management
+CRUD   /api/admin/equipment        # [Admin] Equipment management
+```
+
+## What's Mocked / Stubbed
+
+This is a demo/portfolio project. The following are mocked and documented for future production implementation:
+
+| Component | Current State | Production Implementation |
+|---|---|---|
+| **OTP/SMS** | Logged to console | Twilio/MSG91 integration in `services/otp.ts` |
+| **Disease Detection** | Random mock from 6 diseases | CNN model (ResNet50) via Python FastAPI service |
+| **Crop Recommendation** | Rule-based scoring | Trained ML model (Random Forest/XGBoost) |
+| **Mandi Prices** | Seeded static data | Government mandi price API or data.gov.in scraping |
+| **Weather Insights** | Rule-based logic | ML-based crop-specific predictions |
+| **File Storage** | Local disk (`/uploads`) | AWS S3 or compatible (abstraction layer in place) |
+| **Notifications** | Database only | Push notifications (FCM) + email service |
+| **Payments** | Sandbox only | Razorpay/UPI integration |
+
+## Environment Variables
+
+### Backend (`.env`)
+
+```bash
+DATABASE_URL="postgresql://growsmart:growsmart_secret@localhost:5432/growsmart?schema=public"
+REDIS_URL="redis://localhost:6379"
+JWT_SECRET="change-this-in-production"
+JWT_REFRESH_SECRET="change-this-in-production"
+JWT_ACCESS_EXPIRY="15m"
+JWT_REFRESH_EXPIRY="30d"
+PORT=4000
+NODE_ENV=development
+FRONTEND_URL="http://localhost:3000"
+UPLOAD_DIR="./uploads"
+```
+
+### Frontend (`.env`)
+
+```bash
+VITE_API_URL="http://localhost:4000/api"
+VITE_GEMINI_API_KEY=your_api_key_here
+VITE_NEWSDATA_API_KEY=your_api_key_here
+```
+
+## Development
+
+```bash
+# Run both frontend and backend concurrently
+cd backend && npm run dev  # :4000
+npm run dev                # :3000
+
+# Database management
+cd backend && npx prisma studio    # Visual DB browser
+cd backend && npx prisma db push   # Apply schema changes
+cd backend && npx tsx prisma/seed.ts  # Re-seed data
+```
 
 ## License
 
 This project is for educational purposes.
-
----
-
-<div align="center">
-  <b>Built with ❤️ for Indian Farmers</b>
-</div>
