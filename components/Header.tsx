@@ -16,9 +16,10 @@ interface HeaderProps {
   user: User | null;
   onLogout: () => void;
   cartCount: number;
+  onOpenAuth?: (mode: 'login' | 'signup') => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ user, onLogout, cartCount }) => {
+const Header: React.FC<HeaderProps> = ({ user, onLogout, cartCount, onOpenAuth }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMoreOpen, setIsMoreOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
@@ -246,12 +247,12 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, cartCount }) => {
               </div>
             ) : (
               <div className="flex items-center gap-2">
-                <NavLink to={ROUTES.LOGIN} className="px-4 py-2 text-sm font-medium border border-white/20 text-white rounded-xl hover:bg-white/8 transition-all duration-300">
+                <button onClick={() => onOpenAuth && onOpenAuth('login')} className="px-4 py-2 text-sm font-medium border border-white/20 text-white rounded-xl hover:bg-white/8 transition-all duration-300">
                   Login
-                </NavLink>
-                <NavLink to={ROUTES.SIGNUP} className="btn-modern px-4 py-2 text-sm font-medium bg-gradient-to-r from-emerald-500 to-green-500 text-white rounded-xl hover:shadow-lg hover:shadow-emerald-500/25 transition-all duration-300">
+                </button>
+                <button onClick={() => onOpenAuth && onOpenAuth('signup')} className="btn-modern px-4 py-2 text-sm font-medium bg-gradient-to-r from-emerald-500 to-green-500 text-white rounded-xl hover:shadow-lg hover:shadow-emerald-500/25 transition-all duration-300">
                   Sign Up
-                </NavLink>
+                </button>
               </div>
             )}
           </div>
@@ -324,12 +325,12 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, cartCount }) => {
                 </div>
               ) : (
                 <div className="space-y-2 px-4">
-                  <NavLink to={ROUTES.LOGIN} onClick={() => setIsMenuOpen(false)} className="block py-3 border border-white/20 text-white rounded-xl text-center font-medium hover:bg-white/8 transition-all">
+                  <button onClick={() => { setIsMenuOpen(false); onOpenAuth && onOpenAuth('login'); }} className="block w-full py-3 border border-white/20 text-white rounded-xl text-center font-medium hover:bg-white/8 transition-all">
                     Login
-                  </NavLink>
-                  <NavLink to={ROUTES.SIGNUP} onClick={() => setIsMenuOpen(false)} className="block py-3 bg-gradient-to-r from-emerald-500 to-green-500 text-white rounded-xl text-center font-medium hover:shadow-lg transition-all">
+                  </button>
+                  <button onClick={() => { setIsMenuOpen(false); onOpenAuth && onOpenAuth('signup'); }} className="block w-full py-3 bg-gradient-to-r from-emerald-500 to-green-500 text-white rounded-xl text-center font-medium hover:shadow-lg transition-all">
                     Sign Up
-                  </NavLink>
+                  </button>
                 </div>
               )}
             </div>

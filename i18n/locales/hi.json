@@ -16,7 +16,8 @@
     "profile": "प्रोफ़ाइल",
     "logout": "लॉग आउट",
     "login": "लॉग इन",
-    "admin": "एडमिन पैनल"
+    "admin": "एडमिन पैनल",
+    "backToTop": "ऊपर जाएँ"
   },
   "auth": {
     "loginTitle": "ग्रोस्मार्ट में लॉग इन करें",
@@ -42,7 +43,12 @@
     "selectCategory": "किसान श्रेणी",
     "landholding": "जमीन (एकड़)",
     "completeProfile": "अपनी प्रोफ़ाइल पूरी करें",
-    "welcome": "स्वागत है, {{name}}!"
+    "welcome": "स्वागत है, {{name}}!",
+    "invalidMobile": "मान्य 10 अंकों का मोबाइल नंबर दर्ज करें",
+    "verificationFailed": "सत्यापन विफल रहा। कृपया पुनः प्रयास करें।",
+    "nameRequired": "कृपया अपना पूरा नाम दर्ज करें",
+    "invalidStateDistrict": "कृपया अपना राज्य और जिला चुनें",
+    "otpExpired": "OTP समाप्त हो गया है। नया OTP मांगें।"
   },
   "dashboard": {
     "greeting": "शुभ {{timeOfDay}}, {{name}}!",
@@ -54,7 +60,12 @@
     "totalFarms": "कुल खेत",
     "totalArea": "कुल क्षेत्रफल",
     "activeCrops": "सक्रिय फसलें",
-    "acres": "एकड़"
+    "acres": "एकड़",
+    "title": "आपका किसान कमांड सेंटर",
+    "preview": "ग्रोस्मार्ट द्वारा लाई गई हर चीज़ पर एक नज़र",
+    "personalized": "यह आपका व्यक्तिगत स्नैपशॉट है",
+    "open": "पूरा डैशबोर्ड खोलें",
+    "loginToView": "अपना डैशबोर्ड देखने के लिए लॉगिन करें"
   },
   "weather": {
     "title": "मौसम बुद्धिमत्ता",

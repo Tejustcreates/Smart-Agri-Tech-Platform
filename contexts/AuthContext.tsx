@@ -21,7 +21,7 @@ interface AuthContextType {
   pinLogin: (mobileNumber: string, pin: string) => Promise<void>;
   logout: () => Promise<void>;
   updateUser: (user: User) => void;
-  requestOtp: (mobileNumber: string) => Promise<void>;
+  requestOtp: (mobileNumber: string, purpose?: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -55,8 +55,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const requestOtp = useCallback(async (mobileNumber: string) => {
-    await api.requestOtp(mobileNumber);
+  const requestOtp = useCallback(async (mobileNumber: string, purpose: string = 'LOGIN') => {
+    await api.requestOtp(mobileNumber, purpose);
   }, []);
 
   const login = useCallback(async (mobileNumber: string, otp: string): Promise<User | null> => {

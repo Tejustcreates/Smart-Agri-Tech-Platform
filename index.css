@@ -351,3 +351,42 @@ body { top: 0 !important; }
   background-image: radial-gradient(rgba(255,255,255,0.07) 1px, transparent 1px);
   background-size: 30px 30px;
 }
+
+/* ─── Scroll Reveal (entrance animations, reduced-motion safe) ─── */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  will-change: opacity, transform;
+}
+.reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* ─── Back to top ─── */
+.back-to-top {
+  position: fixed;
+  bottom: 88px;
+  right: 18px;
+  z-index: 60;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.back-to-top.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}

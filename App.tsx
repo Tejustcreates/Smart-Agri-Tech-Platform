@@ -17,6 +17,9 @@ import GovernmentSchemes from './components/schemes/GovernmentSchemes';
 import DigitalMandi from './components/mandi/DigitalMandi';
 import CommunityEquipment from './components/equipment/CommunityEquipment';
 import AuthPage from './components/pages/AuthPage';
+import AuthModal from './components/AuthModal';
+import BackToTop from './components/BackToTop';
+import DashboardPreview from './components/DashboardPreview';
 import Onboarding from './components/pages/Onboarding';
 import CartPage from './components/pages/CartPage';
 import PaymentPage from './components/pages/PaymentPage';
@@ -67,6 +70,9 @@ const AppContent: React.FC = () => {
   const { user, logout } = useAuth();
   const [cart, setCart] = useState<CartItem[]>(() => loadFromStorage<CartItem[]>('growsmart_cart', []));
   const [paymentTotal, setPaymentTotal] = useState<number>(0);
+  const [authOpen, setAuthOpen] = useState(false);
+  const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
+
 
   useEffect(() => {
     localStorage.setItem('growsmart_cart', JSON.stringify(cart));
@@ -153,20 +159,21 @@ const AppContent: React.FC = () => {
         }}
       />
       {!location.pathname.startsWith('/auth') && !location.pathname.startsWith('/onboarding') && (
-        <Header user={user as unknown as UserType | null} onLogout={handleLogout} cartCount={cartCount} />
+        <Header user={user as unknown as UserType | null} onLogout={handleLogout} cartCount={cartCount} onOpenAuth={(m) => { setAuthMode(m); setAuthOpen(true); }} />
       )}
       <main className="flex-1 overflow-x-hidden">
         <Routes>
           <Route path="/" element={
             <>
               <HomePage />
+              <DashboardPreview />
               <Weather />
               <CropRecommender />
               <DiseaseDetection />
-              <FarmerNewsSection />
-              <GovernmentSchemes />
               <DigitalMandi />
               <CommunityEquipment />
+              <GovernmentSchemes />
+              <FarmerNewsSection />
             </>
           } />
           <Route path="/login" element={<AuthPage />} />
@@ -197,6 +204,8 @@ const AppContent: React.FC = () => {
       {!location.pathname.startsWith('/auth') && !location.pathname.startsWith('/onboarding') && (
         <BottomNav user={user as unknown as UserType | null} onLogout={handleLogout} cartCount={cartCount} />
       )}
+      <BackToTop />
+      <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} initialMode={authMode} />
     </div>
   );
 };

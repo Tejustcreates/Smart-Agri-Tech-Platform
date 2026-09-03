@@ -16,7 +16,8 @@
     "profile": "Profile",
     "logout": "Logout",
     "login": "Login",
-    "admin": "Admin Panel"
+    "admin": "Admin Panel",
+    "backToTop": "Back to top"
   },
   "auth": {
     "loginTitle": "Login to GrowSmart",
@@ -42,7 +43,12 @@
     "selectCategory": "Farmer Category",
     "landholding": "Landholding (acres)",
     "completeProfile": "Complete Your Profile",
-    "welcome": "Welcome, {{name}}!"
+    "welcome": "Welcome, {{name}}!",
+    "invalidMobile": "Enter a valid 10-digit mobile number",
+    "verificationFailed": "Verification failed. Please try again.",
+    "nameRequired": "Please enter your full name",
+    "invalidStateDistrict": "Please select your state and district",
+    "otpExpired": "OTP expired. Request a new one."
   },
   "dashboard": {
     "greeting": "Good {{timeOfDay}}, {{name}}!",
@@ -54,7 +60,12 @@
     "totalFarms": "Total Farms",
     "totalArea": "Total Area",
     "activeCrops": "Active Crops",
-    "acres": "acres"
+    "acres": "acres",
+    "title": "Your Farming Command Center",
+    "preview": "A quick glance at everything GrowSmart brings together",
+    "personalized": "Here is your personalized snapshot",
+    "open": "Open Full Dashboard",
+    "loginToView": "Login to see your dashboard"
   },
   "weather": {
     "title": "Weather Intelligence",
