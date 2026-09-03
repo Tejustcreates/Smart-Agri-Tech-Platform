@@ -26,16 +26,17 @@ const TONES: Record<string, { bg: string; chip: string; text: string; divider: s
 export default function Section({ id, eyebrow, icon, title, subtitle, tone = 'green', children, className = '' }: SectionProps) {
   const t = TONES[tone];
   return (
-    <section id={id} className={`snap-section border-t border-gray-100 scroll-mt-20 ${className}`}>
-      <div className={`w-full bg-gradient-to-b ${t.bg} to-white`}>
+    <section id={id} className={`snap-section border-t border-slate-200/70 scroll-mt-16 ${className}`}>
+      <div className={`w-full bg-gradient-to-b ${t.bg} via-white to-white`}>
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-14 sm:py-20">
-          <div className="text-center mb-10">
-            <div className={`inline-flex items-center gap-2 ${t.chip} ${t.text} rounded-full px-4 py-1.5 text-xs font-semibold mb-4`}>
-              <i className={`${icon} text-[11px]`}></i> {eyebrow}
+          <div className="text-center mb-10 max-w-3xl mx-auto">
+            <div className={`inline-flex items-center gap-2 ${t.chip} ${t.text} border border-black/5 rounded-full px-4 py-1 text-xs font-extrabold mb-3 shadow-xs`}>
+              <i className={`${icon} text-[11px]`}></i>
+              <span>{eyebrow}</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-gray-900">{title}</h2>
-            <div className={`h-1 w-16 bg-gradient-to-r ${t.divider} rounded-full my-3 mx-auto`}></div>
-            {subtitle && <p className="text-gray-500 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">{subtitle}</p>}
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 tracking-tight">{title}</h2>
+            <div className={`h-1 w-16 bg-gradient-to-r ${t.divider} rounded-full my-3.5 mx-auto`}></div>
+            {subtitle && <p className="text-slate-600 text-xs sm:text-sm max-w-xl mx-auto leading-relaxed">{subtitle}</p>}
           </div>
           {children}
         </div>
