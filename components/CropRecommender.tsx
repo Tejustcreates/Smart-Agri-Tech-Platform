@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Section } from '../types';
+import SectionShell from './Section';
 import { SensorPayload } from '../types/sensor';
 import { PredictionResult } from '../types/prediction';
 import { trainModel, predict } from '../services/cropRecommendation/randomForestService';
@@ -95,24 +96,15 @@ const CropRecommender: React.FC = () => {
   ];
 
   return (
-    <section id={Section.CROP_RECOMMENDER} className="snap-section min-h-screen flex flex-col justify-center items-center border-t border-gray-100 bg-gradient-to-b from-brand-50/40 to-white">
-      <div className="w-full max-w-7xl mx-auto px-6 lg:px-12 py-16">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 bg-brand-100 text-brand-700 rounded-full px-4 py-1.5 text-sm font-medium mb-4">
-            <i className="fas fa-seedling"></i>
-            Crop Advisor
-          </div>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-800">
-            Smart Crop <span className="text-brand-600">Recommendation</span>
-          </h2>
-          <p className="text-gray-500 mt-3 max-w-lg mx-auto">
-            {activeTab === 'manual'
-              ? 'Enter your soil data to get AI-powered crop suggestions'
-              : 'Connect your ESP32 sensor hub for real-time soil monitoring'}
-          </p>
-        </div>
-
+    <SectionShell
+      id={Section.CROP_RECOMMENDER}
+      tone="green"
+      icon="fas fa-seedling"
+      eyebrow="Crop Advisor"
+      title="Smart Crop Recommendation"
+      subtitle="Enter your soil data or connect your IoT sensor hub for AI-powered crop suggestions."
+    >
+      <div className="w-full">
         {!modelReady && (
           <div className="mb-6 p-4 bg-brand-50 rounded-xl flex items-center gap-3 max-w-xl mx-auto">
             <Loader2 size={18} className="animate-spin text-brand-500" />
@@ -230,7 +222,7 @@ const CropRecommender: React.FC = () => {
           </div>
         </div>
       </div>
-    </section>
+    </SectionShell>
   );
 };
 

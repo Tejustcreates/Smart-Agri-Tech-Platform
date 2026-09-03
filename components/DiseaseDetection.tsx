@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Section from './Section';
 
 /* ── Types ── */
 
@@ -607,20 +608,15 @@ const DiseaseDetection: React.FC = () => {
   }, [currentStep]);
 
   return (
-    <section id="crop-disease-advisor" className="snap-section min-h-screen flex flex-col justify-center items-center border-t border-gray-100 bg-gradient-to-b from-amber-50/40 to-white">
-      <div className="w-full max-w-7xl mx-auto px-6 lg:px-12 py-16">
-        {/* Header */}
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center gap-2 bg-brand-100 text-brand-700 rounded-full px-4 py-1.5 text-sm font-medium mb-4">
-            <i className="fas fa-shield-alt" /> Crop Protection
-          </div>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-800">
-            Crop Disease <span className="text-brand-600">Advisor</span>
-          </h2>
-          <p className="text-gray-500 mt-3 max-w-lg mx-auto">
-            Identify crop diseases and receive treatment and prevention recommendations for healthier crops.
-          </p>
-        </div>
+    <Section
+      id="disease-detection"
+      tone="amber"
+      icon="fas fa-shield-alt"
+      eyebrow="Crop Protection"
+      title="Crop Disease Advisor"
+      subtitle="Identify crop diseases and receive treatment and prevention recommendations for healthier crops."
+    >
+      <div className="w-full">
 
         {/* Step Indicator */}
         <StepIndicator currentStep={currentStep} />
@@ -732,7 +728,7 @@ const DiseaseDetection: React.FC = () => {
           </div>
         </div>
       </div>
-    </section>
+    </Section>
   );
 };
 

@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { BarChart3, MapPin, TrendingUp, Sparkles, Store, Trophy } from 'lucide-react';
 import { MandiTab, MandiDashboardSummary } from '../../types/mandi';
 import { getDashboardSummary } from '../../services/mandi/mandiApi';
+import Section from '../../components/Section';
 import DashboardCards from './DashboardCards';
 import LiveMandiTable from './LiveMandiTable';
 import NearbyMandis from './NearbyMandis';
@@ -26,26 +27,16 @@ const DigitalMandi: React.FC = () => {
   }, []);
 
   return (
-    <section className="min-h-screen snap-section flex flex-col py-16 px-4" id="mandi">
-      <div className="max-w-6xl mx-auto w-full">
-        {/* Hero */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-10"
-        >
-          <div className="inline-flex items-center gap-2 bg-brand-50 text-brand-700 rounded-full px-4 py-1.5 text-xs font-semibold mb-4">
-            <Store size={14} />
-            Digital Mandi Intelligence
-          </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-800 mb-3">
-            Smart <span className="text-brand-600">Mandi</span> Information System
-          </h1>
-          <p className="text-gray-500 max-w-xl mx-auto text-sm">
-            Smart market intelligence to help farmers sell their crops at the best possible mandi.
-          </p>
-        </motion.div>
+    <Section
+      id="mandi"
+      tone="violet"
+      icon="fas fa-store"
+      eyebrow="Digital Mandi Intelligence"
+      title="Smart Mandi Information System"
+      subtitle="Smart market intelligence to help farmers sell their crops at the best possible mandi."
+      className=""
+    >
+      <div className="mx-auto w-full">
 
         {/* Dashboard Summary Cards */}
         <DashboardCards summary={summary} loading={summaryLoading} />
@@ -108,7 +99,7 @@ const DigitalMandi: React.FC = () => {
           {activeTab === 'recommendation' && <BestRecommendation />}
         </motion.div>
       </div>
-    </section>
+    </Section>
   );
 };
 

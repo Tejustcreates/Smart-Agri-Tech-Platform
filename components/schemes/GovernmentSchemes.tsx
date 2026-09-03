@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Search, ShieldCheck, AlertTriangle, Loader2 } from 'lucide-react';
 import { FarmerProfile, SchemeFilters, Scheme } from '../../types/scheme';
 import { searchSchemes, getPopularSchemes } from '../../services/schemeService';
+import Section from '../../components/Section';
 import SchemeFilter from './SchemeFilter';
 import SearchBar from './SearchBar';
 import SchemeCard from './SchemeCard';
@@ -86,26 +87,16 @@ const GovernmentSchemes: React.FC = () => {
   };
 
   return (
-    <section className="min-h-screen snap-section flex flex-col py-16 px-4" id="schemes">
-      <div className="max-w-6xl mx-auto w-full">
-        {/* Hero */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-10"
-        >
-          <div className="inline-flex items-center gap-2 bg-brand-50 text-brand-700 rounded-full px-4 py-1.5 text-xs font-semibold mb-4">
-            <ShieldCheck size={14} />
-            Government Scheme Finder
-          </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-800 mb-3">
-            Find Schemes You <span className="text-brand-600">Qualify For</span>
-          </h1>
-          <p className="text-gray-500 max-w-xl mx-auto text-sm">
-            Complete your profile below and we will match you with central and state government schemes, subsidies, and grants tailored to your farm.
-          </p>
-        </motion.div>
+    <Section
+      id="schemes"
+      tone="rose"
+      icon="fas fa-landmark"
+      eyebrow="Government Scheme Finder"
+      title="Find Schemes You Qualify For"
+      subtitle="Complete your profile below and we will match you with central and state government schemes, subsidies, and grants tailored to your farm."
+      className=""
+    >
+      <div className="mx-auto w-full">
 
         {/* Profile Form */}
         <motion.div
@@ -160,7 +151,7 @@ const GovernmentSchemes: React.FC = () => {
 
       {/* Detail Modal */}
       <SchemeDetailsModal scheme={selectedScheme} onClose={() => setSelectedScheme(null)} />
-    </section>
+    </Section>
   );
 };
 

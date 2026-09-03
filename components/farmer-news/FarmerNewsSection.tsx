@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { LiveArticle, fetchAgriNews } from '../../services/news/newsService';
+import Section from '../../components/Section';
 import NewsFilters from './NewsFilters';
 import FeaturedNews from './FeaturedNews';
 import NewsCard from './NewsCard';
@@ -97,21 +98,15 @@ const FarmerNewsSection: React.FC = () => {
   }, [nextPage]);
 
   return (
-    <section id="farmer-news" className="snap-section min-h-screen flex flex-col justify-center items-center border-t border-gray-100 bg-gradient-to-b from-emerald-50/40 to-white">
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-16">
-        {/* Header */}
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center gap-2 bg-brand-100 text-brand-700 rounded-full px-4 py-1.5 text-sm font-medium mb-4">
-            <i className="fas fa-newspaper" /> Personalized Farmer News
-          </div>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-800">
-            Personalized <span className="text-brand-600">Farmer News</span>
-          </h2>
-          <p className="text-gray-500 mt-3 max-w-xl mx-auto text-sm sm:text-base">
-            Stay updated with the latest agriculture, farming, crop, market, weather and government scheme news tailored to your interests.
-          </p>
-        </div>
-
+          <Section
+        id="news"
+        tone="green"
+        icon="fas fa-newspaper"
+        eyebrow="Personalized Farmer News"
+        title="Farmer News, Alerts & Updates"
+        subtitle="Stay updated with the latest agriculture, farming, crop, market, weather and government scheme news tailored to your interests."
+      >
+      <div className="w-full">
         {/* Filters */}
         <div className="max-w-5xl mx-auto">
           <NewsFilters
@@ -168,7 +163,7 @@ const FarmerNewsSection: React.FC = () => {
           )}
         </div>
       </div>
-    </section>
+    </Section>
   );
 };
 
