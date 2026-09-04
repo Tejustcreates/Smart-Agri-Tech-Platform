@@ -1,23 +1,29 @@
 export const ROUTES = {
   HOME: '/',
-  LOGIN: '/login',
-  SIGNUP: '/signup',
+  MANDI: '/mandi',
+  WEATHER: '/weather',
+  CROPS: '/crop-advisor',
+  DISEASE: '/disease-detection',
+  SCHEMES: '/schemes',
+  EQUIPMENT: '/equipment',
+  NEWS: '/news',
+  DASHBOARD: '/dashboard',
   CART: '/cart',
   PAYMENT: '/payment',
-  DASHBOARD: '/dashboard',
-  NEWS: '/news',
+  LOGIN: '/login',
+  SIGNUP: '/signup',
 } as const;
 
 export const NAV_ITEMS = [
-  { name: 'Home', sectionId: 'hero', icon: 'fas fa-home' },
-  { name: 'Weather', sectionId: 'weather', icon: 'fas fa-cloud-sun' },
-  { name: 'Crop Advisor', sectionId: 'crop-recommender', icon: 'fas fa-seedling' },
-  { name: 'Disease Detection', sectionId: 'disease-detection', icon: 'fas fa-bug' },
-  { name: 'Dashboard', sectionId: 'dashboard', icon: 'fas fa-chart-line', route: '/dashboard' },
-  { name: 'News', sectionId: 'news', icon: 'fas fa-newspaper' },
-  { name: 'Schemes', sectionId: 'schemes', icon: 'fas fa-landmark' },
-  { name: 'Mandi', sectionId: 'mandi', icon: 'fas fa-store' },
-  { name: 'Equipment', sectionId: 'equipment-recommender', icon: 'fas fa-tractor' },
+  { name: 'Home', route: ROUTES.HOME, icon: 'fas fa-home', sectionId: 'hero' },
+  { name: 'Mandi', route: ROUTES.MANDI, icon: 'fas fa-store', sectionId: 'mandi' },
+  { name: 'Weather', route: ROUTES.WEATHER, icon: 'fas fa-cloud-sun', sectionId: 'weather' },
+  { name: 'Crop Doctor', route: ROUTES.DISEASE, icon: 'fas fa-bug', sectionId: 'disease-detection' },
+  { name: 'Crop Advisor', route: ROUTES.CROPS, icon: 'fas fa-seedling', sectionId: 'crop-recommender' },
+  { name: 'Schemes', route: ROUTES.SCHEMES, icon: 'fas fa-landmark', sectionId: 'schemes' },
+  { name: 'Equipment', route: ROUTES.EQUIPMENT, icon: 'fas fa-tractor', sectionId: 'equipment-recommender' },
+  { name: 'News', route: ROUTES.NEWS, icon: 'fas fa-newspaper', sectionId: 'news' },
+  { name: 'Dashboard', route: ROUTES.DASHBOARD, icon: 'fas fa-chart-line', sectionId: 'dashboard' },
 ];
 
 export const INDIAN_STATES = [

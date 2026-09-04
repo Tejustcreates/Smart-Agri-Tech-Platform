@@ -3,13 +3,13 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { ROUTES } from '../constants';
 
 const FOOTER_LINKS = [
-  { name: 'Live Mandi Prices', sectionId: 'mandi', icon: 'fas fa-store' },
-  { name: 'Weather Forecast', sectionId: 'weather', icon: 'fas fa-cloud-sun' },
-  { name: 'Crop Doctor', sectionId: 'disease-detection', icon: 'fas fa-bug' },
-  { name: 'Crop Advisor', sectionId: 'crop-recommender', icon: 'fas fa-seedling' },
-  { name: 'Govt Schemes', sectionId: 'schemes', icon: 'fas fa-landmark' },
-  { name: 'Equipment Rental', sectionId: 'equipment-recommender', icon: 'fas fa-tractor' },
-  { name: 'Farmer News', sectionId: 'news', icon: 'fas fa-newspaper' },
+  { name: 'Live Mandi Prices', route: ROUTES.MANDI, icon: 'fas fa-store' },
+  { name: 'Weather Forecast', route: ROUTES.WEATHER, icon: 'fas fa-cloud-sun' },
+  { name: 'Crop Doctor', route: ROUTES.DISEASE, icon: 'fas fa-bug' },
+  { name: 'Crop Advisor', route: ROUTES.CROPS, icon: 'fas fa-seedling' },
+  { name: 'Govt Schemes', route: ROUTES.SCHEMES, icon: 'fas fa-landmark' },
+  { name: 'Equipment Rental', route: ROUTES.EQUIPMENT, icon: 'fas fa-tractor' },
+  { name: 'Farmer News', route: ROUTES.NEWS, icon: 'fas fa-newspaper' },
 ];
 
 const GOVT_PORTALS = [
@@ -22,19 +22,9 @@ const GOVT_PORTALS = [
 
 const Footer: React.FC = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-
-  const scrollToSection = (sectionId: string) => {
-    if (location.pathname !== ROUTES.HOME) {
-      navigate(ROUTES.HOME, { state: { scrollTo: sectionId } });
-      return;
-    }
-    const el = document.getElementById(sectionId);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
 
   const handleFooterLink = (link: typeof FOOTER_LINKS[0]) => {
-    if (link.sectionId) scrollToSection(link.sectionId);
+    navigate(link.route);
   };
 
   return (

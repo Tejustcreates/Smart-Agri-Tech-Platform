@@ -9,13 +9,12 @@ import Footer from './components/Footer';
 import BottomNav from './components/BottomNav';
 import ProtectedRoute from './components/ProtectedRoute';
 import HomePage from './components/pages/HomePage';
-import Weather from './components/Weather';
-import CropRecommender from './components/CropRecommender';
-import DiseaseDetection from './components/DiseaseDetection';
-import FarmerNewsSection from './components/farmer-news/FarmerNewsSection';
-import GovernmentSchemes from './components/schemes/GovernmentSchemes';
-import DigitalMandi from './components/mandi/DigitalMandi';
-import CommunityEquipment from './components/equipment/CommunityEquipment';
+import WeatherPage from './components/pages/WeatherPage';
+import CropAdvisorPage from './components/pages/CropAdvisorPage';
+import DiseasePage from './components/pages/DiseasePage';
+import MandiPage from './components/pages/MandiPage';
+import EquipmentPage from './components/pages/EquipmentPage';
+import SchemesPage from './components/pages/SchemesPage';
 import AuthPage from './components/pages/AuthPage';
 import AuthModal from './components/AuthModal';
 import BackToTop from './components/BackToTop';
@@ -144,7 +143,6 @@ const AppContent: React.FC = () => {
   }, [user]);
 
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const isHomePage = location.pathname === ROUTES.HOME;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -167,15 +165,18 @@ const AppContent: React.FC = () => {
             <>
               <HomePage />
               <DashboardPreview />
-              <Weather />
-              <CropRecommender />
-              <DiseaseDetection />
-              <DigitalMandi />
-              <CommunityEquipment />
-              <GovernmentSchemes />
-              <FarmerNewsSection />
             </>
           } />
+          <Route path={ROUTES.WEATHER} element={<WeatherPage />} />
+          <Route path={ROUTES.CROPS} element={<CropAdvisorPage />} />
+          <Route path="/crops" element={<Navigate to={ROUTES.CROPS} replace />} />
+          <Route path={ROUTES.DISEASE} element={<DiseasePage />} />
+          <Route path="/disease" element={<Navigate to={ROUTES.DISEASE} replace />} />
+          <Route path="/doctor" element={<Navigate to={ROUTES.DISEASE} replace />} />
+          <Route path={ROUTES.MANDI} element={<MandiPage />} />
+          <Route path={ROUTES.EQUIPMENT} element={<EquipmentPage />} />
+          <Route path={ROUTES.SCHEMES} element={<SchemesPage />} />
+          <Route path={ROUTES.NEWS} element={<FarmerNews />} />
           <Route path="/login" element={<AuthPage />} />
           <Route path="/signup" element={<AuthPage />} />
           <Route path="/auth" element={<AuthPage />} />
@@ -191,7 +192,6 @@ const AppContent: React.FC = () => {
               <FarmerDashboard />
             </ProtectedRoute>
           } />
-          <Route path="/news" element={<FarmerNews />} />
           <Route path="/admin" element={
             <ProtectedRoute requiredRole={['ADMIN', 'FIELD_OFFICER']}>
               <AdminPanel />
@@ -200,7 +200,7 @@ const AppContent: React.FC = () => {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
-      {isHomePage && <Footer />}
+      {!location.pathname.startsWith('/auth') && !location.pathname.startsWith('/onboarding') && <Footer />}
       {!location.pathname.startsWith('/auth') && !location.pathname.startsWith('/onboarding') && (
         <BottomNav user={user as unknown as UserType | null} onLogout={handleLogout} cartCount={cartCount} />
       )}

@@ -1,10 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '../../constants';
-import CropRecommender from '../CropRecommender';
+import DigitalMandi from '../mandi/DigitalMandi';
 
-const CropAdvisorPage: React.FC = () => (
-  <div className="min-h-screen bg-gradient-to-b from-teal-50/50 via-white to-slate-50">
+const MandiPage: React.FC = () => (
+  <div className="min-h-screen bg-gradient-to-b from-amber-50/50 via-white to-slate-50">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2">
       <div className="flex items-center justify-between">
         <Link
@@ -14,13 +14,13 @@ const CropAdvisorPage: React.FC = () => (
           <i className="fas fa-arrow-left text-xs"></i>
           <span>Back to Home</span>
         </Link>
-        <span className="text-xs font-bold text-teal-700 bg-teal-100/80 px-3 py-1 rounded-full border border-teal-200">
-          <i className="fas fa-seedling mr-1.5"></i> Crop Advisory & Soil Intelligence
+        <span className="text-xs font-bold text-amber-700 bg-amber-100/80 px-3 py-1 rounded-full border border-amber-200">
+          <i className="fas fa-store mr-1.5"></i> Live APMC Mandi Rates
         </span>
       </div>
     </div>
-    <CropRecommender />
+    <DigitalMandi />
   </div>
 );
 
-export default CropAdvisorPage;
+export default MandiPage;

@@ -10,16 +10,16 @@ declare global {
   }
 }
 
-const PRIMARY_NAV = ['hero', 'weather', 'crop-recommender', 'mandi'];
+const PRIMARY_NAV_ROUTES = [ROUTES.HOME, ROUTES.MANDI, ROUTES.WEATHER, ROUTES.DISEASE];
 
 const SEARCH_SUGGESTIONS = [
-  { label: 'Live Mandi Prices', subtext: 'Check latest market rates & nearby APMCs', sectionId: 'mandi', icon: 'fas fa-store', keywords: ['mandi', 'price', 'rate', 'bhav', 'market', 'onion', 'soybean', 'wheat', 'cotton'] },
-  { label: 'Weather Forecast & Rain Alert', subtext: 'Rain forecast, humidity & spray advisory', sectionId: 'weather', icon: 'fas fa-cloud-sun', keywords: ['weather', 'rain', 'temperature', 'forecast', 'monsoon', 'barish', 'havaman'] },
-  { label: 'Crop Doctor (Disease Detection)', subtext: 'Identify plant diseases & remedies', sectionId: 'disease-detection', icon: 'fas fa-bug', keywords: ['disease', 'doctor', 'leaf', 'blight', 'pest', 'fungus', 'cure', 'spray', 'keeda'] },
-  { label: 'Crop Advisor & Soil Recommendations', subtext: 'Smart crop selection by soil & season', sectionId: 'crop-recommender', icon: 'fas fa-seedling', keywords: ['crop', 'advisor', 'soil', 'yield', 'sowing', 'npk', 'fertilizer', 'seed'] },
-  { label: 'Govt Schemes & PM-KISAN', subtext: 'Check eligibility & application steps', sectionId: 'schemes', icon: 'fas fa-landmark', keywords: ['scheme', 'yojana', 'pm-kisan', 'subsidy', 'loan', 'insurance', 'kcc', 'grant'] },
-  { label: 'Farm Equipment Rental', subtext: 'Rent tractors, harvesters & sprayers', sectionId: 'equipment-recommender', icon: 'fas fa-tractor', keywords: ['equipment', 'tractor', 'rental', 'rent', 'tools', 'harvester', 'spray pump'] },
-  { label: 'Farmer News & MSP Alerts', subtext: 'Daily updates on MSP and policies', sectionId: 'news', icon: 'fas fa-newspaper', keywords: ['news', 'msp', 'updates', 'articles', 'agri', 'batmya'] },
+  { label: 'Live Mandi Prices', subtext: 'Check latest market rates & nearby APMCs', route: ROUTES.MANDI, icon: 'fas fa-store', keywords: ['mandi', 'price', 'rate', 'bhav', 'market', 'onion', 'soybean', 'wheat', 'cotton'] },
+  { label: 'Weather Forecast & Rain Alert', subtext: 'Rain forecast, humidity & spray advisory', route: ROUTES.WEATHER, icon: 'fas fa-cloud-sun', keywords: ['weather', 'rain', 'temperature', 'forecast', 'monsoon', 'barish', 'havaman'] },
+  { label: 'Crop Doctor (Disease Detection)', subtext: 'Identify plant diseases & remedies', route: ROUTES.DISEASE, icon: 'fas fa-bug', keywords: ['disease', 'doctor', 'leaf', 'blight', 'pest', 'fungus', 'cure', 'spray', 'keeda'] },
+  { label: 'Crop Advisor & Soil Recommendations', subtext: 'Smart crop selection by soil & season', route: ROUTES.CROPS, icon: 'fas fa-seedling', keywords: ['crop', 'advisor', 'soil', 'yield', 'sowing', 'npk', 'fertilizer', 'seed'] },
+  { label: 'Govt Schemes & PM-KISAN', subtext: 'Check eligibility & application steps', route: ROUTES.SCHEMES, icon: 'fas fa-landmark', keywords: ['scheme', 'yojana', 'pm-kisan', 'subsidy', 'loan', 'insurance', 'kcc', 'grant'] },
+  { label: 'Farm Equipment Rental', subtext: 'Rent tractors, harvesters & sprayers', route: ROUTES.EQUIPMENT, icon: 'fas fa-tractor', keywords: ['equipment', 'tractor', 'rental', 'rent', 'tools', 'harvester', 'spray pump'] },
+  { label: 'Farmer News & MSP Alerts', subtext: 'Daily updates on MSP and policies', route: ROUTES.NEWS, icon: 'fas fa-newspaper', keywords: ['news', 'msp', 'updates', 'articles', 'agri', 'batmya'] },
 ];
 
 interface HeaderProps {
@@ -32,13 +32,11 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ user, onLogout, cartCount, onOpenAuth }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMoreOpen, setIsMoreOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState('hero');
   const [scrolled, setScrolled] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const observerRef = useRef<IntersectionObserver | null>(null);
   const moreRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLDivElement>(null);
 
@@ -48,50 +46,17 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, cartCount, onOpenAuth }
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const scrollToSection = useCallback((sectionId: string) => {
+  const navigateTo = useCallback((route: string) => {
     setIsSearchOpen(false);
     setIsMenuOpen(false);
     setIsMoreOpen(false);
-    const navItem = NAV_ITEMS.find((item) => item.sectionId === sectionId);
-    if (navItem && 'route' in navItem && (navItem as any).route) {
-      navigate((navItem as any).route);
-      return;
-    }
-    if (location.pathname !== ROUTES.HOME) {
-      navigate(ROUTES.HOME, { state: { scrollTo: sectionId } });
-      return;
-    }
-    const el = document.getElementById(sectionId);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, [location.pathname, navigate]);
+    navigate(route);
+  }, [navigate]);
 
-  useEffect(() => {
-    if (location.pathname !== ROUTES.HOME) return;
-    const sectionIds = NAV_ITEMS.map((item) => item.sectionId);
-    const elements = sectionIds.map((id) => document.getElementById(id)).filter(Boolean) as HTMLElement[];
-    if (observerRef.current) observerRef.current.disconnect();
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) setActiveSection(entry.target.id);
-        }
-      },
-      { rootMargin: '-80px 0px -60% 0px', threshold: 0 }
-    );
-    elements.forEach((el) => observerRef.current!.observe(el));
-    return () => observerRef.current?.disconnect();
+  const isRouteActive = useCallback((route: string) => {
+    if (route === ROUTES.HOME) return location.pathname === ROUTES.HOME;
+    return location.pathname.startsWith(route);
   }, [location.pathname]);
-
-  useEffect(() => {
-    if (location.pathname === ROUTES.HOME && location.state?.scrollTo) {
-      const timer = setTimeout(() => {
-        const el = document.getElementById(location.state.scrollTo);
-        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        window.history.replaceState({}, '');
-      }, 100);
-      return () => clearTimeout(timer);
-    }
-  }, [location]);
 
   useEffect(() => {
     const initGoogleTranslate = () => {
@@ -131,8 +96,8 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, cartCount, onOpenAuth }
 
   const handleLogout = () => { onLogout(); navigate('/'); };
   const isOnHomePage = location.pathname === ROUTES.HOME;
-  const primaryNav = NAV_ITEMS.filter((item) => PRIMARY_NAV.includes(item.sectionId));
-  const moreNav = NAV_ITEMS.filter((item) => !PRIMARY_NAV.includes(item.sectionId));
+  const primaryNav = NAV_ITEMS.filter((item) => PRIMARY_NAV_ROUTES.includes(item.route as any));
+  const moreNav = NAV_ITEMS.filter((item) => !PRIMARY_NAV_ROUTES.includes(item.route as any));
 
   const filteredSearch = SEARCH_SUGGESTIONS.filter((item) => {
     if (!searchQuery.trim()) return true;
@@ -197,14 +162,14 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, cartCount, onOpenAuth }
               <div className="absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2.5 z-50 animate-fade-in-down overflow-hidden">
                 <div className="px-3.5 pb-2 border-b border-gray-100 flex items-center justify-between text-[11px] font-bold text-gray-400 uppercase tracking-wider">
                   <span>Quick Features & Tools</span>
-                  <span className="text-emerald-600 font-medium">Click to navigate</span>
+                  <span className="text-emerald-600 font-medium">Click to open dedicated page</span>
                 </div>
                 <div className="max-h-64 overflow-y-auto py-1">
                   {filteredSearch.length > 0 ? (
                     filteredSearch.map((item) => (
                       <button
-                        key={item.sectionId}
-                        onClick={() => scrollToSection(item.sectionId)}
+                        key={item.route}
+                        onClick={() => navigateTo(item.route)}
                         className="w-full text-left px-3.5 py-2.5 hover:bg-emerald-50/70 flex items-start gap-3 transition-colors group"
                       >
                         <span className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
@@ -240,11 +205,11 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, cartCount, onOpenAuth }
 
             {primaryNav.map((item) => (
               <button
-                key={item.sectionId}
-                onClick={() => scrollToSection(item.sectionId)}
+                key={item.route}
+                onClick={() => navigateTo(item.route)}
                 className={`px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-200 ${
-                  isOnHomePage && activeSection === item.sectionId
-                    ? 'bg-white/15 text-white shadow-sm ring-1 ring-white/20'
+                  isRouteActive(item.route)
+                    ? 'bg-white/20 text-white font-bold shadow-sm ring-1 ring-white/30'
                     : 'text-white/70 hover:bg-white/10 hover:text-white'
                 }`}
               >
@@ -259,23 +224,23 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, cartCount, onOpenAuth }
                 onClick={() => setIsMoreOpen(!isMoreOpen)}
                 className="px-3 py-2 rounded-xl text-xs font-semibold text-white/70 hover:bg-white/10 hover:text-white transition-all duration-200 flex items-center gap-1"
               >
-                <span>More</span>
+                <span>More Tools</span>
                 <i className={`fas fa-chevron-down text-[9px] transition-transform duration-200 ${isMoreOpen ? 'rotate-180' : ''}`}></i>
               </button>
               {isMoreOpen && (
                 <div className="absolute right-0 top-full mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 w-56 z-50 animate-fade-in-down">
                   {moreNav.map((item) => (
                     <button
-                      key={item.sectionId}
-                      onClick={() => { setIsMoreOpen(false); scrollToSection(item.sectionId); }}
+                      key={item.route}
+                      onClick={() => { setIsMoreOpen(false); navigateTo(item.route); }}
                       className={`w-full text-left px-4 py-2.5 text-xs font-semibold flex items-center gap-3 transition-all duration-200 ${
-                        isOnHomePage && activeSection === item.sectionId
+                        isRouteActive(item.route)
                           ? 'bg-emerald-50 text-emerald-800 font-bold'
                           : 'text-gray-700 hover:bg-gray-50 hover:text-emerald-700'
                       }`}
                     >
                       <span className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs ${
-                        isOnHomePage && activeSection === item.sectionId ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'
+                        isRouteActive(item.route) ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'
                       }`}>
                         <i className={item.icon}></i>
                       </span>
@@ -383,16 +348,16 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, cartCount, onOpenAuth }
 
             {NAV_ITEMS.map((item) => (
               <button
-                key={item.sectionId}
-                onClick={() => { setIsMenuOpen(false); scrollToSection(item.sectionId); }}
+                key={item.route}
+                onClick={() => { setIsMenuOpen(false); navigateTo(item.route); }}
                 className={`w-full text-left px-3.5 py-3 rounded-xl text-sm font-semibold flex items-center gap-3 transition-all ${
-                  isOnHomePage && activeSection === item.sectionId
+                  isRouteActive(item.route)
                     ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold'
                     : 'text-white/70 hover:bg-white/10 hover:text-white'
                 }`}
               >
                 <span className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs ${
-                  isOnHomePage && activeSection === item.sectionId ? 'bg-emerald-400 text-slate-950 font-bold' : 'bg-white/10 text-white/80'
+                  isRouteActive(item.route) ? 'bg-emerald-400 text-slate-950 font-bold' : 'bg-white/10 text-white/80'
                 }`}>
                   <i className={item.icon}></i>
                 </span>
