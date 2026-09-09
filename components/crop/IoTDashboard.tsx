@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { SensorPayload } from '../../types/sensor';
 import SensorCard from './SensorCard';
-import { Thermometer, Droplets, Beaker, Wind, CloudRain, Sun, Zap, Waves, Leaf } from 'lucide-react';
+import { Thermometer, Droplets, Beaker, Wind, CloudRain, Sun, Zap, Waves, Leaf, Battery, Wifi } from 'lucide-react';
 
 interface IoTDashboardProps {
   sensorData: SensorPayload;
@@ -18,8 +18,14 @@ interface IoTDashboardProps {
 }
 
 function getStatus(val: number, min: number, max: number): 'Good' | 'Low' | 'High' {
-  if (val < min * 1.1) return 'Low';
-  if (val > max * 0.9) return 'High';
+  // Margin as a fraction of the (max - min) range, not of min/max themselves —
+  // scaling by min/max directly produced a much narrower "Good" band for
+  // sensors where min is a large fraction of max (e.g. pH 5.5-7.5 squeezed
+  // "Good" down to 35% of the range vs ~70-77% for other sensors).
+  const range = max - min;
+  const margin = range * 0.15;
+  if (val < min + margin) return 'Low';
+  if (val > max - margin) return 'High';
   return 'Good';
 }
 
@@ -54,8 +60,8 @@ const IoTDashboard: React.FC<IoTDashboardProps> = ({ sensorData, connected, batt
             </div>
           </div>
           <div className="flex items-center gap-4 text-xs text-gray-500">
-            <span className="flex items-center gap-1">🔋 {battery}%</span>
-            <span className="flex items-center gap-1">📶 {wifi}%</span>
+            <span className="flex items-center gap-1"><Battery size={13} /> {battery}%</span>
+            <span className="flex items-center gap-1"><Wifi size={13} /> {wifi}%</span>
             <span>Last sync: {syncTime}</span>
           </div>
         </div>

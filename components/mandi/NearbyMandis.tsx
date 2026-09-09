@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
+import { Select, message } from 'antd';
 import { MapPin, Wheat, Route, Loader2, SlidersHorizontal, Navigation } from 'lucide-react';
 import { NearbyMandi, SortBy } from '../../types/mandi';
 import { getNearbyMandis } from '../../services/mandi/mandiApi';
@@ -25,6 +26,7 @@ const NearbyMandis: React.FC = () => {
     setLoading(true);
     getNearbyMandis(crop, locationName, radius)
       .then(setMandis)
+      .catch(() => message.error('Failed to load nearby mandis. Please try again.'))
       .finally(() => setLoading(false));
   }, [crop, locationName, radius]);
 
@@ -68,16 +70,13 @@ const NearbyMandis: React.FC = () => {
           </div>
           <div>
             <label className="block text-xs font-semibold text-gray-500 uppercase mb-1.5">Crop</label>
-            <div className="relative">
-              <Wheat size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-              <select
-                value={crop}
-                onChange={(e) => setCrop(e.target.value)}
-                className="tap-target w-full pl-9 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 appearance-none"
-              >
-                {CROP_OPTIONS.map((c) => <option key={c} value={c}>{c}</option>)}
-              </select>
-            </div>
+            <Select
+              value={crop}
+              onChange={setCrop}
+              className="tap-target w-full"
+              suffixIcon={<Wheat size={14} className="text-gray-400" />}
+              options={CROP_OPTIONS.map((c) => ({ value: c, label: c }))}
+            />
           </div>
           <div>
             <label className="block text-xs font-semibold text-gray-500 uppercase mb-1.5">Radius: {radius} km</label>
@@ -93,19 +92,18 @@ const NearbyMandis: React.FC = () => {
           </div>
           <div>
             <label className="block text-xs font-semibold text-gray-500 uppercase mb-1.5">Sort By</label>
-            <div className="relative">
-              <SlidersHorizontal size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as SortBy)}
-                className="tap-target w-full pl-9 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 appearance-none"
-              >
-                <option value="price-desc">Highest Price</option>
-                <option value="price-asc">Lowest Price</option>
-                <option value="distance">Nearest First</option>
-                <option value="profit">Best Profit</option>
-              </select>
-            </div>
+            <Select
+              value={sortBy}
+              onChange={(v) => setSortBy(v as SortBy)}
+              className="tap-target w-full"
+              suffixIcon={<SlidersHorizontal size={14} className="text-gray-400" />}
+              options={[
+                { value: 'price-desc', label: 'Highest Price' },
+                { value: 'price-asc', label: 'Lowest Price' },
+                { value: 'distance', label: 'Nearest First' },
+                { value: 'profit', label: 'Best Profit' },
+              ]}
+            />
           </div>
         </div>
       </div>
@@ -128,7 +126,7 @@ const NearbyMandis: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {sorted.map((m, i) => (
               <motion.div key={m.id} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}>
-                <MandiCard mandi={m} sortBy={sortBy} />
+                <MandiCard mandi={m} />
               </motion.div>
             ))}
           </div>

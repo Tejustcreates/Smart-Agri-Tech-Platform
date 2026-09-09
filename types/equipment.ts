@@ -77,6 +77,7 @@ export interface RegistrationForm {
   condition: EquipmentCondition | '';
   coverPhoto: string;
   additionalPhotos: string[];
+  video: string;
   pricePerHour: string;
   pricePerDay: string;
   deposit: string;
@@ -85,4 +86,5 @@ export interface RegistrationForm {
   minRental: string;
   workingRadius: number;
   description: string;
+  availability: string[];
 }

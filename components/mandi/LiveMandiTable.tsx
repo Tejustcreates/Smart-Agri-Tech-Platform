@@ -1,10 +1,36 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { motion } from 'framer-motion';
-import { TrendingUp, TrendingDown, ArrowUp, ArrowDown, Minus, Loader2 } from 'lucide-react';
+import { Table, message } from 'antd';
+import type { ColumnsType } from 'antd/es/table';
+import { ArrowUp, ArrowDown, Minus, Loader2 } from 'lucide-react';
 import { LivePrice, PriceFilters } from '../../types/mandi';
 import { getLivePrices } from '../../services/mandi/mandiApi';
 import SearchBar from './SearchBar';
 import FilterPanel from './FilterPanel';
+
+const ChangeBadge: React.FC<{ change: number }> = ({ change }) => {
+  const isUp = change > 0;
+  const isDown = change < 0;
+  return (
+    <span className={`inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold ${
+      isUp ? 'bg-emerald-50 text-emerald-700' : isDown ? 'bg-red-50 text-red-700' : 'bg-gray-50 text-gray-600'
+    }`}>
+      {isUp ? <ArrowUp size={10} /> : isDown ? <ArrowDown size={10} /> : <Minus size={10} />}
+      {Math.abs(change)}%
+    </span>
+  );
+};
+
+const columns: ColumnsType<LivePrice> = [
+  { title: 'Crop', dataIndex: 'crop', key: 'crop', fixed: 'left', width: 110, render: (v) => <span className="font-semibold text-gray-800">{v}</span> },
+  { title: 'Mandi', dataIndex: 'mandi', key: 'mandi', width: 140 },
+  { title: 'District', dataIndex: 'district', key: 'district', width: 120, render: (v) => <span className="text-gray-500">{v}</span> },
+  { title: 'State', dataIndex: 'state', key: 'state', width: 130, render: (v) => <span className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded-full text-[10px] font-semibold">{v}</span> },
+  { title: 'Min Price', dataIndex: 'minPrice', key: 'minPrice', width: 110, render: (v: number) => `₹${v.toLocaleString()}` },
+  { title: 'Max Price', dataIndex: 'maxPrice', key: 'maxPrice', width: 110, render: (v: number) => `₹${v.toLocaleString()}` },
+  { title: 'Modal Price', dataIndex: 'modalPrice', key: 'modalPrice', width: 120, render: (v: number) => <span className="font-bold text-gray-800">₹{v.toLocaleString()}</span> },
+  { title: 'Change', dataIndex: 'change', key: 'change', width: 100, render: (v: number) => <ChangeBadge change={v} /> },
+  { title: 'Updated', dataIndex: 'lastUpdated', key: 'lastUpdated', width: 110, render: (v) => <span className="text-xs text-gray-400">{v}</span> },
+];
 
 const LiveMandiTable: React.FC = () => {
   const [prices, setPrices] = useState<LivePrice[]>([]);
@@ -14,8 +40,21 @@ const LiveMandiTable: React.FC = () => {
   });
 
   useEffect(() => {
-    getLivePrices().then(setPrices).finally(() => setLoading(false));
+    getLivePrices()
+      .then(setPrices)
+      .catch(() => message.error('Failed to load live mandi prices. Please try again.'))
+      .finally(() => setLoading(false));
   }, []);
+
+  const stateOptions = useMemo(
+    () => Array.from(new Set(prices.map((p) => p.state))).sort(),
+    [prices]
+  );
+
+  const districtOptions = useMemo(
+    () => Array.from(new Set(prices.filter((p) => !filters.state || p.state === filters.state).map((p) => p.district))).sort(),
+    [prices, filters.state]
+  );
 
   const filtered = useMemo(() => {
     return prices.filter((p) => {
@@ -40,104 +79,29 @@ const LiveMandiTable: React.FC = () => {
 
   return (
     <div>
-      {/* Search + Filters — stacked on mobile */}
+      {/* Search + Filters */}
       <div className="flex flex-col gap-3 mb-5">
         <div className="w-full">
           <SearchBar value={filters.search} onChange={(v) => updateFilter('search', v)} placeholder="Search crop or mandi..." />
         </div>
       </div>
       <FilterPanel
-        state={filters.state} onStateChange={(v) => updateFilter('state', v)}
-        district={filters.district} onDistrictChange={(v) => updateFilter('district', v)}
+        state={filters.state} onStateChange={(v) => updateFilter('state', v)} stateOptions={stateOptions}
+        district={filters.district} onDistrictChange={(v) => updateFilter('district', v)} districtOptions={districtOptions}
         crop={filters.crop} onCropChange={(v) => updateFilter('crop', v)}
         date={filters.date} onDateChange={(v) => updateFilter('date', v)}
       />
 
-      {/* Desktop Table — lg and above only */}
-      <div className="hidden lg:block mt-5 overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-gray-200">
-              {['Crop', 'Mandi', 'District', 'State', 'Min Price', 'Max Price', 'Modal Price', 'Change', 'Updated'].map((h) => (
-                <th key={h} className="text-left py-3 px-3 text-xs font-bold text-gray-500 uppercase tracking-wide">{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((p, i) => (
-              <motion.tr
-                key={p.id}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: i * 0.02 }}
-                className="border-b border-gray-50 hover:bg-brand-50/50 transition-colors"
-              >
-                <td className="py-3 px-3 font-semibold text-gray-800">{p.crop}</td>
-                <td className="py-3 px-3 text-gray-700">{p.mandi}</td>
-                <td className="py-3 px-3 text-gray-500">{p.district}</td>
-                <td className="py-3 px-3">
-                  <span className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded-full text-[10px] font-semibold">{p.state}</span>
-                </td>
-                <td className="py-3 px-3 text-gray-600">₹{p.minPrice.toLocaleString()}</td>
-                <td className="py-3 px-3 text-gray-600">₹{p.maxPrice.toLocaleString()}</td>
-                <td className="py-3 px-3 font-bold text-gray-800">₹{p.modalPrice.toLocaleString()}</td>
-                <td className="py-3 px-3">
-                  <span className={`inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                    p.change > 0 ? 'bg-emerald-50 text-emerald-700' : p.change < 0 ? 'bg-red-50 text-red-700' : 'bg-gray-50 text-gray-600'
-                  }`}>
-                    {p.change > 0 ? <ArrowUp size={10} /> : p.change < 0 ? <ArrowDown size={10} /> : <Minus size={10} />}
-                    {Math.abs(p.change)}%
-                  </span>
-                </td>
-                <td className="py-3 px-3 text-xs text-gray-400">{p.lastUpdated}</td>
-              </motion.tr>
-            ))}
-          </tbody>
-        </table>
-        {filtered.length === 0 && (
-          <div className="text-center py-12 text-gray-400 text-sm">No prices match your filters.</div>
-        )}
-      </div>
-
-      {/* Mobile Stacked Cards — below lg */}
-      <div className="lg:hidden mt-4 space-y-3">
-        {filtered.map((p) => {
-          const isUp = p.change > 0;
-          const isDown = p.change < 0;
-          return (
-            <div key={p.id} className="bg-white/80 backdrop-blur-sm rounded-xl border border-gray-100 p-4 shadow-sm">
-              <div className="flex items-start justify-between gap-3 mb-3">
-                <div className="min-w-0 flex-1">
-                  <h4 className="text-lg font-extrabold text-gray-800 leading-tight">{p.crop}</h4>
-                  <p className="text-xs text-gray-400 mt-0.5">{p.mandi}, {p.district}</p>
-                </div>
-                <span className={`inline-flex items-center gap-0.5 px-2.5 py-1 rounded-full text-xs font-bold flex-shrink-0 ${
-                  isUp ? 'bg-emerald-50 text-emerald-700' : isDown ? 'bg-red-50 text-red-700' : 'bg-gray-50 text-gray-600'
-                }`}>
-                  {isUp ? <ArrowUp size={12} /> : isDown ? <ArrowDown size={12} /> : <Minus size={12} />}
-                  {Math.abs(p.change)}%
-                </span>
-              </div>
-              <div className="flex items-baseline gap-2 mb-3">
-                <span className={`text-2xl font-extrabold ${isUp ? 'text-emerald-700' : isDown ? 'text-red-700' : 'text-gray-800'}`}>
-                  ₹{p.modalPrice.toLocaleString()}
-                </span>
-                <span className="text-xs text-gray-400">modal / quintal</span>
-              </div>
-              <div className="grid grid-cols-2 gap-2 text-center">
-                <div className="bg-gray-50 rounded-lg p-2">
-                  <p className="text-[10px] text-gray-400">Min</p>
-                  <p className="text-xs font-bold text-gray-700">₹{p.minPrice.toLocaleString()}</p>
-                </div>
-                <div className="bg-gray-50 rounded-lg p-2">
-                  <p className="text-[10px] text-gray-400">Max</p>
-                  <p className="text-xs font-bold text-gray-700">₹{p.maxPrice.toLocaleString()}</p>
-                </div>
-              </div>
-              <p className="text-[10px] text-gray-400 mt-2 text-right">Updated {p.lastUpdated}</p>
-            </div>
-          );
-        })}
+      <div className="mt-5">
+        <Table
+          rowKey="id"
+          columns={columns}
+          dataSource={filtered}
+          scroll={{ x: 1060 }}
+          pagination={filtered.length > 10 ? { pageSize: 10 } : false}
+          locale={{ emptyText: 'No prices match your filters.' }}
+          size="middle"
+        />
       </div>
 
       <p className="text-xs text-gray-400 mt-4 text-center">{filtered.length} results found</p>

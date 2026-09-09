@@ -53,11 +53,25 @@ const AnalyticsChart: React.FC<AnalyticsChartProps> = ({ data, currentPrice, lab
             <Line
               type="monotone"
               dataKey="price"
+              data={actualData}
               stroke="#173404"
               strokeWidth={2}
               dot={false}
               activeDot={{ r: 4, fill: '#173404' }}
             />
+            {predictedData.length > 0 && (
+              <Line
+                type="monotone"
+                dataKey="price"
+                data={predictedData}
+                stroke="#173404"
+                strokeWidth={2}
+                strokeDasharray="5 4"
+                strokeOpacity={0.55}
+                dot={false}
+                activeDot={{ r: 4, fill: '#173404' }}
+              />
+            )}
           </LineChart>
         </ResponsiveContainer>
       </div>

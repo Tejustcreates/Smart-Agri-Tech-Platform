@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { ArrowLeft, Sprout } from 'lucide-react';
 import { ROUTES } from '../../constants';
 import CropRecommender from '../CropRecommender';
 
@@ -11,11 +12,11 @@ const CropAdvisorPage: React.FC = () => (
           to={ROUTES.HOME}
           className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-600 hover:text-emerald-700 transition-colors bg-white border border-slate-200/80 px-3.5 py-1.5 rounded-xl shadow-xs"
         >
-          <i className="fas fa-arrow-left text-xs"></i>
+          <ArrowLeft size={12} />
           <span>Back to Home</span>
         </Link>
-        <span className="text-xs font-bold text-teal-700 bg-teal-100/80 px-3 py-1 rounded-full border border-teal-200">
-          <i className="fas fa-seedling mr-1.5"></i> Crop Advisory & Soil Intelligence
+        <span className="inline-flex items-center text-xs font-bold text-teal-700 bg-teal-100/80 px-3 py-1 rounded-full border border-teal-200">
+          <Sprout size={12} className="mr-1.5" /> Crop Advisory & Soil Intelligence
         </span>
       </div>
     </div>

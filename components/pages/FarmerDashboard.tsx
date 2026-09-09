@@ -1,5 +1,12 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  CalendarDays, ArrowLeft, CloudSun, Sprout, Bug, Store, Landmark, Tractor,
+  Droplet, Wind, CloudRain, Wheat, Cloud, Circle, TrendingUp, TrendingDown,
+  HandCoins, ShieldCheck, CreditCard, HeartPulse, ChartLine, FlaskConical,
+  Bell, X, CloudRainWind, IndianRupee, Truck, ClipboardCheck, Lightbulb,
+  SprayCan, Clock, Bot, Newspaper, FileOutput,
+} from 'lucide-react';
 import { Section } from '../../types';
 import { ROUTES } from '../../constants';
 import {
@@ -21,25 +28,25 @@ import {
 import toast from 'react-hot-toast';
 
 const QUICK_ACTIONS = [
-  { label: 'Weather', icon: 'fas fa-cloud-sun', section: Section.WEATHER, bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200' },
-  { label: 'Crop Advice', icon: 'fas fa-seedling', section: Section.CROP_RECOMMENDER, bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200' },
-  { label: 'Disease Check', icon: 'fas fa-bug', section: Section.DISEASE_DETECTION, bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-200' },
-  { label: 'Mandi Prices', icon: 'fas fa-store', section: Section.MANDI, bg: 'bg-teal-50', text: 'text-teal-700', border: 'border-teal-200' },
-  { label: 'Govt Schemes', icon: 'fas fa-landmark', section: Section.SCHEMES, bg: 'bg-indigo-50', text: 'text-indigo-700', border: 'border-indigo-200' },
-  { label: 'Equipment', icon: 'fas fa-tractor', section: Section.EQUIPMENT_RECOMMENDER, bg: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-200' },
+  { label: 'Weather', icon: CloudSun, section: Section.WEATHER, bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200' },
+  { label: 'Crop Advice', icon: Sprout, section: Section.CROP_RECOMMENDER, bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200' },
+  { label: 'Disease Check', icon: Bug, section: Section.DISEASE_DETECTION, bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-200' },
+  { label: 'Mandi Prices', icon: Store, section: Section.MANDI, bg: 'bg-teal-50', text: 'text-teal-700', border: 'border-teal-200' },
+  { label: 'Govt Schemes', icon: Landmark, section: Section.SCHEMES, bg: 'bg-indigo-50', text: 'text-indigo-700', border: 'border-indigo-200' },
+  { label: 'Equipment', icon: Tractor, section: Section.EQUIPMENT_RECOMMENDER, bg: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-200' },
 ];
 
 const MANDI_PRICES = [
-  { crop: 'Soybean', price: 4850, unit: '₹/quintal', change: +2.3, icon: 'fas fa-seedling' },
-  { crop: 'Wheat', price: 2275, unit: '₹/quintal', change: -0.8, icon: 'fas fa-wheat-awn' },
-  { crop: 'Cotton', price: 6920, unit: '₹/quintal', change: +1.5, icon: 'fas fa-cloud' },
-  { crop: 'Onion', price: 3150, unit: '₹/quintal', change: -3.1, icon: 'fas fa-circle' },
+  { crop: 'Soybean', price: 4850, unit: '₹/quintal', change: +2.3, icon: Sprout },
+  { crop: 'Wheat', price: 2275, unit: '₹/quintal', change: -0.8, icon: Wheat },
+  { crop: 'Cotton', price: 6920, unit: '₹/quintal', change: +1.5, icon: Cloud },
+  { crop: 'Onion', price: 3150, unit: '₹/quintal', change: -3.1, icon: Circle },
 ];
 
 const SCHEMES = [
-  { name: 'PM-KISAN', desc: 'Direct income support of ₹6,000/year to farmer families', status: 'Eligible', statusColor: 'bg-emerald-100 text-emerald-700', icon: 'fas fa-hand-holding-dollar' },
-  { name: 'PM Fasal Bima', desc: 'Crop insurance against natural calamities', status: 'Active', statusColor: 'bg-blue-100 text-blue-700', icon: 'fas fa-shield-halved' },
-  { name: 'KCC Loan', desc: 'Kisan Credit Card with subsidized interest rates', status: 'Applied', statusColor: 'bg-amber-100 text-amber-700', icon: 'fas fa-credit-card' },
+  { name: 'PM-KISAN', desc: 'Direct income support of ₹6,000/year to farmer families', status: 'Eligible', statusColor: 'bg-emerald-100 text-emerald-700', icon: HandCoins },
+  { name: 'PM Fasal Bima', desc: 'Crop insurance against natural calamities', status: 'Active', statusColor: 'bg-blue-100 text-blue-700', icon: ShieldCheck },
+  { name: 'KCC Loan', desc: 'Kisan Credit Card with subsidized interest rates', status: 'Applied', statusColor: 'bg-amber-100 text-amber-700', icon: CreditCard },
 ];
 
 const PRICE_DATA = [
@@ -72,32 +79,32 @@ const SOIL_DATA = [
 ];
 
 const ALERTS = [
-  { icon: 'fas fa-cloud-showers-heavy', title: 'Heavy Rain Expected', desc: 'Rain expected tomorrow. Delay pesticide spray.', color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-l-blue-500' },
-  { icon: 'fas fa-chart-line', title: 'Soybean Price Up', desc: 'Soybean prices rose 3.5% at Nashik mandi today.', color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-l-emerald-500' },
-  { icon: 'fas fa-bug', title: 'Blight Risk Detected', desc: 'High humidity may cause late blight in tomato/potato.', color: 'text-red-600', bg: 'bg-red-50', border: 'border-l-red-500' },
-  { icon: 'fas fa-landmark', title: 'PM-KISAN Installment', desc: '17th installment expected this week. Check status.', color: 'text-purple-600', bg: 'bg-purple-50', border: 'border-l-purple-500' },
-  { icon: 'fas fa-wheat-awn', title: 'Rabi Sowing Window', desc: 'Optimal wheat sowing starts next week.', color: 'text-amber-600', bg: 'bg-amber-50', border: 'border-l-amber-500' },
+  { icon: CloudRainWind, title: 'Heavy Rain Expected', desc: 'Rain expected tomorrow. Delay pesticide spray.', color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-l-blue-500' },
+  { icon: ChartLine, title: 'Soybean Price Up', desc: 'Soybean prices rose 3.5% at Nashik mandi today.', color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-l-emerald-500' },
+  { icon: Bug, title: 'Blight Risk Detected', desc: 'High humidity may cause late blight in tomato/potato.', color: 'text-red-600', bg: 'bg-red-50', border: 'border-l-red-500' },
+  { icon: Landmark, title: 'PM-KISAN Installment', desc: '17th installment expected this week. Check status.', color: 'text-purple-600', bg: 'bg-purple-50', border: 'border-l-purple-500' },
+  { icon: Wheat, title: 'Rabi Sowing Window', desc: 'Optimal wheat sowing starts next week.', color: 'text-amber-600', bg: 'bg-amber-50', border: 'border-l-amber-500' },
 ];
 
 const ACTIVITIES = [
-  { text: 'Soil test report uploaded for Field #3', time: '2 hours ago', icon: 'fas fa-flask', color: 'text-emerald-600' },
-  { text: 'Weather alert: Heavy rain expected tomorrow', time: '5 hours ago', icon: 'fas fa-cloud-showers-heavy', color: 'text-blue-600' },
-  { text: 'PM-KISAN installment received ₹2,000', time: '1 day ago', icon: 'fas fa-indian-rupee-sign', color: 'text-emerald-600' },
-  { text: 'Pesticide order delivered from Mandi', time: '2 days ago', icon: 'fas fa-truck', color: 'text-orange-600' },
-  { text: 'Cotton crop health check completed', time: '3 days ago', icon: 'fas fa-clipboard-check', color: 'text-purple-600' },
+  { text: 'Soil test report uploaded for Field #3', time: '2 hours ago', icon: FlaskConical, color: 'text-emerald-600' },
+  { text: 'Weather alert: Heavy rain expected tomorrow', time: '5 hours ago', icon: CloudRainWind, color: 'text-blue-600' },
+  { text: 'PM-KISAN installment received ₹2,000', time: '1 day ago', icon: IndianRupee, color: 'text-emerald-600' },
+  { text: 'Pesticide order delivered from Mandi', time: '2 days ago', icon: Truck, color: 'text-orange-600' },
+  { text: 'Cotton crop health check completed', time: '3 days ago', icon: ClipboardCheck, color: 'text-purple-600' },
 ];
 
 const FARMING_TIPS = [
-  { tip: 'Delay irrigation for 2 days — rain expected', icon: 'fas fa-cloud-rain', color: 'text-blue-600', bg: 'bg-blue-50' },
-  { tip: 'Apply neem-based pesticide to prevent aphids', icon: 'fas fa-spray-can-sparkles', color: 'text-emerald-600', bg: 'bg-emerald-50' },
-  { tip: 'Harvest wheat within 3 days for best MSP rates', icon: 'fas fa-clock', color: 'text-amber-600', bg: 'bg-amber-50' },
-  { tip: 'Spray fungicide on cotton leaves today', icon: 'fas fa-droplet', color: 'text-purple-600', bg: 'bg-purple-50' },
+  { tip: 'Delay irrigation for 2 days — rain expected', icon: CloudRain, color: 'text-blue-600', bg: 'bg-blue-50' },
+  { tip: 'Apply neem-based pesticide to prevent aphids', icon: SprayCan, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+  { tip: 'Harvest wheat within 3 days for best MSP rates', icon: Clock, color: 'text-amber-600', bg: 'bg-amber-50' },
+  { tip: 'Spray fungicide on cotton leaves today', icon: Droplet, color: 'text-purple-600', bg: 'bg-purple-50' },
 ];
 
 const RECENT_NEWS = [
-  { title: 'PM-KISAN 17th installment releasing soon', source: 'Krishi Jagran', time: '2h ago', icon: 'fas fa-landmark', color: 'text-emerald-600' },
-  { title: 'Soybean prices surge across Maharashtra', source: 'Agri Market', time: '5h ago', icon: 'fas fa-chart-line', color: 'text-amber-600' },
-  { title: 'New drone spraying technology for cotton', source: 'AgriTech India', time: '1d ago', icon: 'fas fa-robot', color: 'text-purple-600' },
+  { title: 'PM-KISAN 17th installment releasing soon', source: 'Krishi Jagran', time: '2h ago', icon: Landmark, color: 'text-emerald-600' },
+  { title: 'Soybean prices surge across Maharashtra', source: 'Agri Market', time: '5h ago', icon: ChartLine, color: 'text-amber-600' },
+  { title: 'New drone spraying technology for cotton', source: 'AgriTech India', time: '1d ago', icon: Bot, color: 'text-purple-600' },
 ];
 
 function getGreeting(): string {
@@ -188,7 +195,7 @@ const FarmerDashboard: React.FC = () => {
               <div className="flex flex-wrap items-center gap-3 mt-1 text-sm text-emerald-100">
                 <span>{today}</span>
                 <span className="inline-flex items-center gap-1 bg-white/15 rounded-full px-3 py-0.5 text-xs font-medium">
-                  <i className="fas fa-calendar-days text-[10px]"></i> {currentSeason}
+                  <CalendarDays size={11} /> {currentSeason}
                 </span>
               </div>
             </div>
@@ -196,7 +203,7 @@ const FarmerDashboard: React.FC = () => {
               onClick={() => navigate(ROUTES.HOME)}
               className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/20 hover:bg-white/25 text-white text-sm font-medium rounded-full px-4 py-2 min-h-[48px] transition-colors self-start"
             >
-              <i className="fas fa-arrow-left text-xs"></i> Back to Home
+              <ArrowLeft size={13} /> Back to Home
             </button>
           </div>
         </div>
@@ -214,7 +221,7 @@ const FarmerDashboard: React.FC = () => {
                 onClick={() => goToSection(action.section)}
                 className={`flex flex-col items-center justify-center gap-2 rounded-xl border ${action.bg} ${action.border} ${action.text} p-4 min-h-[48px] active:scale-95 transition-transform hover:shadow-md`}
               >
-                <i className={`${action.icon} text-xl`}></i>
+                <action.icon size={22} />
                 <span className="text-xs font-medium text-center leading-tight">{action.label}</span>
               </button>
             ))}
@@ -228,7 +235,7 @@ const FarmerDashboard: React.FC = () => {
           <section className="bg-white rounded-2xl shadow-sm overflow-hidden">
             <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-5 py-4 text-white flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <i className="fas fa-cloud-sun text-2xl"></i>
+                <CloudSun size={26} />
                 <div>
                   <h3 className="text-lg font-semibold">Weather Now</h3>
                   <p className="text-blue-100 text-sm">Partly Cloudy</p>
@@ -239,22 +246,22 @@ const FarmerDashboard: React.FC = () => {
             <div className="px-5 py-4 space-y-3">
               <div className="flex items-center gap-6 text-sm text-gray-600">
                 <div className="flex items-center gap-2">
-                  <i className="fas fa-droplet text-blue-400"></i>
+                  <Droplet size={13} className="text-blue-400" />
                   <span>Humidity: <strong>68%</strong></span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <i className="fas fa-wind text-blue-400"></i>
+                  <Wind size={13} className="text-blue-400" />
                   <span>Wind: <strong>12 km/h</strong></span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <i className="fas fa-cloud-rain text-blue-400"></i>
+                  <CloudRain size={13} className="text-blue-400" />
                   <span>Rain: <strong>40%</strong></span>
                 </div>
               </div>
               <div className="bg-blue-50 rounded-xl p-3 border border-blue-100">
-                <p className="text-sm text-blue-700">
-                  <i className="fas fa-seedling mr-1"></i>
-                  <strong>Farming Advisory:</strong> Good day for field work. Delay irrigation if rain expected.
+                <p className="text-sm text-blue-700 flex items-start gap-1.5">
+                  <Sprout size={14} className="mt-0.5 flex-shrink-0" />
+                  <span><strong>Farming Advisory:</strong> Good day for field work. Delay irrigation if rain expected.</span>
                 </p>
               </div>
               <button
@@ -269,8 +276,8 @@ const FarmerDashboard: React.FC = () => {
           {/* Widget 2: Mandi Price Alert */}
           <section className="bg-white rounded-2xl shadow-sm overflow-hidden">
             <div className="bg-gradient-to-r from-teal-500 to-teal-600 px-5 py-4 text-white">
-              <h3 className="text-lg font-semibold">
-                <i className="fas fa-store mr-2"></i>Mandi Price Alert
+              <h3 className="text-lg font-semibold flex items-center gap-2">
+                <Store size={17} />Mandi Price Alert
               </h3>
               <p className="text-teal-100 text-sm">Top crops today</p>
             </div>
@@ -279,7 +286,7 @@ const FarmerDashboard: React.FC = () => {
                 {MANDI_PRICES.map((item) => (
                   <div key={item.crop} className="flex items-center justify-between rounded-xl bg-gray-50 px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <i className={`${item.icon} text-gray-400`}></i>
+                      <item.icon size={15} className="text-gray-400" />
                       <div>
                         <p className="font-medium text-gray-800 text-sm">{item.crop}</p>
                         <p className="text-xs text-gray-400">{item.unit}</p>
@@ -290,7 +297,7 @@ const FarmerDashboard: React.FC = () => {
                       <span className={`inline-flex items-center gap-1 text-xs font-semibold ${
                         item.change >= 0 ? 'text-emerald-600' : 'text-red-600'
                       }`}>
-                        <i className={`fas ${item.change >= 0 ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down'} text-[10px]`}></i>
+                        {item.change >= 0 ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
                         {item.change >= 0 ? '+' : ''}{item.change}%
                       </span>
                     </div>
@@ -308,15 +315,15 @@ const FarmerDashboard: React.FC = () => {
 
           {/* Widget 3: Govt Schemes */}
           <section className="bg-white rounded-2xl shadow-sm p-5">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">
-              <i className="fas fa-landmark text-indigo-500 mr-2"></i>Government Schemes
+            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <Landmark size={17} className="text-indigo-500" />Government Schemes
             </h3>
             <div className="space-y-3">
               {SCHEMES.map((s) => (
                 <div key={s.name} className="bg-gray-50 rounded-xl p-4 flex items-start justify-between gap-3">
                   <div className="flex items-start gap-3">
                     <div className="w-9 h-9 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0">
-                      <i className={`${s.icon} text-indigo-600 text-sm`}></i>
+                      <s.icon size={14} className="text-indigo-600" />
                     </div>
                     <div>
                       <h4 className="font-semibold text-gray-800 text-sm">{s.name}</h4>
@@ -339,8 +346,8 @@ const FarmerDashboard: React.FC = () => {
 
           {/* Widget 4: Farm Health Score */}
           <section className="bg-white rounded-2xl shadow-sm p-5">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">
-              <i className="fas fa-heart-pulse text-red-400 mr-2"></i>Farm Health Score
+            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <HeartPulse size={17} className="text-red-400" />Farm Health Score
             </h3>
             <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-around">
               <CircularProgress score={82} />
@@ -371,8 +378,8 @@ const FarmerDashboard: React.FC = () => {
 
           {/* Chart 1: Weekly Mandi Price Trend */}
           <section className="bg-white rounded-2xl shadow-sm p-5 lg:col-span-2">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">
-              <i className="fas fa-chart-line text-emerald-500 mr-2"></i>Weekly Mandi Price Trend
+            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <ChartLine size={17} className="text-emerald-500" />Weekly Mandi Price Trend
             </h3>
             <div className="h-72">
               <ResponsiveContainer width="100%" height="100%">
@@ -407,8 +414,8 @@ const FarmerDashboard: React.FC = () => {
 
           {/* Chart 2: Rainfall Forecast */}
           <section className="bg-white rounded-2xl shadow-sm p-5">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">
-              <i className="fas fa-cloud-rain text-blue-500 mr-2"></i>Rainfall Forecast
+            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <CloudRain size={17} className="text-blue-500" />Rainfall Forecast
             </h3>
             <div className="h-72">
               <ResponsiveContainer width="100%" height="100%">
@@ -429,8 +436,8 @@ const FarmerDashboard: React.FC = () => {
 
         {/* Chart 3: Soil Nutrient Radar */}
         <section className="bg-white rounded-2xl shadow-sm p-5">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">
-            <i className="fas fa-flask text-emerald-500 mr-2"></i>Soil Nutrient Analysis
+          <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+            <FlaskConical size={17} className="text-emerald-500" />Soil Nutrient Analysis
           </h3>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
@@ -449,41 +456,48 @@ const FarmerDashboard: React.FC = () => {
         </section>
 
         {/* ALERTS PANEL */}
-        {visibleAlerts.length > 0 && (
-          <section>
-            <h2 className="text-lg font-semibold text-gray-800 mb-3">
-              <i className="fas fa-bell text-amber-500 mr-2"></i>Alerts & Notifications
-            </h2>
+        <section>
+          <h2 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
+            <Bell size={17} className="text-amber-500" />Alerts & Notifications
+          </h2>
+          {visibleAlerts.length > 0 ? (
             <div className="space-y-2">
               {ALERTS.map((alert, i) => (
-                <div
-                  key={i}
-                  className={`${alert.bg} ${alert.border} border-l-4 rounded-xl p-4 flex items-start gap-3`}
-                >
-                  <i className={`${alert.icon} ${alert.color} text-lg mt-0.5`}></i>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-gray-800">{alert.title}</p>
-                    <p className="text-xs text-gray-600 mt-0.5">{alert.desc}</p>
-                  </div>
-                  <button
-                    onClick={() => dismissAlert(i)}
-                    className="text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0"
+                dismissedAlerts.includes(i) ? null : (
+                  <div
+                    key={i}
+                    className={`${alert.bg} ${alert.border} border-l-4 rounded-xl p-4 flex items-start gap-3`}
                   >
-                    <i className="fas fa-xmark text-sm"></i>
-                  </button>
-                </div>
+                    <alert.icon size={18} className={`${alert.color} mt-0.5 flex-shrink-0`} />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-gray-800">{alert.title}</p>
+                      <p className="text-xs text-gray-600 mt-0.5">{alert.desc}</p>
+                    </div>
+                    <button
+                      onClick={() => dismissAlert(i)}
+                      aria-label="Dismiss alert"
+                      className="text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0"
+                    >
+                      <X size={15} />
+                    </button>
+                  </div>
+                )
               ))}
             </div>
-          </section>
-        )}
+          ) : (
+            <div className="bg-white rounded-xl border border-dashed border-gray-200 p-6 text-center text-sm text-gray-400">
+              You're all caught up — no active alerts right now.
+            </div>
+          )}
+        </section>
 
         {/* BOTTOM GRID: Activity + Tips + News */}
         <div className="grid gap-6 lg:grid-cols-3">
 
           {/* Recent Activity Timeline */}
           <section className="bg-white rounded-2xl shadow-sm p-5">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">
-              <i className="fas fa-clock-rotate-left text-gray-400 mr-2"></i>Recent Activity
+            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <History size={17} className="text-gray-400" />Recent Activity
             </h3>
             <div className="relative">
               <div className="absolute left-4 top-0 bottom-0 border-l-2 border-dotted border-gray-200"></div>
@@ -491,7 +505,7 @@ const FarmerDashboard: React.FC = () => {
                 {ACTIVITIES.map((a, i) => (
                   <div key={i} className="flex items-start gap-4 relative">
                     <div className="w-8 h-8 rounded-full bg-white border-2 border-gray-200 flex items-center justify-center flex-shrink-0 z-10">
-                      <i className={`${a.icon} ${a.color} text-xs`}></i>
+                      <a.icon size={12} className={a.color} />
                     </div>
                     <div className="pt-1">
                       <p className="text-sm text-gray-700">{a.text}</p>
@@ -505,14 +519,14 @@ const FarmerDashboard: React.FC = () => {
 
           {/* Weather-based Tips */}
           <section className="bg-white rounded-2xl shadow-sm p-5">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">
-              <i className="fas fa-lightbulb text-amber-500 mr-2"></i>Weather-based Tips
+            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <Lightbulb size={17} className="text-amber-500" />Weather-based Tips
             </h3>
             <div className="space-y-3">
               {FARMING_TIPS.map((t, i) => (
                 <div key={i} className={`flex items-start gap-3 rounded-xl ${t.bg} p-3`}>
                   <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center flex-shrink-0 shadow-sm">
-                    <i className={`${t.icon} ${t.color} text-sm`}></i>
+                    <t.icon size={14} className={t.color} />
                   </div>
                   <p className="text-sm text-gray-700 leading-relaxed pt-1">{t.tip}</p>
                 </div>
@@ -522,14 +536,14 @@ const FarmerDashboard: React.FC = () => {
 
           {/* Recent News */}
           <section className="bg-white rounded-2xl shadow-sm p-5">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">
-              <i className="fas fa-newspaper text-gray-400 mr-2"></i>Recent News
+            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <Newspaper size={17} className="text-gray-400" />Recent News
             </h3>
             <div className="space-y-3">
               {RECENT_NEWS.map((item, i) => (
                 <div key={i} className="flex items-start gap-3 p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer">
                   <div className="w-9 h-9 rounded-full bg-white flex items-center justify-center flex-shrink-0 shadow-sm">
-                    <i className={`${item.icon} ${item.color} text-sm`}></i>
+                    <item.icon size={14} className={item.color} />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-800 leading-snug">{item.title}</p>
@@ -551,7 +565,7 @@ const FarmerDashboard: React.FC = () => {
             onClick={() => toast.success('Dashboard report exported!')}
             className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-xl px-6 py-3 text-sm transition-colors shadow-sm"
           >
-            <i className="fas fa-file-export"></i> Export Dashboard Data
+            <FileOutput size={15} /> Export Dashboard Data
           </button>
         </section>
 

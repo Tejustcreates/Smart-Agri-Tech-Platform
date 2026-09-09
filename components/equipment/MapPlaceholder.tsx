@@ -7,7 +7,7 @@ interface MapPlaceholderProps {
   userLng: number;
 }
 
-const MapPlaceholder: React.FC<MapPlaceholderProps> = ({ listings }) => {
+const MapPlaceholder: React.FC<MapPlaceholderProps> = ({ listings, userLat, userLng }) => {
   return (
     <div className="bg-gradient-to-br from-brand-50 to-emerald-50 rounded-2xl border border-brand-100 mb-6 overflow-hidden relative">
       {/* Static illustration */}
@@ -17,7 +17,7 @@ const MapPlaceholder: React.FC<MapPlaceholderProps> = ({ listings }) => {
         </div>
         <h4 className="text-sm font-bold text-gray-700 mb-1">Map View Coming Soon</h4>
         <p className="text-xs text-gray-500 max-w-xs">
-          Showing {listings.length} equipment in list view below. Interactive map with directions will be available in a future update.
+          Showing {listings.length} equipment near {userLat.toFixed(3)}, {userLng.toFixed(3)} in list view below. Interactive map with directions will be available in a future update.
         </p>
       </div>
 

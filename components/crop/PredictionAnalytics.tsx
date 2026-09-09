@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Progress } from 'antd';
 import { PredictionResult } from '../../types/prediction';
 import { BarChart3, Layers, Circle, ChevronDown, ChevronUp } from 'lucide-react';
 
@@ -45,14 +46,12 @@ const PredictionAnalytics: React.FC<PredictionAnalyticsProps> = ({ result }) => 
                         <span className="text-gray-600 font-medium">{name}</span>
                         <span className="text-gray-500">{value}%</span>
                       </div>
-                      <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-                        <motion.div
-                          initial={{ width: 0 }}
-                          animate={{ width: `${(value / maxImportance) * 100}%` }}
-                          transition={{ duration: 0.6 }}
-                          className="h-full bg-gradient-to-r from-brand-600 to-brand-400 rounded-full"
-                        />
-                      </div>
+                      <Progress
+                        percent={(value / maxImportance) * 100}
+                        showInfo={false}
+                        size="small"
+                        strokeColor="#3B6D11"
+                      />
                     </div>
                   ))}
               </div>

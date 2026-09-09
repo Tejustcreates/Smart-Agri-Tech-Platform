@@ -1,4 +1,6 @@
 import React from 'react';
+import { Form, Slider, Select, InputNumber, Button } from 'antd';
+import { Sprout } from 'lucide-react';
 import { SensorPayload } from '../../types/sensor';
 
 interface ManualInputProps {
@@ -63,26 +65,25 @@ const ManualInput: React.FC<ManualInputProps> = ({ sensorData, onChange, season,
   };
 
   return (
-    <div className="space-y-5 pb-20 lg:pb-0">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+    <Form layout="vertical" className="space-y-5 pb-20 lg:pb-0" onFinish={onPredict}>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5">
         {sliders.map((s) => {
           const val = typeof sensorData[s.key] === 'number' ? sensorData[s.key] : 0;
           const interp = interpretValue(s.key, val);
           return (
-            <div key={s.key}>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                {s.label} <span className="text-gray-400">({s.unit})</span>
-              </label>
-              <input
-                type="range"
+            <Form.Item
+              {...{ key: s.key } as any}
+              label={<span>{s.label} <span className="text-gray-400">({s.unit})</span></span>}
+            >
+              <Slider
                 min={s.min}
                 max={s.max}
                 step={s.step}
                 value={val}
-                onChange={(e) => update(s.key, Number(e.target.value))}
-                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-brand-600 tap-target"
+                onChange={(v) => update(s.key, v as number)}
+                tooltip={{ formatter: (v) => `${s.step < 1 ? (v as number).toFixed(1) : v} ${s.unit}` }}
               />
-              <div className="flex justify-between items-center text-xs mt-1">
+              <div className="flex justify-between items-center text-xs -mt-1">
                 <span className="text-gray-400">{s.min}</span>
                 <span className="font-semibold text-brand-600">{s.step < 1 ? val.toFixed(1) : Math.round(val)} {s.unit}</span>
                 <span className="text-gray-400">{s.max}</span>
@@ -90,59 +91,54 @@ const ManualInput: React.FC<ManualInputProps> = ({ sensorData, onChange, season,
               {interp.text && (
                 <p className={`text-xs font-medium mt-1 ${interp.color}`}>{interp.text}</p>
               )}
-            </div>
+            </Form.Item>
           );
         })}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Season</label>
-          <select value={season} onChange={(e) => onSeasonChange(e.target.value)} className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 tap-target">
-            {SEASONS.map(s => <option key={s} value={s}>{s}</option>)}
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Soil Type</label>
-          <select value={soilType} onChange={(e) => onSoilTypeChange(e.target.value)} className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 tap-target">
-            {SOIL_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Land Size (Acres)</label>
-          <input
-            type="number"
+        <Form.Item label="Season">
+          <Select
+            value={season}
+            onChange={onSeasonChange}
+            options={SEASONS.map((s) => ({ value: s, label: s }))}
+          />
+        </Form.Item>
+        <Form.Item label="Soil Type">
+          <Select
+            value={soilType}
+            onChange={onSoilTypeChange}
+            options={SOIL_TYPES.map((t) => ({ value: t, label: t }))}
+          />
+        </Form.Item>
+        <Form.Item label="Land Size (Acres)">
+          <InputNumber
             min={0.1}
             max={100}
             step={0.1}
             value={landSize}
-            onChange={(e) => { const v = parseFloat(e.target.value); onLandSizeChange(isNaN(v) ? 1 : Math.min(100, Math.max(0.1, v))); }}
-            className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 tap-target"
+            onChange={(v) => onLandSizeChange(v == null ? 1 : Math.min(100, Math.max(0.1, v as number)))}
+            className="w-full"
           />
-        </div>
+        </Form.Item>
       </div>
 
       {/* Sticky submit on mobile */}
       <div className="fixed bottom-0 left-0 right-0 lg:relative lg:bottom-auto p-4 bg-white border-t border-gray-200 lg:border-0 lg:p-0 lg:bg-transparent z-40 shadow-[0_-2px_10px_rgba(0,0,0,0.08)] lg:shadow-none">
-        <button
-          onClick={onPredict}
+        <Button
+          htmlType="submit"
+          type="primary"
           disabled={predicting}
-          className="w-full py-4 bg-brand-600 text-white rounded-xl hover:bg-brand-800 disabled:bg-brand-400 transition-all font-semibold text-base flex items-center justify-center gap-2 shadow-sm active:scale-[0.98] tap-target"
+          loading={predicting}
+          block
+          size="large"
+          icon={!predicting ? <Sprout size={16} /> : undefined}
+          className="!h-auto !py-3.5 !text-base !font-semibold"
         >
-          {predicting ? (
-            <>
-              <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              Analyzing...
-            </>
-          ) : (
-            <>
-              <i className="fas fa-seedling"></i>
-              Get Crop Recommendation
-            </>
-          )}
-        </button>
+          {predicting ? 'Analyzing...' : 'Get Crop Recommendation'}
+        </Button>
       </div>
-    </div>
+    </Form>
   );
 };
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
+import { Spin } from 'antd';
 import { useAuth } from '../contexts/AuthContext';
 
 interface ProtectedRouteProps {
@@ -13,10 +14,10 @@ export default function ProtectedRoute({ children, requiredRole, requireOnboardi
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f8faf5]">
+      <div className="min-h-screen flex items-center justify-center bg-[#f8faf6]">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-agri-green border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 text-lg">Loading...</p>
+          <Spin size="large" />
+          <p className="text-gray-600 text-lg mt-4">Loading...</p>
         </div>
       </div>
     );

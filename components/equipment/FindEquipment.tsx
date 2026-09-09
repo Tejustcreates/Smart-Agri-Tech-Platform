@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Loader2, Search } from 'lucide-react';
+import { message } from 'antd';
+import { Search } from 'lucide-react';
 import { EquipmentListing, SearchFilters } from '../../types/equipment';
 import { searchEquipment } from '../../services/equipment/equipmentService';
 import SearchPanel from './SearchPanel';
@@ -24,6 +24,8 @@ const FindEquipment: React.FC = () => {
     try {
       const data = await searchEquipment(filters);
       setResults(data);
+    } catch (err: any) {
+      message.error(err?.message || 'Failed to search equipment. Please try again.');
     } finally {
       setLoading(false);
     }

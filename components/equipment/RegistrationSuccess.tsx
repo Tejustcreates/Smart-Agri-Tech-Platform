@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, X } from 'lucide-react';
 
 interface RegistrationSuccessProps {
   onDone: () => void;
@@ -22,8 +22,15 @@ const RegistrationSuccess: React.FC<RegistrationSuccessProps> = ({ onDone }) => 
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-        className="bg-white rounded-3xl shadow-2xl p-10 text-center max-w-sm mx-4"
+        className="relative bg-white rounded-3xl shadow-2xl p-10 text-center max-w-sm mx-4"
       >
+        <button
+          onClick={onDone}
+          aria-label="Close"
+          className="tap-target absolute top-3 right-3 w-9 h-9 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
+        >
+          <X size={16} />
+        </button>
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}

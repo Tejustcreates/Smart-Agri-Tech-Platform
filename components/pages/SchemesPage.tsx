@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { ArrowLeft, Landmark } from 'lucide-react';
 import { ROUTES } from '../../constants';
 import GovernmentSchemes from '../schemes/GovernmentSchemes';
 
@@ -11,11 +12,11 @@ const SchemesPage: React.FC = () => (
           to={ROUTES.HOME}
           className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-600 hover:text-emerald-700 transition-colors bg-white border border-slate-200/80 px-3.5 py-1.5 rounded-xl shadow-xs"
         >
-          <i className="fas fa-arrow-left text-xs"></i>
+          <ArrowLeft size={13} />
           <span>Back to Home</span>
         </Link>
-        <span className="text-xs font-bold text-indigo-700 bg-indigo-100/80 px-3 py-1 rounded-full border border-indigo-200">
-          <i className="fas fa-landmark mr-1.5"></i> Govt Subsidies & Schemes
+        <span className="text-xs font-bold text-indigo-700 bg-indigo-100/80 px-3 py-1 rounded-full border border-indigo-200 inline-flex items-center gap-1.5">
+          <Landmark size={13} /> Govt Subsidies & Schemes
         </span>
       </div>
     </div>

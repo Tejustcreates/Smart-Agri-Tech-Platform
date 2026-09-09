@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Droplet } from 'lucide-react';
 import { DailyForecast } from '../../types/weather';
 import { weatherCodeToDescription, weatherCodeToIcon } from '../../services/weather/openMeteo';
 
@@ -39,7 +40,7 @@ const ForecastCards: React.FC<ForecastCardsProps> = ({ forecasts }) => {
               <p className="text-xs text-gray-400">{day.temperatureMin}°</p>
             </div>
             <div className="flex items-center gap-1 text-xs text-brand-700 bg-brand-100 px-2 py-0.5 rounded-full">
-              <i className="fas fa-droplet text-[10px]"></i>
+              <Droplet size={10} />
               <span className="font-medium">{day.precipitationProbabilityMax}%</span>
             </div>
             <p className="text-[10px] text-gray-400 text-center leading-tight max-w-[90px]">

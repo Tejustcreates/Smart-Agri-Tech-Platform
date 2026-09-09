@@ -14,6 +14,7 @@
     "@hey-api/openapi-ts": "^0.64.11",
     "@tailwindcss/postcss": "^4.2.2",
     "@tanstack/react-query": "^5.66.9",
+    "antd": "^6.6.3",
     "axios": "^1.14.0",
     "framer-motion": "^12.42.2",
     "i18next": "^24.2.2",

@@ -1,16 +1,16 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, CircleAlert, Info, type LucideIcon } from 'lucide-react';
 import { WeatherAlert } from '../../types/weather';
 
 interface WeatherAlertsProps {
   alerts: WeatherAlert[];
 }
 
-const alertStyles: Record<string, { bg: string; icon: string }> = {
-  high: { bg: 'bg-red-600 text-white', icon: 'fas fa-exclamation-triangle' },
-  medium: { bg: 'bg-amber-500 text-white', icon: 'fas fa-exclamation-circle' },
-  low: { bg: 'bg-brand-600 text-white', icon: 'fas fa-info-circle' },
+const alertStyles: Record<string, { bg: string; icon: LucideIcon }> = {
+  high: { bg: 'bg-red-600 text-white', icon: AlertTriangle },
+  medium: { bg: 'bg-amber-500 text-white', icon: CircleAlert },
+  low: { bg: 'bg-brand-600 text-white', icon: Info },
 };
 
 const WeatherAlerts: React.FC<WeatherAlertsProps> = ({ alerts }) => {
@@ -37,7 +37,7 @@ const WeatherAlerts: React.FC<WeatherAlertsProps> = ({ alerts }) => {
             transition={{ delay: 0.15 + i * 0.05 }}
             className={`flex items-center gap-4 p-4 rounded-xl ${style.bg} shadow-lg`}
           >
-            <i className={`${style.icon} text-2xl flex-shrink-0`} aria-hidden="true"></i>
+            <style.icon size={28} className="flex-shrink-0" aria-hidden="true" />
             <div className="flex-1 min-w-0">
               <p className="text-base font-bold leading-tight">{alert.title}</p>
               <p className="text-sm opacity-90 mt-0.5">{alert.message}</p>

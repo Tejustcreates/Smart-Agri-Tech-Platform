@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { Select, Progress, message } from 'antd';
 import { TrendingUp, TrendingDown, Minus, BarChart3, Loader2, Sprout, MapPin, Calendar, CloudRain, Navigation } from 'lucide-react';
 import { PriceForecast, PredictionInput } from '../../types/mandi';
 import { getPricePrediction } from '../../services/mandi/mandiApi';
@@ -44,6 +45,8 @@ const PricePrediction: React.FC = () => {
     try {
       const forecast = await getPricePrediction(input.crop, Number(input.currentPrice));
       setResult(forecast);
+    } catch {
+      message.error('Failed to generate price prediction. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -58,13 +61,14 @@ const PricePrediction: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-5">
           <div>
             <label className="block text-xs font-semibold text-gray-500 uppercase mb-1.5">Crop *</label>
-            <div className="relative">
-              <Sprout size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <select value={input.crop} onChange={(e) => update('crop', e.target.value)} className="tap-target w-full pl-9 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 appearance-none">
-                <option value="">Select Crop</option>
-                {CROP_OPTIONS.map((c) => <option key={c} value={c}>{c}</option>)}
-              </select>
-            </div>
+            <Select
+              value={input.crop || undefined}
+              onChange={(v) => update('crop', v)}
+              placeholder="Select Crop"
+              className="tap-target w-full"
+              suffixIcon={<Sprout size={14} className="text-gray-400" />}
+              options={CROP_OPTIONS.map((c) => ({ value: c, label: c }))}
+            />
           </div>
           <div>
             <label className="block text-xs font-semibold text-gray-500 uppercase mb-1.5">Your Location</label>
@@ -94,20 +98,24 @@ const PricePrediction: React.FC = () => {
           </div>
           <div>
             <label className="block text-xs font-semibold text-gray-500 uppercase mb-1.5">Season</label>
-            <div className="relative">
-              <Calendar size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <select value={input.season} onChange={(e) => update('season', e.target.value)} className="w-full pl-9 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
-                <option value="">Select Season</option>
-                {SEASONS.map((s) => <option key={s} value={s}>{s}</option>)}
-              </select>
-            </div>
+            <Select
+              value={input.season || undefined}
+              onChange={(v) => update('season', v)}
+              placeholder="Select Season"
+              className="w-full"
+              suffixIcon={<Calendar size={14} className="text-gray-400" />}
+              options={SEASONS.map((s) => ({ value: s, label: s }))}
+            />
           </div>
           <div>
             <label className="block text-xs font-semibold text-gray-500 uppercase mb-1.5">Month</label>
-            <select value={input.month} onChange={(e) => update('month', e.target.value)} className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
-              <option value="">Select Month</option>
-              {MONTHS.map((m) => <option key={m} value={m}>{m}</option>)}
-            </select>
+            <Select
+              value={input.month || undefined}
+              onChange={(v) => update('month', v)}
+              placeholder="Select Month"
+              className="w-full"
+              options={MONTHS.map((m) => ({ value: m, label: m }))}
+            />
           </div>
           <div>
             <label className="block text-xs font-semibold text-gray-500 uppercase mb-1.5">Rainfall (mm, optional)</label>
@@ -167,14 +175,11 @@ const PricePrediction: React.FC = () => {
               <span className="text-xs font-semibold text-gray-600">Prediction Confidence</span>
               <span className="text-sm font-bold text-brand-700">{result.confidence}%</span>
             </div>
-            <div className="w-full bg-gray-100 rounded-full h-2.5">
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: `${result.confidence}%` }}
-                transition={{ duration: 1, ease: 'easeOut' }}
-                className={`h-2.5 rounded-full ${result.confidence >= 80 ? 'bg-green-500' : result.confidence >= 60 ? 'bg-amber-500' : 'bg-red-500'}`}
-              />
-            </div>
+            <Progress
+              percent={result.confidence}
+              showInfo={false}
+              strokeColor={result.confidence >= 80 ? '#22c55e' : result.confidence >= 60 ? '#f59e0b' : '#ef4444'}
+            />
             <p className="text-[11px] text-gray-400 mt-2">
               Prediction is based on historical price patterns and seasonal trends. Backend ML model (XGBoost) will be integrated later for higher accuracy.
             </p>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, Wheat, Truck, IndianRupee, Loader2, Sparkles, Trophy, Navigation } from 'lucide-react';
+import { Select, message } from 'antd';
+import { MapPin, Wheat, Truck, Loader2, Sparkles, Trophy, Navigation } from 'lucide-react';
 import { MandiRecommendation, RecommendationInput } from '../../types/mandi';
 import { getRecommendation } from '../../services/mandi/mandiApi';
 import { CROP_OPTIONS } from '../../constants';
@@ -37,6 +38,8 @@ const BestRecommendation: React.FC = () => {
       const tc = Number(input.transportCost) || 200;
       const recs = await getRecommendation(input.crop, qty, tc);
       setResults(recs);
+    } catch {
+      message.error('Failed to fetch mandi recommendations. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -73,13 +76,14 @@ const BestRecommendation: React.FC = () => {
           </div>
           <div>
             <label className="block text-xs font-semibold text-gray-500 uppercase mb-1.5">Crop *</label>
-            <div className="relative">
-              <Wheat size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-              <select value={input.crop} onChange={(e) => update('crop', e.target.value)} className="tap-target w-full pl-9 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 appearance-none">
-                <option value="">Select Crop</option>
-                {CROP_OPTIONS.map((c) => <option key={c} value={c}>{c}</option>)}
-              </select>
-            </div>
+            <Select
+              value={input.crop || undefined}
+              onChange={(v) => update('crop', v)}
+              placeholder="Select Crop"
+              className="tap-target w-full"
+              suffixIcon={<Wheat size={14} className="text-gray-400" />}
+              options={CROP_OPTIONS.map((c) => ({ value: c, label: c }))}
+            />
           </div>
           <div>
             <label className="block text-xs font-semibold text-gray-500 uppercase mb-1.5">Quantity (Quintals) *</label>

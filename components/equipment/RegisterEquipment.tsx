@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { message, Upload as AntUpload } from 'antd';
+import type { UploadProps } from 'antd';
 import { User, Phone, MapPin, Wrench, IndianRupee, Calendar, Upload, Loader2, Fuel, UserCheck, Navigation, RefreshCw } from 'lucide-react';
 import { RegistrationForm, EquipmentCategory, EquipmentCondition, GpsLocation } from '../../types/equipment';
 import { registerEquipment, reverseGeocode } from '../../services/equipment/equipmentService';
@@ -7,12 +8,14 @@ import RegistrationSuccess from './RegistrationSuccess';
 
 const CATEGORIES: EquipmentCategory[] = ['Tractor', 'Harvester', 'Rotavator', 'Seeder', 'Sprayer', 'Cultivator', 'Thresher', 'Plough', 'Others'];
 const CONDITIONS: EquipmentCondition[] = ['Excellent', 'Good', 'Average'];
+const WEEK_DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 const INITIAL_FORM: RegistrationForm = {
   ownerName: '', phone: '', lat: 0, lng: 0, fullAddress: '', village: '', pincode: '',
   equipmentName: '', category: '', brand: '', model: '', horsepower: '', year: '', condition: '',
-  coverPhoto: '', additionalPhotos: [], pricePerHour: '', pricePerDay: '', deposit: '',
+  coverPhoto: '', additionalPhotos: [], video: '', pricePerHour: '', pricePerDay: '', deposit: '',
   fuelIncluded: false, operatorIncluded: false, minRental: '', workingRadius: 20, description: '',
+  availability: [...WEEK_DAYS],
 };
 
 const RegisterEquipment: React.FC = () => {
@@ -69,9 +72,20 @@ const RegisterEquipment: React.FC = () => {
     try {
       await registerEquipment(form);
       setSuccess(true);
+    } catch (err: any) {
+      message.error(err?.message || 'Failed to register equipment. Please try again.');
     } finally {
       setLoading(false);
     }
+  };
+
+  const toggleDay = (day: string) => {
+    setForm((prev) => ({
+      ...prev,
+      availability: prev.availability.includes(day)
+        ? prev.availability.filter((d) => d !== day)
+        : [...prev.availability, day],
+    }));
   };
 
   if (success) return <RegistrationSuccess onDone={() => { setSuccess(false); setForm(INITIAL_FORM); setGpsStatus('idle'); }} />;
@@ -158,9 +172,26 @@ const RegisterEquipment: React.FC = () => {
         <SectionHeader icon={<Upload size={18} />} title="Uploads" color="bg-amber-50 text-amber-600" />
         <div className="px-6 pb-6">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <UploadBox label="Cover Photo *" required />
-            <UploadBox label="Additional Photos" />
-            <UploadBox label="Video (Optional)" />
+            <UploadBox
+              label="Cover Photo *"
+              required
+              accept="image/*"
+              value={form.coverPhoto ? [form.coverPhoto] : []}
+              onFilesChange={(urls) => update('coverPhoto', urls[0] || '')}
+            />
+            <UploadBox
+              label="Additional Photos"
+              accept="image/*"
+              multiple
+              value={form.additionalPhotos}
+              onFilesChange={(urls) => update('additionalPhotos', urls)}
+            />
+            <UploadBox
+              label="Video (Optional)"
+              accept="video/*"
+              value={form.video ? [form.video] : []}
+              onFilesChange={(urls) => update('video', urls[0] || '')}
+            />
           </div>
         </div>
 
@@ -181,11 +212,24 @@ const RegisterEquipment: React.FC = () => {
         <SectionHeader icon={<Calendar size={18} />} title="Availability & Radius" color="bg-teal-50 text-teal-600" />
         <div className="px-6 pb-6">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
-            {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((d) => (
-              <button key={d} className="tap-target bg-gray-50 border border-gray-200 rounded-xl text-xs font-semibold text-gray-600 hover:bg-brand-50 hover:border-brand-300 hover:text-brand-700 transition-all">
-                {d}
-              </button>
-            ))}
+            {WEEK_DAYS.map((d) => {
+              const active = form.availability.includes(d);
+              return (
+                <button
+                  key={d}
+                  type="button"
+                  onClick={() => toggleDay(d)}
+                  aria-pressed={active}
+                  className={`tap-target border rounded-xl text-xs font-semibold transition-all ${
+                    active
+                      ? 'bg-brand-600 border-brand-600 text-white'
+                      : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-brand-50 hover:border-brand-300 hover:text-brand-700'
+                  }`}
+                >
+                  {d}
+                </button>
+              );
+            })}
           </div>
           <label className="block text-xs font-semibold text-gray-500 uppercase mb-1.5">Working Radius: {form.workingRadius} km</label>
           <input
@@ -271,12 +315,37 @@ const Toggle: React.FC<{
   </label>
 );
 
-const UploadBox: React.FC<{ label: string; required?: boolean }> = ({ label, required }) => (
-  <div className="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center hover:border-brand-400 hover:bg-brand-50/50 transition-all cursor-pointer">
-    <Upload size={20} className="text-gray-400 mx-auto mb-2" />
-    <p className="text-xs font-semibold text-gray-600">{label}</p>
-    <p className="text-[10px] text-gray-400 mt-1">{required ? 'Required' : 'Optional'}</p>
-  </div>
-);
+const UploadBox: React.FC<{
+  label: string;
+  required?: boolean;
+  accept?: string;
+  multiple?: boolean;
+  value: string[];
+  onFilesChange: (urls: string[]) => void;
+}> = ({ label, required, accept, multiple, value, onFilesChange }) => {
+  const props: UploadProps = {
+    accept,
+    multiple,
+    showUploadList: false,
+    capture: undefined,
+    beforeUpload: (file) => {
+      const url = URL.createObjectURL(file);
+      onFilesChange(multiple ? [...value, url] : [url]);
+      return false; // prevent auto-upload; this is a client-side mock
+    },
+  };
+
+  return (
+    <AntUpload.Dragger {...props} className="!border-2 !border-dashed !border-gray-200 !rounded-xl hover:!border-brand-400 hover:!bg-brand-50/50">
+      <div className="p-2 text-center">
+        <Upload size={20} className="text-gray-400 mx-auto mb-2" />
+        <p className="text-xs font-semibold text-gray-600">{label}</p>
+        <p className="text-[10px] text-gray-400 mt-1">
+          {value.length > 0 ? `${value.length} file${value.length > 1 ? 's' : ''} selected` : required ? 'Required' : 'Optional'}
+        </p>
+      </div>
+    </AntUpload.Dragger>
+  );
+};
 
 export default RegisterEquipment;

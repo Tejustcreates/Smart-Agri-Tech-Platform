@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { ArrowLeft, Bug } from 'lucide-react';
 import { ROUTES } from '../../constants';
 import DiseaseDetection from '../DiseaseDetection';
 
@@ -11,11 +12,11 @@ const DiseasePage: React.FC = () => (
           to={ROUTES.HOME}
           className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-600 hover:text-emerald-700 transition-colors bg-white border border-slate-200/80 px-3.5 py-1.5 rounded-xl shadow-xs"
         >
-          <i className="fas fa-arrow-left text-xs"></i>
+          <ArrowLeft size={12} />
           <span>Back to Home</span>
         </Link>
-        <span className="text-xs font-bold text-rose-700 bg-rose-100/80 px-3 py-1 rounded-full border border-rose-200">
-          <i className="fas fa-bug mr-1.5"></i> Crop Doctor & Leaf Diagnosis
+        <span className="inline-flex items-center text-xs font-bold text-rose-700 bg-rose-100/80 px-3 py-1 rounded-full border border-rose-200">
+          <Bug size={12} className="mr-1.5" /> Crop Doctor & Leaf Diagnosis
         </span>
       </div>
     </div>

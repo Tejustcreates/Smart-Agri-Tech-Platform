@@ -1,5 +1,12 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Steps } from 'antd';
+import type { LucideIcon } from 'lucide-react';
+import {
+  ShieldAlert, Leaf, Sprout, Apple, TriangleAlert, Wheat, Cloud, Circle, CircleDashed, TreeDeciduous, Ellipsis,
+  Check, Search, CircleAlert, Info, Lightbulb, FlaskConical, Bug, Droplet, Pill, ChevronDown,
+  ArrowLeft, ArrowRight, RotateCcw, Heart, Wind, RefreshCw, Brush, Droplets, Trash2,
+} from 'lucide-react';
 import Section from './Section';
 
 /* ── Types ── */
@@ -117,10 +124,10 @@ const DISEASES: Record<string, DiseaseInfo> = {
   },
 };
 
-const SYMPTOM_CATEGORIES = [
+const SYMPTOM_CATEGORIES: { name: string; icon: LucideIcon; color: string; symptoms: { id: string; label: string }[] }[] = [
   {
     name: 'Leaf Symptoms',
-    iconClass: 'fas fa-leaf',
+    icon: Leaf,
     color: 'bg-emerald-100 text-emerald-700',
     symptoms: [
       { id: 'yellow-spots', label: 'Yellow spots on leaves' },
@@ -134,7 +141,7 @@ const SYMPTOM_CATEGORIES = [
   },
   {
     name: 'Stem & Root Symptoms',
-    iconClass: 'fas fa-seedling',
+    icon: Sprout,
     color: 'bg-amber-100 text-amber-700',
     symptoms: [
       { id: 'soft-roots', label: 'Soft or mushy roots' },
@@ -145,7 +152,7 @@ const SYMPTOM_CATEGORIES = [
   },
   {
     name: 'Fruit & Yield Symptoms',
-    iconClass: 'fas fa-apple-alt',
+    icon: Apple,
     color: 'bg-red-100 text-red-700',
     symptoms: [
       { id: 'fruit-rot', label: 'Fruit rot or spots' },
@@ -156,7 +163,7 @@ const SYMPTOM_CATEGORIES = [
   },
   {
     name: 'General Symptoms',
-    iconClass: 'fas fa-exclamation-triangle',
+    icon: TriangleAlert,
     color: 'bg-orange-100 text-orange-700',
     symptoms: [
       { id: 'stunted', label: 'General stunting' },
@@ -167,17 +174,17 @@ const SYMPTOM_CATEGORIES = [
   },
 ];
 
-const CROP_OPTIONS = [
-  { name: 'Wheat', iconClass: 'fas fa-wheat-awn' },
-  { name: 'Rice', iconClass: 'fas fa-seedling' },
-  { name: 'Cotton', iconClass: 'fas fa-cloud' },
-  { name: 'Tomato', iconClass: 'fas fa-apple-alt' },
-  { name: 'Potato', iconClass: 'fas fa-circle' },
-  { name: 'Onion', iconClass: 'fas fa-circle-half-stroke' },
-  { name: 'Maize', iconClass: 'fas fa-wheat-awn' },
-  { name: 'Sugarcane', iconClass: 'fas fa-tree' },
-  { name: 'Soybean', iconClass: 'fas fa-leaf' },
-  { name: 'Other', iconClass: 'fas fa-ellipsis-h' },
+const CROP_OPTIONS: { name: string; icon: LucideIcon }[] = [
+  { name: 'Wheat', icon: Wheat },
+  { name: 'Rice', icon: Sprout },
+  { name: 'Cotton', icon: Cloud },
+  { name: 'Tomato', icon: Apple },
+  { name: 'Potato', icon: Circle },
+  { name: 'Onion', icon: CircleDashed },
+  { name: 'Maize', icon: Wheat },
+  { name: 'Sugarcane', icon: TreeDeciduous },
+  { name: 'Soybean', icon: Leaf },
+  { name: 'Other', icon: Ellipsis },
 ];
 
 const STEPS = [
@@ -191,47 +198,19 @@ const STEPS = [
 
 const StepIndicator: React.FC<{ currentStep: number }> = ({ currentStep }) => (
   <div className="max-w-2xl mx-auto mb-10 px-2">
-    <div className="flex items-center justify-between">
-      {STEPS.map((step, i) => {
-        const isActive = currentStep === step.num;
-        const isDone = currentStep > step.num;
-        return (
-          <React.Fragment key={step.num}>
-            <div className="flex flex-col items-center text-center flex-1">
-              <div
-                className={`min-w-[40px] min-h-[40px] w-10 h-10 sm:min-w-[48px] sm:min-h-[48px] sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 ${
-                  isDone
-                    ? 'bg-brand-600 text-white'
-                    : isActive
-                    ? 'bg-brand-600 text-white ring-4 ring-brand-100'
-                    : 'bg-gray-100 text-gray-400'
-                }`}
-              >
-                {isDone ? <i className="fas fa-check text-xs" /> : step.num}
-              </div>
-              <p className={`text-[10px] sm:text-xs font-semibold mt-2 ${isActive || isDone ? 'text-brand-700' : 'text-gray-400'}`}>
-                <span className="hidden sm:inline">{step.label}</span>
-                <span className="sm:hidden">{step.shortLabel}</span>
-              </p>
-            </div>
-            {i < STEPS.length - 1 && (
-              <div
-                className={`flex-1 h-0.5 mx-1 mt-[-16px] sm:mt-[-20px] transition-colors duration-300 ${
-                  currentStep > step.num ? 'bg-brand-600' : 'bg-gray-200'
-                }`}
-              />
-            )}
-          </React.Fragment>
-        );
-      })}
-    </div>
+    <Steps
+      current={currentStep - 1}
+      items={STEPS.map((step) => ({ title: step.label }))}
+      responsive
+      size="small"
+    />
   </div>
 );
 
 const CropSelector: React.FC<{ selected: string; onSelect: (c: string) => void }> = ({ selected, onSelect }) => (
   <div>
     <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-      <i className="fas fa-seedling text-brand-600" /> Select Your Crop
+      <Sprout size={18} className="text-brand-600" /> Select Your Crop
     </h3>
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
       {CROP_OPTIONS.map((crop) => {
@@ -246,7 +225,7 @@ const CropSelector: React.FC<{ selected: string; onSelect: (c: string) => void }
                 : 'border-2 border-gray-100 bg-white text-gray-600 hover:border-brand-300 hover:bg-brand-50/40 hover:shadow-sm'
             }`}
           >
-            <i className={`${crop.iconClass} text-xl ${isSelected ? 'text-brand-600' : 'text-gray-400'}`} />
+            <crop.icon size={22} className={isSelected ? 'text-brand-600' : 'text-gray-400'} />
             <span>{crop.name}</span>
           </button>
         );
@@ -270,7 +249,7 @@ const SymptomSelector: React.FC<{
   return (
     <div>
       <h3 className="text-lg font-bold text-gray-800 mb-5 flex items-center gap-2">
-        <i className="fas fa-search text-brand-600" /> Select Observed Symptoms
+        <Search size={18} className="text-brand-600" /> Select Observed Symptoms
       </h3>
       <div className="space-y-4">
         {SYMPTOM_CATEGORIES.map((category) => {
@@ -284,7 +263,7 @@ const SymptomSelector: React.FC<{
               >
                 <div className="flex items-center gap-2.5">
                   <span className={`w-7 h-7 rounded-lg flex items-center justify-center ${category.color}`}>
-                    <i className={`${category.iconClass} text-xs`} />
+                    <category.icon size={12} />
                   </span>
                   <span className="text-sm font-bold text-gray-700">{category.name}</span>
                   {selectedInCat > 0 && (
@@ -293,7 +272,7 @@ const SymptomSelector: React.FC<{
                     </span>
                   )}
                 </div>
-                <span className={`text-gray-400 text-lg transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}>▾</span>
+                <ChevronDown size={16} className={`text-gray-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
               </button>
               <AnimatePresence>
                 {isOpen && (
@@ -322,9 +301,7 @@ const SymptomSelector: React.FC<{
                                 isSelected ? 'bg-brand-500 border-brand-500' : 'border-gray-300'
                               }`}
                             >
-                              {isSelected && (
-                                <i className="fas fa-check text-[10px] text-white" />
-                              )}
+                              {isSelected && <Check size={11} className="text-white" />}
                             </div>
                             <span>{symptom.label}</span>
                           </button>
@@ -357,7 +334,7 @@ const ResultReport: React.FC<{
     return (
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-2xl shadow-sm p-10 text-center">
         <div className="w-20 h-20 bg-brand-100 rounded-full flex items-center justify-center mx-auto mb-5">
-          <i className="fas fa-check text-3xl text-brand-600" />
+          <Check size={36} className="text-brand-600" />
         </div>
         <h3 className="text-xl font-bold text-gray-800 mb-2">Healthy Crop</h3>
         <p className="text-gray-500 max-w-md mx-auto">
@@ -367,10 +344,10 @@ const ResultReport: React.FC<{
     );
   }
 
-  const severityConfig = {
-    High: { bg: 'bg-red-100', text: 'text-red-700', border: 'border-red-200', icon: 'fas fa-exclamation-circle' },
-    Medium: { bg: 'bg-amber-100', text: 'text-amber-700', border: 'border-amber-200', icon: 'fas fa-exclamation' },
-    Low: { bg: 'bg-emerald-100', text: 'text-emerald-700', border: 'border-emerald-200', icon: 'fas fa-info-circle' },
+  const severityConfig: Record<DiseaseInfo['severity'], { bg: string; text: string; border: string; icon: LucideIcon }> = {
+    High: { bg: 'bg-red-100', text: 'text-red-700', border: 'border-red-200', icon: CircleAlert },
+    Medium: { bg: 'bg-amber-100', text: 'text-amber-700', border: 'border-amber-200', icon: TriangleAlert },
+    Low: { bg: 'bg-emerald-100', text: 'text-emerald-700', border: 'border-emerald-200', icon: Info },
   };
   const sev = severityConfig[disease.severity];
 
@@ -381,11 +358,11 @@ const ResultReport: React.FC<{
   };
 
   const treatmentEntries = Object.entries(disease.treatment).filter(([_, v]) => v) as [string, string][];
-  const treatmentMeta: Record<string, { label: string; color: string; icon: string }> = {
-    organic: { label: 'Organic Treatment', color: 'bg-emerald-50 border-emerald-100 text-emerald-700', icon: 'fas fa-leaf' },
-    fungicide: { label: 'Fungicide', color: 'bg-purple-50 border-purple-100 text-purple-700', icon: 'fas fa-flask' },
-    pesticide: { label: 'Pesticide', color: 'bg-amber-50 border-amber-100 text-amber-700', icon: 'fas fa-bug' },
-    fertilizer: { label: 'Recommended Fertilizer', color: 'bg-blue-50 border-blue-100 text-blue-700', icon: 'fas fa-tint' },
+  const treatmentMeta: Record<string, { label: string; color: string; icon: LucideIcon }> = {
+    organic: { label: 'Organic Treatment', color: 'bg-emerald-50 border-emerald-100 text-emerald-700', icon: Leaf },
+    fungicide: { label: 'Fungicide', color: 'bg-purple-50 border-purple-100 text-purple-700', icon: FlaskConical },
+    pesticide: { label: 'Pesticide', color: 'bg-amber-50 border-amber-100 text-amber-700', icon: Bug },
+    fertilizer: { label: 'Recommended Fertilizer', color: 'bg-blue-50 border-blue-100 text-blue-700', icon: Droplet },
   };
 
   return (
@@ -407,7 +384,7 @@ const ResultReport: React.FC<{
       <div className="p-6 space-y-5">
         {/* Severity badge + action sentence — shown first */}
         <div className={`flex items-center gap-3 p-4 rounded-xl border ${sev.bg} ${sev.border}`}>
-          <i className={`${sev.icon} text-lg ${sev.text}`} />
+          <sev.icon size={20} className={`${sev.text} flex-shrink-0`} />
           <div>
             <span className={`text-sm font-bold ${sev.text}`}>{disease.severity} Severity</span>
             <p className="text-sm text-gray-600 mt-0.5">{actionSentence[disease.severity]}</p>
@@ -417,7 +394,7 @@ const ResultReport: React.FC<{
         {/* Observed Symptoms */}
         <div>
           <h4 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
-            <i className="fas fa-search text-brand-600 text-sm" /> Observed Symptoms
+            <Search size={14} className="text-brand-600" /> Observed Symptoms
           </h4>
           <div className="flex flex-wrap gap-2">
             {matchedSymptoms.map((s, i) => (
@@ -429,7 +406,7 @@ const ResultReport: React.FC<{
         {/* Likely Causes */}
         <div>
           <h4 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
-            <i className="fas fa-lightbulb text-amber-500 text-sm" /> Likely Causes
+            <Lightbulb size={14} className="text-amber-500" /> Likely Causes
           </h4>
           <ul className="space-y-2">
             {disease.causes.map((cause, i) => (
@@ -448,9 +425,9 @@ const ResultReport: React.FC<{
             className="tap-target w-full font-bold text-gray-800 mb-3 flex items-center justify-between"
           >
             <span className="flex items-center gap-2">
-              <i className="fas fa-pills text-brand-600 text-sm" /> Recommended Treatment
+              <Pill size={14} className="text-brand-600" /> Recommended Treatment
             </span>
-            <i className={`fas fa-chevron-down text-gray-400 text-xs transition-transform ${expandedSection === 'treatment' ? 'rotate-180' : ''}`} />
+            <ChevronDown size={13} className={`text-gray-400 transition-transform ${expandedSection === 'treatment' ? 'rotate-180' : ''}`} />
           </button>
           <AnimatePresence>
             {expandedSection === 'treatment' && (
@@ -463,11 +440,11 @@ const ResultReport: React.FC<{
               >
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {treatmentEntries.map(([key, value]) => {
-                    const meta = treatmentMeta[key] || { label: key, color: 'bg-gray-50 border-gray-100 text-gray-700', icon: 'fas fa-pills' };
+                    const meta = treatmentMeta[key] || { label: key, color: 'bg-gray-50 border-gray-100 text-gray-700', icon: Pill };
                     return (
                       <div key={key} className={`rounded-xl p-4 border ${meta.color}`}>
                         <p className="flex items-center gap-1.5 text-xs uppercase font-bold mb-1">
-                          <i className={meta.icon} /> {meta.label}
+                          <meta.icon size={12} /> {meta.label}
                         </p>
                         <p className="text-sm font-medium text-gray-800">{value}</p>
                       </div>
@@ -486,9 +463,9 @@ const ResultReport: React.FC<{
             className="tap-target w-full font-bold text-gray-800 mb-3 flex items-center justify-between"
           >
             <span className="flex items-center gap-2">
-              <i className="fas fa-shield-alt text-brand-600 text-sm" /> Prevention Tips
+              <ShieldAlert size={14} className="text-brand-600" /> Prevention Tips
             </span>
-            <i className={`fas fa-chevron-down text-gray-400 text-xs transition-transform ${expandedSection === 'prevention' ? 'rotate-180' : ''}`} />
+            <ChevronDown size={13} className={`text-gray-400 transition-transform ${expandedSection === 'prevention' ? 'rotate-180' : ''}`} />
           </button>
           <AnimatePresence>
             {expandedSection === 'prevention' && (
@@ -611,7 +588,7 @@ const DiseaseDetection: React.FC = () => {
     <Section
       id="disease-detection"
       tone="amber"
-      icon="fas fa-shield-alt"
+      icon={ShieldAlert}
       eyebrow="Crop Protection"
       title="Crop Disease Advisor"
       subtitle="Identify crop diseases and receive treatment and prevention recommendations for healthier crops."
@@ -671,9 +648,9 @@ const DiseaseDetection: React.FC = () => {
               {currentStep > 1 && (
                 <button
                   onClick={handleBack}
-                  className="tap-target py-3.5 px-8 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-all text-sm"
+                  className="tap-target py-3.5 px-8 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-all text-sm inline-flex items-center justify-center gap-1.5"
                 >
-                  <i className="fas fa-arrow-left mr-1" /> Back
+                  <ArrowLeft size={14} /> Back
                 </button>
               )}
               {currentStep < 3 && (
@@ -682,14 +659,14 @@ const DiseaseDetection: React.FC = () => {
                   disabled={!canProceed}
                   className="tap-target py-3.5 px-10 bg-brand-600 text-white rounded-xl font-semibold hover:bg-brand-700 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed transition-all text-sm shadow-md shadow-brand-200/50"
                 >
-                  {currentStep === 2 ? 'Analyze Crop' : 'Next Step'} <i className="fas fa-arrow-right ml-1" />
+                  {currentStep === 2 ? 'Analyze Crop' : 'Next Step'} <ArrowRight size={14} className="ml-1 inline" />
                 </button>
               )}
               <button
                 onClick={resetAll}
                 className="tap-target py-3.5 px-8 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-all text-sm"
               >
-                <i className="fas fa-redo mr-1" /> Reset
+                <RotateCcw size={14} className="mr-1 inline" /> Reset
               </button>
             </div>
           )}
@@ -701,7 +678,7 @@ const DiseaseDetection: React.FC = () => {
                 onClick={resetAll}
                 className="tap-target py-3.5 px-10 bg-brand-600 text-white rounded-xl font-semibold hover:bg-brand-700 transition-all text-sm shadow-sm shadow-brand-200"
               >
-                <i className="fas fa-redo mr-1" /> Check Another Crop
+                <RotateCcw size={14} className="mr-1 inline" /> Check Another Crop
               </button>
             </div>
           )}
@@ -710,17 +687,17 @@ const DiseaseDetection: React.FC = () => {
         {/* Crop Care Tips */}
         <div className="max-w-4xl mx-auto mt-12 bg-white rounded-2xl shadow-sm p-6 md:p-8">
           <h3 className="text-lg font-bold text-gray-800 mb-5 flex items-center gap-2">
-            <i className="fas fa-heart text-brand-600" /> Crop Care Tips
+            <Heart size={16} className="text-brand-600 inline" /> Crop Care Tips
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { icon: 'fas fa-tint', title: 'Proper Watering', desc: 'Water early morning to reduce fungal growth' },
-              { icon: 'fas fa-wind', title: 'Good Air Circulation', desc: 'Space plants properly to prevent disease spread' },
-              { icon: 'fas fa-sync-alt', title: 'Crop Rotation', desc: 'Rotate crops yearly to break disease cycles' },
-              { icon: 'fas fa-broom', title: 'Field Hygiene', desc: 'Remove crop debris and clean tools regularly' },
+              { icon: Droplets, title: 'Proper Watering', desc: 'Water early morning to reduce fungal growth' },
+              { icon: Wind, title: 'Good Air Circulation', desc: 'Space plants properly to prevent disease spread' },
+              { icon: RefreshCw, title: 'Crop Rotation', desc: 'Rotate crops yearly to break disease cycles' },
+              { icon: Trash2, title: 'Field Hygiene', desc: 'Remove crop debris and clean tools regularly' },
             ].map((tip) => (
               <div key={tip.title} className="tap-target bg-brand-50 rounded-xl p-4 min-h-[100px] flex flex-col">
-                <i className={`${tip.icon} text-brand-600 text-xl mb-2`} />
+                <tip.icon size={20} className="text-brand-600 mb-2" />
                 <h4 className="font-semibold text-gray-800 mb-1 text-sm">{tip.title}</h4>
                 <p className="text-xs text-gray-600">{tip.desc}</p>
               </div>

@@ -1,5 +1,8 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { AutoComplete, Input, message } from 'antd';
+import _Result from 'antd/es/result';
+const Result = _Result as unknown as React.FC<any>;
 import { Search, MapPin, Locate, ArrowLeft, Loader2 } from 'lucide-react';
 import { useWeatherData } from '../../hooks/useWeatherData';
 import { useLocationSearch } from '../../hooks/useLocationSearch';
@@ -34,26 +37,49 @@ const WeatherDashboard: React.FC = () => {
   const { searchResults, searching, search, clearResults } = useLocationSearch();
   const mlPredictions = useMLPredictions(weatherData);
   const [query, setQuery] = useState('');
-  const [showDropdown, setShowDropdown] = useState(false);
   const [locationName, setLocationName] = useState('');
   const [hasSearched, setHasSearched] = useState(false);
   const [dashboardLoading, setDashboardLoading] = useState(false);
 
+  // Background refetch (e.g. re-searching a new location while data from the
+  // previous one is still on screen) failing silently used to leave the user
+  // with no feedback at all — surface it as a toast without tearing down the
+  // dashboard that's already rendered.
+  const hadWeatherDataRef = useRef(false);
+  useEffect(() => {
+    if (weatherData) hadWeatherDataRef.current = true;
+  }, [weatherData]);
+  useEffect(() => {
+    if (error && weatherData && hadWeatherDataRef.current) {
+      message.error(error);
+    }
+  }, [error, weatherData]);
+
   const handleSearch = useCallback((value: string) => {
     setQuery(value);
     if (value.length >= 2) {
-      setShowDropdown(true);
       search(value);
-    } else {
-      setShowDropdown(false);
     }
   }, [search]);
+
+  const locationOptions = searchResults.slice(0, 5).map((loc, i) => ({
+    value: `${loc.latitude},${loc.longitude}`,
+    key: `${loc.name}-${loc.latitude}-${i}`,
+    label: (
+      <div className="flex items-center gap-3 py-0.5">
+        <MapPin size={14} className="text-gray-400 flex-shrink-0" />
+        <div>
+          <p className="text-sm font-medium text-gray-800">{loc.name}</p>
+          <p className="text-xs text-gray-500">{loc.admin1 && `${loc.admin1}, `}{loc.country}</p>
+        </div>
+      </div>
+    ),
+  }));
 
   const handleLandingSelect = useCallback(async (lat: number, lon: number, name: string) => {
     setDashboardLoading(true);
     setLocationName(name);
     setHasSearched(true);
-    setShowDropdown(false);
     clearResults();
     await fetchWeather(lat, lon);
     setDashboardLoading(false);
@@ -61,7 +87,6 @@ const WeatherDashboard: React.FC = () => {
 
   const handleDashboardSelect = async (loc: GeoLocation) => {
     setQuery('');
-    setShowDropdown(false);
     clearResults();
     setDashboardLoading(true);
     setLocationName(`${loc.name}, ${loc.admin1 || loc.country}`);
@@ -123,15 +148,16 @@ const WeatherDashboard: React.FC = () => {
   // ─── Error State ─────────────────────────────────────────────
   if (error && !weatherData) {
     return (
-      <div className="text-center py-20">
-        <div className="w-16 h-16 bg-brand-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <span className="text-2xl">⚠️</span>
-        </div>
-        <p className="text-gray-700 font-medium">{error}</p>
-          <button onClick={handleBack} className="mt-4 px-6 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-800 transition-colors font-semibold">
+      <Result
+        status="error"
+        title="Couldn't load weather data"
+        subTitle={error}
+        extra={
+          <button onClick={handleBack} className="px-6 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-800 transition-colors font-semibold">
             Try Again
           </button>
-      </div>
+        }
+      />
     );
   }
 
@@ -153,22 +179,25 @@ const WeatherDashboard: React.FC = () => {
           <ArrowLeft size={18} className="text-gray-600" />
         </button>
         <div className="flex-1 relative">
-          <div className="absolute left-3.5 top-1/2 -translate-y-1/2">
-            {searching && query.length >= 2 ? (
-              <Loader2 size={18} className="text-brand-500 animate-spin" />
-            ) : (
-              <Search size={18} className="text-gray-400" />
-            )}
-          </div>
-          <input
-            type="text"
+          <label htmlFor="weather-dashboard-search" className="sr-only">Search another location</label>
+          <AutoComplete
+            id="weather-dashboard-search"
+            className="w-full"
             value={query}
-            onChange={(e) => handleSearch(e.target.value)}
-            onFocus={() => query.length >= 2 && setShowDropdown(true)}
-            onBlur={() => setTimeout(() => setShowDropdown(false), 250)}
-            placeholder="Search another location..."
-            className="w-full pl-10 pr-4 py-3 sm:py-3.5 bg-white rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all shadow-sm"
-          />
+            options={locationOptions}
+            onSearch={handleSearch}
+            onChange={(value) => setQuery(value)}
+            onSelect={(value) => {
+              const loc = searchResults.find((l) => `${l.latitude},${l.longitude}` === value);
+              if (loc) handleDashboardSelect(loc);
+            }}
+          >
+            <Input
+              placeholder="Search another location..."
+              prefix={searching && query.length >= 2 ? <Loader2 size={16} className="text-brand-500 animate-spin" /> : <Search size={16} className="text-gray-400" />}
+              className="!rounded-xl !py-3 sm:!py-3.5 !text-sm !shadow-sm"
+            />
+          </AutoComplete>
         </div>
         <button
           onClick={handleGeolocateDashboard}
@@ -177,32 +206,6 @@ const WeatherDashboard: React.FC = () => {
         >
           <Locate size={18} />
         </button>
-
-        {/* Dropdown */}
-        <AnimatePresence>
-          {showDropdown && searchResults.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: -5 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -5 }}
-              className="absolute top-full left-12 right-12 mt-1 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50"
-            >
-              {searchResults.slice(0, 5).map((loc, i) => (
-                <button
-                  key={`${loc.name}-${loc.latitude}-${i}`}
-                  onMouseDown={() => handleDashboardSelect(loc)}
-                  className="w-full flex items-center gap-3 px-4 py-3 hover:bg-brand-50 transition-colors text-left"
-                >
-                  <MapPin size={14} className="text-gray-400 flex-shrink-0" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-800">{loc.name}</p>
-                    <p className="text-xs text-gray-500">{loc.admin1 && `${loc.admin1}, `}{loc.country}</p>
-                  </div>
-                </button>
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
       </motion.div>
 
       {/* Location Label */}

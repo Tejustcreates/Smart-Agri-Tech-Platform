@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Search, ShieldCheck, AlertTriangle, Loader2 } from 'lucide-react';
+import { Search, ShieldCheck, AlertTriangle, Loader2, Landmark } from 'lucide-react';
 import { FarmerProfile, SchemeFilters, Scheme } from '../../types/scheme';
 import { searchSchemes, getPopularSchemes } from '../../services/schemeService';
 import Section from '../../components/Section';
@@ -90,7 +90,7 @@ const GovernmentSchemes: React.FC = () => {
     <Section
       id="schemes"
       tone="rose"
-      icon="fas fa-landmark"
+      icon={Landmark}
       eyebrow="Government Scheme Finder"
       title="Find Schemes You Qualify For"
       subtitle="Complete your profile below and we will match you with central and state government schemes, subsidies, and grants tailored to your farm."

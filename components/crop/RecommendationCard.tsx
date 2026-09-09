@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { Progress } from 'antd';
 import { CropPrediction } from '../../types/prediction';
-import { Trophy, Droplets, TrendingUp, BarChart3, Sprout, ShieldCheck, ChevronDown, ChevronUp } from 'lucide-react';
+import { Trophy, Droplets, TrendingUp, BarChart3, Sprout, ShieldCheck, ChevronDown, ChevronUp, Leaf } from 'lucide-react';
 
 interface RecommendationCardProps {
   prediction: CropPrediction;
@@ -19,7 +20,7 @@ const RecommendationCard: React.FC<RecommendationCardProps> = ({ prediction, ran
 
   const confLabel = prediction.confidence >= 70 ? 'High match' : prediction.confidence >= 45 ? 'Medium match' : 'Low match';
   const confBg = prediction.confidence >= 70 ? 'bg-green-500 text-white' : prediction.confidence >= 45 ? 'bg-amber-500 text-white' : 'bg-red-400 text-white';
-  const confBarBg = prediction.confidence >= 70 ? 'bg-green-500' : prediction.confidence >= 45 ? 'bg-amber-500' : 'bg-red-400';
+  const confBarColor = prediction.confidence >= 70 ? '#22c55e' : prediction.confidence >= 45 ? '#f59e0b' : '#f87171';
 
   const farmerReason = prediction.confidence >= 70
     ? `This crop suits your soil's nutrients and this season's rainfall.`
@@ -60,19 +61,12 @@ const RecommendationCard: React.FC<RecommendationCardProps> = ({ prediction, ran
         </div>
 
         {/* Confidence bar */}
-        <div className="w-full h-2.5 bg-gray-100 rounded-full mb-3 overflow-hidden">
-          <motion.div
-            initial={{ width: 0 }}
-            animate={{ width: `${prediction.confidence}%` }}
-            transition={{ duration: 0.8, delay: rank * 0.08 + 0.2 }}
-            className={`h-full rounded-full ${confBarBg}`}
-          />
-        </div>
+        <Progress percent={prediction.confidence} showInfo={false} strokeColor={confBarColor} className="mb-3" />
 
         {/* Farmer-language explanation */}
-        <p className="text-sm text-gray-600 mb-4 bg-brand-50 rounded-lg px-3 py-2">
-          <i className="fas fa-leaf text-brand-600 mr-1.5"></i>
-          {farmerReason}
+        <p className="text-sm text-gray-600 mb-4 bg-brand-50 rounded-lg px-3 py-2 flex items-start gap-1.5">
+          <Leaf size={14} className="text-brand-600 flex-shrink-0 mt-0.5" />
+          <span>{farmerReason}</span>
         </p>
 
         {/* Key details */}
