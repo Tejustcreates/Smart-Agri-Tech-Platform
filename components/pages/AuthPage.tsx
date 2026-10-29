@@ -4,7 +4,6 @@ import { Sprout } from 'lucide-react';
 import { useAuthFlow } from '../../hooks/useAuthFlow';
 import AuthModeTabs from '../auth/AuthModeTabs';
 import AuthStepsForm from '../auth/AuthStepsForm';
-import LanguageSwitcher from '../LanguageSwitcher';
 
 export default function AuthPage() {
   const navigate = useNavigate();
@@ -22,7 +21,6 @@ export default function AuthPage() {
           </div>
           <span className="text-lg font-bold text-white">GROW<span className="text-emerald-400">SMART</span></span>
         </div>
-        <LanguageSwitcher compact />
       </div>
 
       <div className="flex-1 flex items-center justify-center px-4 py-8">
@@ -50,7 +48,7 @@ export default function AuthPage() {
             {flow.mode === 'login' ? (
               <>New to GrowSmart?{' '}
                 <Link to="/signup" onClick={() => flow.reset('signup')} className="text-emerald-300 font-medium hover:underline">
-                  Create an account
+                  Create new account
                 </Link>
               </>
             ) : (

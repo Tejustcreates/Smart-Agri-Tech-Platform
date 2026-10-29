@@ -21,7 +21,7 @@ const AuthModeTabs: React.FC<AuthModeTabsProps> = ({ mode, onChange, className =
       onClick={() => onChange('signup')}
       className={`flex-1 py-3 text-sm font-semibold transition-colors ${mode === 'signup' ? 'text-brand-600 border-b-2 border-brand-600' : 'text-gray-400 hover:text-gray-600'}`}
     >
-      Sign Up
+      Create Account
     </button>
   </div>
 );

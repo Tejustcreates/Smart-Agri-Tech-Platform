@@ -8,12 +8,6 @@ interface AuthStepsFormProps {
   onSignupAccountCreated: (user: any) => void;
 }
 
-const LANGUAGES = [
-  { code: 'en', label: 'English' },
-  { code: 'hi', label: 'हिन्दी' },
-  { code: 'mr', label: 'मराठी' },
-];
-
 /**
  * The mobile -> OTP -> signup-details step machine shared by AuthModal and AuthPage.
  * Validation lives in antd Form `rules` (per-field messages) instead of the old
@@ -59,6 +53,18 @@ const AuthStepsForm: React.FC<AuthStepsFormProps> = ({ flow, onLoginSuccess, onS
           <Button type="primary" htmlType="submit" block size="large" loading={flow.loading}>
             Send OTP
           </Button>
+          {flow.mode === 'login' && (
+            <p className="mt-5 text-center text-sm text-gray-500">
+              New to GrowSmart?{' '}
+              <button
+                type="button"
+                onClick={() => flow.setMode('signup')}
+                className="text-brand-600 font-semibold hover:underline"
+              >
+                Create new account
+              </button>
+            </p>
+          )}
         </Form>
       )}
 
@@ -114,7 +120,6 @@ const AuthStepsForm: React.FC<AuthStepsFormProps> = ({ flow, onLoginSuccess, onS
         <Form
           form={signupForm}
           layout="vertical"
-          initialValues={{ preferredLanguage: 'en' }}
           onFinish={async (values) => {
             const user = await flow.createAccount(values);
             if (user) onSignupAccountCreated(user);
@@ -127,28 +132,6 @@ const AuthStepsForm: React.FC<AuthStepsFormProps> = ({ flow, onLoginSuccess, onS
             rules={[{ required: true, min: 2, message: 'Please enter your full name' }]}
           >
             <Input placeholder="Enter your full name" autoFocus />
-          </Form.Item>
-          <Form.Item name="preferredLanguage" label="Preferred Language">
-            <Input type="hidden" />
-          </Form.Item>
-          <Form.Item shouldUpdate noStyle>
-            {() => (
-              <div className="grid grid-cols-3 gap-2 mb-4 -mt-2">
-                {LANGUAGES.map((l) => {
-                  const active = signupForm.getFieldValue('preferredLanguage') === l.code;
-                  return (
-                    <button
-                      key={l.code}
-                      type="button"
-                      onClick={() => signupForm.setFieldValue('preferredLanguage', l.code)}
-                      className={`py-3 rounded-xl text-sm font-medium border-2 transition-colors ${active ? 'border-brand-600 bg-brand-50 text-brand-600' : 'border-gray-200 text-gray-500 hover:border-gray-300'}`}
-                    >
-                      {l.label}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
           </Form.Item>
           <Button type="primary" htmlType="submit" block size="large" loading={flow.loading}>
             Create Account

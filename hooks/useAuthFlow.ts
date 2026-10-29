@@ -99,7 +99,7 @@ export function useAuthFlow(initialMode: AuthMode = 'login') {
     setError('');
     setLoading(true);
     try {
-      const result = await api.signup({ mobileNumber, otp, name: values.name, preferredLanguage: values.preferredLanguage });
+      const result = await api.signup({ mobileNumber, otp, name: values.name, preferredLanguage: 'en' });
       // Push the freshly-created account into AuthContext so the rest of the
       // app (Header, ProtectedRoute, etc.) sees the logged-in state immediately
       // instead of only landing in localStorage until the next reload.

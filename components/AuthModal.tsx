@@ -8,7 +8,6 @@ import { useOnboardingSubmit } from '../hooks/useOnboardingSubmit';
 import AuthModeTabs from './auth/AuthModeTabs';
 import AuthStepsForm from './auth/AuthStepsForm';
 import OnboardingForm from './auth/OnboardingForm';
-import LanguageSwitcher from './LanguageSwitcher';
 
 interface AuthModalProps {
   open: boolean;
@@ -52,12 +51,9 @@ export default function AuthModal({ open, onClose, initialMode = 'login' }: Auth
           </div>
           <span className="text-white font-bold">GROW<span className="text-emerald-400">SMART</span></span>
         </div>
-        <div className="flex items-center gap-2">
-          <LanguageSwitcher compact />
-          <button onClick={onClose} aria-label="Close" className="text-white/80 hover:text-white p-1.5">
-            <X size={16} />
-          </button>
-        </div>
+        <button onClick={onClose} aria-label="Close" className="text-white/80 hover:text-white p-1.5">
+          <X size={16} />
+        </button>
       </div>
 
       <div className="p-6">

@@ -18,6 +18,36 @@ class ApiClient {
     return localStorage.getItem('growsmart_access_token');
   }
 
+  private getFallbackBaseUrl(): string | null {
+    if (!import.meta.env.DEV || typeof window === 'undefined' || !this.baseUrl.startsWith('/')) {
+      return null;
+    }
+    return `${window.location.protocol}//${window.location.hostname}:4000/api`;
+  }
+
+  private async fetchWithFallback(endpoint: string, options: RequestInit): Promise<Response> {
+    try {
+      const response = await fetch(`${this.baseUrl}${endpoint}`, options);
+      const contentType = response.headers.get('content-type') || '';
+      const isStaticMiss = (response.status === 404 || response.status === 405) && !contentType.includes('application/json');
+
+      if (!isStaticMiss) return response;
+    } catch {
+      // Fall through to the direct backend URL below.
+    }
+
+    const fallbackBase = this.getFallbackBaseUrl();
+    if (!fallbackBase) {
+      throw new Error('Unable to reach the server. Please check your connection and try again.');
+    }
+
+    try {
+      return await fetch(`${fallbackBase}${endpoint}`, options);
+    } catch {
+      throw new Error('Unable to reach the server. Please check your connection and try again.');
+    }
+  }
+
   private async request<T = any>(endpoint: string, options: ApiOptions = {}): Promise<T> {
     const { token, ...fetchOptions } = options;
     const authToken = token || this.getToken();
@@ -31,7 +61,7 @@ class ApiClient {
       headers['Authorization'] = `Bearer ${authToken}`;
     }
 
-    const response = await fetch(`${this.baseUrl}${endpoint}`, {
+    const response = await this.fetchWithFallback(endpoint, {
       ...fetchOptions,
       headers,
     });
@@ -41,7 +71,7 @@ class ApiClient {
       const refreshed = await this.tryRefresh();
       if (refreshed && authToken) {
         headers['Authorization'] = `Bearer ${this.getToken()}`;
-        const retryResponse = await fetch(`${this.baseUrl}${endpoint}`, { ...fetchOptions, headers });
+        const retryResponse = await this.fetchWithFallback(endpoint, { ...fetchOptions, headers });
         if (!retryResponse.ok) {
           const error = await retryResponse.json().catch(() => ({ error: 'Request failed' }));
           throw new Error(error.error || `HTTP ${retryResponse.status}`);
@@ -198,7 +228,7 @@ class ApiClient {
     if (farmId) formData.append('farmId', farmId);
 
     const token = this.getToken();
-    const response = await fetch(`${this.baseUrl}/disease/detect`, {
+    const response = await this.fetchWithFallback('/disease/detect', {
       method: 'POST',
       headers: token ? { Authorization: `Bearer ${token}` } : {},
       body: formData,
