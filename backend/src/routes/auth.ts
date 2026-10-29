@@ -198,6 +198,23 @@ router.post('/signup', validate(signupSchema), async (req, res: Response) => {
     return;
   }
 
+  // Signup must follow a successful SIGNUP OTP verification. This check is
+  // server-side so the endpoint cannot be called directly to bypass OTP.
+  const verifiedOtp = await prisma.otpRequest.findFirst({
+    where: {
+      mobileNumber,
+      purpose: 'SIGNUP',
+      isVerified: true,
+      verifiedAt: { gte: new Date(Date.now() - env.OTP_EXPIRY_MINUTES * 60 * 1000) },
+    },
+    orderBy: { verifiedAt: 'desc' },
+  });
+
+  if (!verifiedOtp) {
+    res.status(403).json({ error: 'Mobile number not verified. Please verify OTP before signing up.', code: 'OTP_NOT_VERIFIED' });
+    return;
+  }
+
   // Hash password if provided
   const userData: any = {
     mobileNumber,
@@ -218,6 +235,16 @@ router.post('/signup', validate(signupSchema), async (req, res: Response) => {
   }
 
   const user = await prisma.user.create({ data: userData });
+
+  await prisma.notification.create({
+    data: {
+      userId: user.id,
+      type: 'WELCOME',
+      title: 'Welcome to GrowSmart',
+      body: 'Your account is ready. Complete your farm profile to get personalised weather, crop, mandi, and scheme recommendations.',
+      language: user.preferredLanguage,
+    },
+  });
 
   // Generate tokens
   const accessToken = generateAccessToken({ id: user.id, role: user.role, mobileNumber: user.mobileNumber });

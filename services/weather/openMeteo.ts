@@ -74,7 +74,7 @@ export async function fetchWeatherData(latitude: number, longitude: number): Pro
     hourly: [
       'temperature_2m', 'relative_humidity_2m', 'dew_point_2m',
       'precipitation_probability', 'precipitation', 'rain', 'weather_code',
-      'cloud_cover', 'wind_speed_10m', 'uv_index', 'is_day',
+      'cloud_cover', 'wind_speed_10m', 'uv_index', 'pressure_msl', 'is_day',
     ].join(','),
     daily: [
       'weather_code', 'temperature_2m_max', 'temperature_2m_min',
@@ -119,6 +119,7 @@ export async function fetchWeatherData(latitude: number, longitude: number): Pro
     cloudCover: data.hourly.cloud_cover[i],
     windSpeed: Math.round(data.hourly.wind_speed_10m[i]),
     uvIndex: data.hourly.uv_index[i] ?? 0,
+    pressureMsl: Math.round(data.hourly.pressure_msl[i]),
     isDay: Boolean(data.hourly.is_day[i]),
   }));
 

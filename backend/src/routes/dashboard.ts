@@ -1,6 +1,7 @@
 import { Router, Response } from 'express';
 import prisma from '../config/database';
 import { authenticate, AuthRequest } from '../middleware/auth';
+import { matchSchemesForUser } from './schemes';
 
 const router = Router();
 
@@ -32,15 +33,18 @@ router.get('/', authenticate, async (req: AuthRequest, res: Response) => {
     }),
   ]);
 
-  // Get matching schemes count
-  const schemeCount = await prisma.schemeMatch.count({ where: { userId } });
+  // Count the schemes this farmer currently qualifies for. This is derived
+  // from the same rules as GET /api/schemes/match so the dashboard is never
+  // stuck at zero just because no scheme_match rows have been persisted yet.
+  const schemeMatches = user ? matchSchemesForUser(user) : [];
 
   res.json({
     user,
     farms,
     recentDetections,
     notifications,
-    schemeMatches: schemeCount,
+    schemeMatches: schemeMatches.length,
+    matchedSchemes: schemeMatches.slice(0, 3),
     summary: {
       totalFarms: farms.length,
       totalArea: farms.reduce((sum, f) => sum + f.areaAcres, 0),

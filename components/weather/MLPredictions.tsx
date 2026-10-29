@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Leaf, Bug } from 'lucide-react';
+import { Leaf, Bug, CloudRain } from 'lucide-react';
 import { CropRecommendation, DiseaseRiskAssessment } from '../../types/weather';
 import AIConfidenceMeter from './AIConfidenceMeter';
 
@@ -22,7 +22,7 @@ const riskColor = {
   low: 'text-green-600',
 };
 
-const CropAndDiseasePanel: React.FC<MLPredictionsProps> = ({ crops, diseases }) => {
+const CropAndDiseasePanel: React.FC<MLPredictionsProps> = ({ crops, diseases, rainConfidence }) => {
   return (
     <div className="space-y-4">
       {/* Crop Recommendations */}
@@ -32,9 +32,16 @@ const CropAndDiseasePanel: React.FC<MLPredictionsProps> = ({ crops, diseases }) 
         transition={{ delay: 0.25 }}
         className="bg-white rounded-2xl p-5 shadow-lg border border-gray-100"
       >
-        <div className="flex items-center gap-2 mb-4">
-          <Leaf size={16} className="text-green-600" />
-          <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wider">Crop Recommendations</h3>
+        <div className="flex items-center justify-between gap-2 mb-4">
+          <div className="flex items-center gap-2">
+            <Leaf size={16} className="text-green-600" />
+            <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wider">Crop Recommendations</h3>
+          </div>
+          <span className={`flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-full ${
+            rainConfidence >= 60 ? 'bg-blue-100 text-blue-700' : rainConfidence >= 30 ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-600'
+          }`}>
+            <CloudRain size={11} /> {rainConfidence}% rain
+          </span>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           {crops.map((crop, i) => (

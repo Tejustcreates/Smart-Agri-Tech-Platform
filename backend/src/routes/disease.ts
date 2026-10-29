@@ -2,6 +2,8 @@ import { Router, Response } from 'express';
 import { z } from 'zod';
 import multer from 'multer';
 import path from 'path';
+import fs from 'fs';
+import crypto from 'crypto';
 import { v4 as uuidv4 } from 'uuid';
 import prisma from '../config/database';
 import { authenticate, AuthRequest } from '../middleware/auth';
@@ -98,13 +100,22 @@ const MOCK_DISEASES: DiseaseResult[] = [
  * which loads a trained CNN (e.g., ResNet50 fine-tuned on PlantVillage dataset)
  * and returns top predictions with confidence scores.
  */
-async function predictDisease(imageUrl: string): Promise<DiseaseResult> {
-  // MOCK: Return random disease from pool
-  // In production: await axios.post('http://ml-service:8000/predict', { image_url: imageUrl });
-  const idx = Math.floor(Math.random() * MOCK_DISEASES.length);
-  const result = { ...MOCK_DISEASES[idx] };
-  result.confidence = 0.75 + Math.random() * 0.2; // Random confidence between 0.75-0.95
-  return result;
+async function predictDisease(imagePath: string, imageUrl: string): Promise<DiseaseResult> {
+  // Deterministic stand-in for the CNN. Hashing the uploaded image means the
+  // same photo always produces the same prediction, which makes demos and tests
+  // reproducible while the real ML service is not configured.
+  let seed = imageUrl;
+  try {
+    const image = await fs.promises.readFile(imagePath);
+    seed = crypto.createHash('sha256').update(image).digest('hex');
+  } catch {
+    // Fall back to the stored URL when the file cannot be read.
+  }
+
+  const hash = parseInt(seed.slice(0, 12), 16) || 1;
+  const idx = hash % MOCK_DISEASES.length;
+  const confidence = 0.78 + ((hash >>> 8) % 16) / 100;
+  return { ...MOCK_DISEASES[idx], confidence: Math.round(confidence * 100) / 100 };
 }
 
 // POST /api/disease/detect — upload image and get disease prediction
@@ -115,7 +126,7 @@ router.post('/detect', authenticate, upload.single('image'), async (req: AuthReq
   }
 
   const imageUrl = `/uploads/${req.file.filename}`;
-  const result = await predictDisease(imageUrl);
+  const result = await predictDisease(req.file.path, imageUrl);
 
   // Save detection record
   const detection = await prisma.diseaseDetection.create({
@@ -126,6 +137,16 @@ router.post('/detect', authenticate, upload.single('image'), async (req: AuthReq
       predictedDisease: result.disease,
       confidenceScore: result.confidence,
       recommendedTreatment: result.treatment.join('\n'),
+      preventionTips: result.prevention.join('\n'),
+    },
+  });
+
+  await prisma.notification.create({
+    data: {
+      userId: req.user!.id,
+      type: 'DISEASE_ALERT',
+      title: `${result.disease} detected`,
+      body: `${Math.round(result.confidence * 100)}% confidence · ${result.severity} severity. Open the disease report for treatment steps.`,
     },
   });
 

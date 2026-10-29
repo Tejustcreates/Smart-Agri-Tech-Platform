@@ -15,6 +15,17 @@ interface DecisionTree {
   minSamplesSplit: number;
 }
 
+function mulberry32(seed: number): () => number {
+  let state = seed;
+  return () => {
+    state |= 0;
+    state = (state + 0x6d2b79f5) | 0;
+    let t = Math.imul(state ^ (state >>> 15), 1 | state);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
 function generateTrainingData(): { features: number[][]; labels: number[] } {
   const features: number[][] = [];
   const labels: number[] = [];
@@ -42,15 +53,38 @@ function generateTrainingData(): { features: number[][]; labels: number[] } {
     { temp: 37, hum: 22, pres: 1023, wind: 5, cloud: 3, uv: 11, dp: 10, pp: 0, rain: 0, hour: 11, dow: 6, month: 6, td: 0, hd: -1, pd: 0, wgf: 0.6, ct: 0, sf: 1.0, label: 0 },
   ];
 
+  const rand = mulberry32(20261030);
+  const jitter = (value: number, amount: number, min: number, max: number) =>
+    Math.min(max, Math.max(min, value + (rand() * 2 - 1) * amount));
+
   for (const s of scenarios) {
-    const f = [
-      s.temp / 50, s.hum / 100, s.pres / 1100, s.wind / 50, s.cloud / 100,
-      s.uv / 12, (s.dp + 20) / 50, s.pp / 100, s.rain, s.hour / 24,
-      s.dow / 7, s.month / 12, (s.td + 20) / 40, (s.hd + 50) / 100,
-      s.pd / 30, s.wgf / 3, (s.ct + 1) / 2, s.sf,
-    ];
-    features.push(f);
-    labels.push(s.label);
+    for (let variant = 0; variant < 10; variant++) {
+      const temp = variant === 0 ? s.temp : jitter(s.temp, 3, 0, 50);
+      const hum = variant === 0 ? s.hum : jitter(s.hum, 8, 5, 100);
+      const pres = variant === 0 ? s.pres : jitter(s.pres, 5, 980, 1045);
+      const wind = variant === 0 ? s.wind : jitter(s.wind, 4, 0, 50);
+      const cloud = variant === 0 ? s.cloud : jitter(s.cloud, 12, 0, 100);
+      const uv = variant === 0 ? s.uv : jitter(s.uv, 1.5, 0, 12);
+      const dp = variant === 0 ? s.dp : jitter(s.dp, 2, -10, 35);
+      const pp = variant === 0 ? s.pp : jitter(s.pp, 12, 0, 100);
+      const rain = variant === 0 ? s.rain : pp > 55 ? 1 : 0;
+      const hour = variant === 0 ? s.hour : Math.round(jitter(s.hour, 3, 0, 23));
+      const dow = variant === 0 ? s.dow : Math.round(jitter(s.dow, 2, 0, 6));
+      const month = variant === 0 ? s.month : Math.round(jitter(s.month, 1, 0, 11));
+      const td = variant === 0 ? s.td : jitter(s.td, 2, -12, 12);
+      const hd = variant === 0 ? s.hd : jitter(s.hd, 8, -40, 40);
+      const pd = variant === 0 ? s.pd : jitter(s.pd, 2, -10, 10);
+      const wgf = variant === 0 ? s.wgf : jitter(s.wgf, 0.4, 0.3, 3);
+      const ct = variant === 0 ? s.ct : jitter(s.ct, 0.15, -1, 1);
+      const sf = variant === 0 ? s.sf : jitter(s.sf, 0.1, 0, 1);
+      features.push([
+        temp / 50, hum / 100, pres / 1100, wind / 50, cloud / 100,
+        uv / 12, (dp + 20) / 50, pp / 100, rain, hour / 24,
+        dow / 7, month / 12, (td + 20) / 40, (hd + 50) / 100,
+        pd / 30, wgf / 3, (ct + 1) / 2, sf,
+      ]);
+      labels.push(s.label);
+    }
   }
 
   return { features, labels };
@@ -67,6 +101,7 @@ function trainTree(
   labels: number[],
   maxDepth: number,
   minSamplesSplit: number,
+  rng: () => number,
   depth: number = 0
 ): TreeNode {
   const posCount = labels.filter((l) => l === 1).length;
@@ -82,7 +117,7 @@ function trainTree(
   const numFeatures = features[0].length;
   const featuresPerSplit = Math.ceil(Math.sqrt(numFeatures));
   const featureIndices = Array.from({ length: numFeatures }, (_, i) => i)
-    .sort(() => Math.random() - 0.5)
+    .sort(() => rng() - 0.5)
     .slice(0, featuresPerSplit);
 
   for (const fi of featureIndices) {
@@ -134,17 +169,17 @@ function trainTree(
     isLeaf: false,
     featureIndex: bestFeature,
     threshold: bestThreshold,
-    left: trainTree(leftFeatures, leftLabels, maxDepth, minSamplesSplit, depth + 1),
-    right: trainTree(rightFeatures, rightLabels, maxDepth, minSamplesSplit, depth + 1),
+    left: trainTree(leftFeatures, leftLabels, maxDepth, minSamplesSplit, rng, depth + 1),
+    right: trainTree(rightFeatures, rightLabels, maxDepth, minSamplesSplit, rng, depth + 1),
     samples: labels.length,
     value: posCount / labels.length,
   };
 }
 
-function predictTree(tree: TreeNode, features: number[]): number {
-  if (tree.isLeaf) return tree.prediction!;
-  if (features[tree.featureIndex!] <= tree.threshold!) return predictTree(tree.left!, features);
-  return predictTree(tree.right!, features);
+function predictTreeValue(tree: TreeNode, features: number[]): number {
+  if (tree.isLeaf) return tree.value;
+  if (features[tree.featureIndex!] <= tree.threshold!) return predictTreeValue(tree.left!, features);
+  return predictTreeValue(tree.right!, features);
 }
 
 export interface RandomForestModel {
@@ -152,34 +187,34 @@ export interface RandomForestModel {
   numTrees: number;
 }
 
-export function trainRandomForest(numTrees: number = 15, maxDepth: number = 8): RandomForestModel {
+export function trainRandomForest(numTrees: number = 31, maxDepth: number = 7): RandomForestModel {
   const { features, labels } = generateTrainingData();
   const trees: TreeNode[] = [];
+  const rng = mulberry32(42);
 
   for (let i = 0; i < numTrees; i++) {
     const bootstrapFeatures: number[][] = [];
     const bootstrapLabels: number[] = [];
     for (let j = 0; j < features.length; j++) {
-      const idx = Math.floor(Math.random() * features.length);
+      const idx = Math.floor(rng() * features.length);
       bootstrapFeatures.push([...features[idx]]);
       bootstrapLabels.push(labels[idx]);
     }
-    trees.push(trainTree(bootstrapFeatures, bootstrapLabels, maxDepth, 4));
+    trees.push(trainTree(bootstrapFeatures, bootstrapLabels, maxDepth, 4, rng));
   }
 
   return { trees, numTrees };
 }
 
 export function predictRain(model: RandomForestModel, features: number[]): { probability: number; willRain: boolean } {
-  const votes = model.trees.map((tree) => predictTree(tree, features));
-  const positives = votes.filter((v) => v === 1).length;
-  const probability = positives / model.numTrees;
-  return { probability, willRain: probability > 0.5 };
+  const values = model.trees.map((tree) => predictTreeValue(tree, features));
+  const probability = values.reduce((sum, value) => sum + value, 0) / Math.max(values.length, 1);
+  return { probability, willRain: probability >= 0.5 };
 }
 
 let cachedModel: RandomForestModel | null = null;
 
 export function getModel(): RandomForestModel {
-  if (!cachedModel) cachedModel = trainRandomForest(15, 8);
+  if (!cachedModel) cachedModel = trainRandomForest(31, 7);
   return cachedModel;
 }

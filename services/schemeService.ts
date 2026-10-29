@@ -1,6 +1,6 @@
 import { Scheme, FarmerProfile, SchemeFilters } from '../types/scheme';
 
-const DATA_GOV_KEY = import.meta.env.VITE_DATA_GOV_API_KEY;
+const DATA_GOV_KEY = import.meta.env?.VITE_DATA_GOV_API_KEY;
 
 const POPULAR_SCHEMES: Scheme[] = [
   {
@@ -63,7 +63,7 @@ const POPULAR_SCHEMES: Scheme[] = [
     id: 'br', schemeName: 'Blue Revolution — Integrated Development', ministry: 'Ministry of Fisheries, Animal Husbandry & Dairying',
     level: 'Central', description: 'Comprehensive scheme for fisheries sector development with focus on inland and deep sea fishing.',
     eligibility: 'Fish farmers, fishers, entrepreneurs', benefits: 'Up to 60% subsidy on aquaculture infrastructure',
-    documents: ['Aadhaar Card', 'Land/Water Body Records', 'Project Report'], website: 'https://蓝色revolution.gov.in/',
+    documents: ['Aadhaar Card', 'Land/Water Body Records', 'Project Report'], website: 'https://pmmsy.dof.gov.in/',
     lastUpdated: '2024-10-15', category: 'Fisheries', matchScore: 72,
   },
   {
@@ -78,32 +78,88 @@ const POPULAR_SCHEMES: Scheme[] = [
 let cachedSchemes: Scheme[] | null = null;
 
 function computeMatch(scheme: Scheme, profile: FarmerProfile): number {
-  let score = 60;
+  let score = 55;
+  const haystack = `${scheme.schemeName} ${scheme.description} ${scheme.eligibility} ${scheme.benefits} ${scheme.category}`.toLowerCase();
 
   if (profile.category === 'Small' || profile.category === 'Marginal') {
-    if (['pm-kisan', 'kcc', 'shc'].includes(scheme.id)) score += 15;
+    if (['pm-kisan', 'kcc', 'shc', 'nmnf', 'pkvy'].includes(scheme.id)) score += 15;
   }
   if (profile.category === 'Medium' || profile.category === 'Large') {
-    if (['pmfby', 'aif', 'enam'].includes(scheme.id)) score += 12;
+    if (['pmfby', 'aif', 'enam', 'nfsm'].includes(scheme.id)) score += 12;
   }
 
   if (profile.irrigation === 'Rainfed') {
-    if (['pmfby', 'shc', 'nmnf'].includes(scheme.id)) score += 10;
+    if (['pmfby', 'shc', 'nmnf', 'nfsm'].includes(scheme.id)) score += 10;
+    if (scheme.category === 'Infrastructure' || /irrigation|water|sinchai/i.test(haystack)) score += 6;
   }
 
   if (profile.farmerType === 'Organic Farmer') {
     if (['nmnf', 'pkvy'].includes(scheme.id)) score += 15;
+    if (/organic|natural farming/i.test(haystack)) score += 8;
   }
   if (profile.farmerType === 'FPO') {
     if (['aif', 'enam'].includes(scheme.id)) score += 12;
+    if (/fpo|cooperative|cluster/i.test(haystack)) score += 6;
+  }
+  if (profile.farmerType === 'Tenant Farmer') {
+    if (['kcc', 'shc'].includes(scheme.id)) score += 5;
   }
 
   const income = parseInt(profile.annualIncome);
   if (!isNaN(income) && income < 100000) {
-    if (['pm-kisan', 'kcc'].includes(scheme.id)) score += 10;
+    if (['pm-kisan', 'kcc', 'shc'].includes(scheme.id)) score += 10;
   }
 
+  const age = parseInt(profile.age);
+  if (!isNaN(age) && age >= 60 && /pension|maandhan/i.test(haystack)) score += 12;
+
+  if (profile.gender === 'Female' && /women|woman|female|mahila/i.test(haystack)) score += 8;
+
+  if (profile.crop && haystack.includes(profile.crop.toLowerCase())) score += 8;
+
+  const land = parseFloat(profile.landHolding);
+  if (!isNaN(land)) {
+    if (land <= 2 && /small|marginal/i.test(haystack)) score += 5;
+    if (land > 5 && /infrastructure|mechani[sz]ation|equipment/i.test(haystack)) score += 5;
+  }
+
+  if (profile.state && scheme.level === 'State' && scheme.ministry.toLowerCase().includes(profile.state.toLowerCase())) score += 8;
+
   return Math.min(98, score);
+}
+
+function applyFilters(schemes: Scheme[], filters: SchemeFilters): Scheme[] {
+  const search = filters.search.trim().toLowerCase();
+
+  return schemes.filter((scheme) => {
+    if (filters.level !== 'all' && scheme.level !== filters.level) return false;
+    if (filters.category && scheme.category !== filters.category) return false;
+    if (filters.state && scheme.level === 'State' && !scheme.ministry.toLowerCase().includes(filters.state.toLowerCase())) return false;
+    if (search) {
+      const text = `${scheme.schemeName} ${scheme.ministry} ${scheme.description} ${scheme.eligibility} ${scheme.benefits} ${scheme.category}`.toLowerCase();
+      if (!text.includes(search)) return false;
+    }
+    return true;
+  });
+}
+
+function sortSchemes(schemes: Scheme[], sort: SchemeFilters['sort']): Scheme[] {
+  const sorted = [...schemes];
+  switch (sort) {
+    case 'newest':
+      sorted.sort((a, b) => b.lastUpdated.localeCompare(a.lastUpdated));
+      break;
+    case 'central':
+      sorted.sort((a, b) => Number(b.level === 'Central') - Number(a.level === 'Central') || b.matchScore - a.matchScore);
+      break;
+    case 'state':
+      sorted.sort((a, b) => Number(b.level === 'State') - Number(a.level === 'State') || b.matchScore - a.matchScore);
+      break;
+    case 'match':
+    default:
+      sorted.sort((a, b) => b.matchScore - a.matchScore);
+  }
+  return sorted;
 }
 
 export async function searchSchemes(filters: SchemeFilters, profile: FarmerProfile): Promise<Scheme[]> {
@@ -143,14 +199,21 @@ export async function searchSchemes(filters: SchemeFilters, profile: FarmerProfi
     matchScore: computeMatch(s, profile),
   }));
 
-  schemes.sort((a, b) => b.matchScore - a.matchScore);
-  return schemes;
+  return sortSchemes(applyFilters(schemes, filters), filters.sort);
 }
 
-export function getPopularSchemes(_state?: string): Scheme[] {
-  return POPULAR_SCHEMES;
+export function getPopularSchemes(state?: string): Scheme[] {
+  const stateName = state?.trim().toLowerCase();
+  return [...POPULAR_SCHEMES]
+    .map((scheme) => ({
+      ...scheme,
+      matchScore: stateName && scheme.level === 'State' && scheme.ministry.toLowerCase().includes(stateName)
+        ? Math.min(98, scheme.matchScore + 5)
+        : scheme.matchScore,
+    }))
+    .sort((a, b) => b.matchScore - a.matchScore);
 }
 
 export function getSchemeDetails(id: string): Scheme | undefined {
-  return POPULAR_SCHEMES.find((s) => s.id === id);
+  return (cachedSchemes || POPULAR_SCHEMES).find((s) => s.id === id);
 }

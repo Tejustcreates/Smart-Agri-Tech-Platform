@@ -15,6 +15,7 @@ export interface LivePrice {
   modalPrice: number;
   lastUpdated: string;
   change: number;
+  priceDate?: string;
 }
 
 export interface NearbyMandi {
@@ -84,6 +85,14 @@ export interface NearbyFilters {
   location: string;
   crop: string;
   radius: number;
+}
+
+export interface PricePredictionContext {
+  state?: string;
+  district?: string;
+  season?: string;
+  month?: string;
+  rainfall?: string;
 }
 
 export interface PredictionInput {

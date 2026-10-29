@@ -1,5 +1,5 @@
 import { CurrentWeather, HourlyForecast, DailyForecast, RainPrediction } from '../../types/weather';
-import { extractFeatures, featuresToArray } from './featureEngineering';
+import { extractFeatures, featuresToArray, findCurrentHourIndex } from './featureEngineering';
 import { getModel, predictRain } from './randomForest';
 
 export function predictRainFromWeather(
@@ -11,33 +11,39 @@ export function predictRainFromWeather(
   const featureArray = featuresToArray(features);
   const model = getModel();
   const result = predictRain(model, featureArray);
+  const nowIndex = findCurrentHourIndex(current, hourly);
 
-  const nextRainHour = hourly.findIndex(
-    (h, i) => i > 0 && (h.precipitationProbability > 50 || h.precipitation > 0)
+  const nextRainIndex = hourly.findIndex(
+    (h, i) => i >= nowIndex && (h.precipitationProbability > 50 || h.precipitation > 0)
   );
+  const hoursAhead = nextRainIndex >= 0 ? nextRainIndex - nowIndex : -1;
+  const forecastProbability = nextRainIndex >= 0
+    ? Math.max(...hourly.slice(nextRainIndex, nextRainIndex + 3).map((h) => h.precipitationProbability)) / 100
+    : 0;
+  const probability = Math.max(result.probability, forecastProbability);
+  const willRain = probability >= 0.5;
 
   let timeframe = 'No rain expected in next 48 hours';
-  if (nextRainHour > 0) {
-    if (nextRainHour <= 3) timeframe = `Rain expected within ${nextRainHour} hours`;
-    else if (nextRainHour <= 12) timeframe = `Rain likely in ${nextRainHour} hours`;
-    else timeframe = `Rain possible in ${Math.round(nextRainHour / 24)} day(s)`;
-  }
+  if (hoursAhead === 0) timeframe = 'Rain expected this hour';
+  else if (hoursAhead > 0 && hoursAhead <= 3) timeframe = `Rain expected within ${hoursAhead} hours`;
+  else if (hoursAhead > 3 && hoursAhead <= 12) timeframe = `Rain likely in ${hoursAhead} hours`;
+  else if (hoursAhead > 12) timeframe = `Rain possible in ${Math.round(hoursAhead / 24)} day(s)`;
 
   let recommendation = '';
-  if (result.willRain && result.probability > 0.7) {
+  if (willRain && probability > 0.7) {
     recommendation = 'Heavy rain likely. Delay irrigation and pesticide spraying. Ensure field drainage is clear.';
-  } else if (result.willRain && result.probability > 0.5) {
+  } else if (willRain && probability > 0.5) {
     recommendation = 'Rain probable. Postpone fertilizer application. Prepare drainage channels.';
-  } else if (result.probability > 0.3) {
+  } else if (probability > 0.3) {
     recommendation = 'Slight chance of rain. Monitor conditions before field operations.';
   } else {
     recommendation = 'Clear weather expected. Ideal for harvesting, spraying, and field work.';
   }
 
   return {
-    willRain: result.willRain,
-    confidence: Math.round(result.probability * 100),
-    probability: Math.round(result.probability * 100),
+    willRain,
+    confidence: Math.round(probability * 100),
+    probability: Math.round(probability * 100),
     recommendation,
     timeframe,
   };

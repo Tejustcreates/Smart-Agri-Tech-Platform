@@ -6,8 +6,9 @@ export function generateAdvisory(
   rainConfidence: number
 ): FarmingAdvisory {
   const today = daily[0];
-  const hasHeavyRain = today && today.precipitationProbabilityMax > 70;
+  const hasHeavyRain = (today && today.precipitationProbabilityMax > 70) || rainConfidence >= 75;
   const hasLightRain = today && today.precipitationProbabilityMax > 30 && today.precipitationProbabilityMax <= 70;
+  const rainLikely = rainConfidence >= 55;
   const isWindy = current.windSpeed > 25;
   const isHot = current.temperature > 35;
   const isHumid = current.humidity > 80;
@@ -15,6 +16,7 @@ export function generateAdvisory(
 
   const irrigation = (() => {
     if (hasHeavyRain) return { recommendation: 'Skip irrigation today — rain expected.', urgency: 'low' as const, reason: 'Rain will provide sufficient moisture' };
+    if (rainLikely) return { recommendation: 'Delay irrigation — rain is likely soon.', urgency: 'low' as const, reason: `Rain probability is ${rainConfidence}%` };
     if (current.humidity > 85) return { recommendation: 'Reduce irrigation — high humidity slows evaporation.', urgency: 'medium' as const, reason: 'Soil moisture retention is higher in humid conditions' };
     if (current.temperature > 35) return { recommendation: 'Irrigate early morning or evening to reduce evaporation loss.', urgency: 'high' as const, reason: 'High temperatures increase water loss' };
     if (current.humidity < 40) return { recommendation: 'Increase irrigation frequency — dry conditions detected.', urgency: 'high' as const, reason: 'Low humidity accelerates soil moisture depletion' };
@@ -23,6 +25,7 @@ export function generateAdvisory(
 
   const spraying = (() => {
     if (hasHeavyRain) return { recommendation: 'Do NOT spray — rain will wash away chemicals.', urgency: 'high' as const, reason: 'Rain within 4 hours negates pesticide effectiveness' };
+    if (rainLikely) return { recommendation: 'Postpone spraying — rain may wash off chemicals.', urgency: 'medium' as const, reason: `Rain probability is ${rainConfidence}%` };
     if (isWindy) return { recommendation: 'Avoid spraying — wind will cause drift and uneven coverage.', urgency: 'high' as const, reason: `Wind speed ${current.windSpeed} km/h exceeds safe spraying threshold` };
     if (isHot) return { recommendation: 'Spray in early morning or late evening to avoid evaporation.', urgency: 'medium' as const, reason: 'High temperatures cause rapid chemical evaporation' };
     if (hasLightRain) return { recommendation: 'Wait 2-3 hours after rain stops before spraying.', urgency: 'medium' as const, reason: 'Wet foliage reduces chemical absorption' };
@@ -31,6 +34,7 @@ export function generateAdvisory(
 
   const harvesting = (() => {
     if (hasHeavyRain) return { recommendation: 'Complete harvest before rain — crops may be damaged.', urgency: 'high' as const, reason: 'Rain can cause grain sprouting and quality loss' };
+    if (rainConfidence >= 70) return { recommendation: 'Harvest early and cover produce — rain is likely.', urgency: 'medium' as const, reason: `Rain probability is ${rainConfidence}%` };
     if (today && today.precipitationHours > 4) return { recommendation: 'Delayed harvest due to wet conditions.', urgency: 'medium' as const, reason: 'Prolonged rain affects crop quality' };
     if (isHumid && current.temperature > 25) return { recommendation: 'Harvest and dry crops quickly — humidity promotes mold.', urgency: 'medium' as const, reason: 'High humidity increases fungal growth risk post-harvest' };
     return { recommendation: 'Good conditions for harvesting and drying.', urgency: 'low' as const, reason: 'Weather is suitable for field operations' };

@@ -43,6 +43,14 @@ function interpretValue(key: string, val: number): { text: string; color: string
       if (val < 50) return { text: 'Low — irrigation needed', color: 'text-amber-600' };
       if (val <= 200) return { text: 'Good — adequate rainfall', color: 'text-green-600' };
       return { text: 'Heavy — risk of waterlogging', color: 'text-blue-600' };
+    case 'humidity':
+      if (val < 40) return { text: 'Dry air — increase irrigation', color: 'text-amber-600' };
+      if (val <= 75) return { text: 'Good — comfortable humidity', color: 'text-green-600' };
+      return { text: 'Very humid — fungal risk', color: 'text-blue-600' };
+    case 'moisture':
+      if (val < 30) return { text: 'Dry soil — water soon', color: 'text-red-600' };
+      if (val <= 65) return { text: 'Good — healthy soil moisture', color: 'text-green-600' };
+      return { text: 'Wet soil — avoid overwatering', color: 'text-blue-600' };
     default:
       return { text: '', color: 'text-gray-400' };
   }
@@ -55,6 +63,8 @@ const sliders = [
   { key: 'ph' as const, label: 'Soil pH', unit: '', min: 4, max: 9, step: 0.1 },
   { key: 'temperature' as const, label: 'Temperature', unit: '°C', min: 5, max: 45, step: 1 },
   { key: 'rainfall' as const, label: 'Rainfall', unit: 'mm', min: 0, max: 300, step: 5 },
+  { key: 'humidity' as const, label: 'Humidity', unit: '%', min: 20, max: 100, step: 1 },
+  { key: 'moisture' as const, label: 'Soil Moisture', unit: '%', min: 0, max: 100, step: 1 },
 ];
 
 const ManualInput: React.FC<ManualInputProps> = ({ sensorData, onChange, season, onSeasonChange, soilType, onSoilTypeChange, landSize, onLandSizeChange, onPredict, predicting }) => {

@@ -83,6 +83,7 @@ export interface RegistrationForm {
   fuelIncluded: boolean;
   operatorIncluded: boolean;
   minRental: string;
+  availability: string[];
   workingRadius: number;
   description: string;
 }

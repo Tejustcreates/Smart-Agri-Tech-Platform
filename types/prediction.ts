@@ -3,6 +3,8 @@ export interface CropPrediction {
   confidence: number;
   expectedYield: string;
   estimatedYield: string;
+  yieldRange?: [number, number];
+  yieldUnit?: string;
   reason: string;
   suitableSeason: string;
   suitableSoil: string;

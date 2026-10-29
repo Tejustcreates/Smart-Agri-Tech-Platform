@@ -5,6 +5,10 @@ import { fetchAgriNews, LiveArticle, AgriNewsCategory } from '../services/news/n
 const BOOKMARKS_KEY = 'growsmart_bookmarks';
 const REFRESH_INTERVAL = 30 * 60 * 1000;
 
+function getArticleId(article: LiveArticle): string {
+  return article.article_id || article.link || article.title;
+}
+
 function loadBookmarks(): LiveArticle[] {
   try {
     const raw = localStorage.getItem(BOOKMARKS_KEY);
@@ -22,8 +26,8 @@ interface UseAgriNewsReturn {
   articles: LiveArticle[];
   loading: boolean;
   error: string | null;
-  category: AgriNewsCategory;
-  setCategory: (cat: AgriNewsCategory) => void;
+  category: AgriNewsCategory | 'all';
+  setCategory: (cat: AgriNewsCategory | 'all') => void;
   searchQuery: string;
   setSearchQuery: (q: string) => void;
   loadMore: () => Promise<void>;
@@ -39,7 +43,7 @@ export function useAgriNews(initialCategory?: AgriNewsCategory): UseAgriNewsRetu
   const [articles, setArticles] = useState<LiveArticle[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [category, setCategory] = useState<AgriNewsCategory>(initialCategory ?? 'all');
+  const [category, setCategory] = useState<AgriNewsCategory | 'all'>(initialCategory ?? 'all');
   const [searchQuery, setSearchQuery] = useState('');
   const [nextPage, setNextPage] = useState<string | null>(null);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -76,9 +80,10 @@ export function useAgriNews(initialCategory?: AgriNewsCategory): UseAgriNewsRetu
   const toggleBookmark = useCallback(
     (article: LiveArticle) => {
       setBookmarks((prev) => {
-        const exists = prev.some((b) => b.title === article.title);
+        const articleId = getArticleId(article);
+        const exists = prev.some((b) => getArticleId(b) === articleId);
         const next = exists
-          ? prev.filter((b) => b.title !== article.title)
+          ? prev.filter((b) => getArticleId(b) !== articleId)
           : [...prev, article];
         saveBookmarks(next);
         toast.success(exists ? 'Bookmark removed' : 'Article bookmarked');
@@ -90,12 +95,13 @@ export function useAgriNews(initialCategory?: AgriNewsCategory): UseAgriNewsRetu
 
   const isBookmarked = useCallback(
     (id: string): boolean => {
-      return bookmarks.some((b) => b.title === id);
+      return bookmarks.some((b) => getArticleId(b) === id || b.title === id);
     },
     [bookmarks],
   );
 
   const filteredArticles = articles.filter((article) => {
+    if (category !== 'all' && article.agriCategory !== category) return false;
     if (!searchQuery.trim()) return true;
     const q = searchQuery.toLowerCase();
     return (
@@ -104,10 +110,9 @@ export function useAgriNews(initialCategory?: AgriNewsCategory): UseAgriNewsRetu
     );
   });
 
-  // Refetch on category change
   useEffect(() => {
     fetchNews();
-  }, [category, fetchNews]);
+  }, [fetchNews]);
 
   // Auto-refresh every 30 minutes
   useEffect(() => {

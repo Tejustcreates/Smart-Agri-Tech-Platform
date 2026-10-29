@@ -132,10 +132,14 @@ const RecommendationCard: React.FC<RecommendationCardProps> = ({ prediction, ran
             animate={{ opacity: 1, height: 'auto' }}
             className="mt-3 pt-3 border-t border-gray-100 space-y-3"
           >
-            <div className="grid grid-cols-3 gap-2 text-center">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-center">
               <div className="bg-brand-50 rounded-lg p-2">
-                <p className="text-xs text-gray-500">NPK Balance</p>
-                <p className="text-sm font-bold text-brand-800">N:{Math.round(prediction.confidence * 0.6)} P:{Math.round(prediction.confidence * 0.25)} K:{Math.round(prediction.confidence * 0.15)}</p>
+                <p className="text-xs text-gray-500">Your Land ({landSize} acres)</p>
+                <p className="text-sm font-bold text-brand-800">
+                  {prediction.yieldRange
+                    ? `${Math.round(prediction.yieldRange[0] * landSize * 10) / 10}–${Math.round(prediction.yieldRange[1] * landSize * 10) / 10} ${prediction.yieldUnit ?? 'tons'}`
+                    : prediction.estimatedYield}
+                </p>
               </div>
               <div className="bg-amber-50 rounded-lg p-2">
                 <p className="text-xs text-gray-500">Water Need</p>
@@ -147,7 +151,7 @@ const RecommendationCard: React.FC<RecommendationCardProps> = ({ prediction, ran
               </div>
             </div>
             <p className="text-xs text-gray-400 italic">
-              Detailed NPK radar and feature importance charts are available in the analytics section below.
+              Soil balance, feature importance, and input-vs-ideal charts are available in the analytics section below.
             </p>
           </motion.div>
         )}

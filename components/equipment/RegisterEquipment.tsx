@@ -12,7 +12,7 @@ const INITIAL_FORM: RegistrationForm = {
   ownerName: '', phone: '', lat: 0, lng: 0, fullAddress: '', village: '', pincode: '',
   equipmentName: '', category: '', brand: '', model: '', horsepower: '', year: '', condition: '',
   coverPhoto: '', additionalPhotos: [], pricePerHour: '', pricePerDay: '', deposit: '',
-  fuelIncluded: false, operatorIncluded: false, minRental: '', workingRadius: 20, description: '',
+  fuelIncluded: false, operatorIncluded: false, minRental: '', availability: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'], workingRadius: 20, description: '',
 };
 
 const RegisterEquipment: React.FC = () => {
@@ -24,6 +24,15 @@ const RegisterEquipment: React.FC = () => {
 
   const update = <K extends keyof RegistrationForm>(key: K, val: RegistrationForm[K]) => {
     setForm((prev) => ({ ...prev, [key]: val }));
+  };
+
+  const toggleDay = (day: string) => {
+    setForm((prev) => ({
+      ...prev,
+      availability: prev.availability.includes(day)
+        ? prev.availability.filter((d) => d !== day)
+        : [...prev.availability, day],
+    }));
   };
 
   const detectLocation = () => {
@@ -181,12 +190,25 @@ const RegisterEquipment: React.FC = () => {
         <SectionHeader icon={<Calendar size={18} />} title="Availability & Radius" color="bg-teal-50 text-teal-600" />
         <div className="px-6 pb-6">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
-            {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((d) => (
-              <button key={d} className="tap-target bg-gray-50 border border-gray-200 rounded-xl text-xs font-semibold text-gray-600 hover:bg-brand-50 hover:border-brand-300 hover:text-brand-700 transition-all">
-                {d}
+            {[
+              ['Mon', 'monday'], ['Tue', 'tuesday'], ['Wed', 'wednesday'], ['Thu', 'thursday'],
+              ['Fri', 'friday'], ['Sat', 'saturday'], ['Sun', 'sunday'],
+            ].map(([label, day]) => (
+              <button
+                key={day}
+                type="button"
+                onClick={() => toggleDay(day)}
+                className={`tap-target rounded-xl text-xs font-semibold transition-all border ${
+                  form.availability.includes(day)
+                    ? 'bg-brand-600 text-white border-brand-600 shadow-sm'
+                    : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-brand-50 hover:border-brand-300 hover:text-brand-700'
+                }`}
+              >
+                {label}
               </button>
             ))}
           </div>
+          <p className="text-[11px] text-gray-400 mb-4">Tap the days this equipment is available for rent.</p>
           <label className="block text-xs font-semibold text-gray-500 uppercase mb-1.5">Working Radius: {form.workingRadius} km</label>
           <input
             type="range"
@@ -206,7 +228,7 @@ const RegisterEquipment: React.FC = () => {
         <div className="px-6 pb-6 sticky bottom-0 bg-white/80 backdrop-blur-sm pt-2">
           <button
             onClick={handleSubmit}
-            disabled={loading || !form.ownerName || !form.phone || !form.equipmentName || !form.category || !form.pricePerDay || !form.condition || form.lat === 0}
+            disabled={loading || !form.ownerName || !form.phone || !form.equipmentName || !form.category || !form.pricePerDay || !form.condition || form.lat === 0 || form.availability.length === 0}
             className="w-full py-3.5 bg-brand-600 text-white rounded-xl font-semibold text-sm hover:bg-brand-700 disabled:bg-brand-400 transition-all shadow-sm shadow-brand-200 active:scale-[0.98] flex items-center justify-center gap-2"
           >
             {loading ? <><Loader2 size={16} className="animate-spin" /> Registering...</> : 'Register Equipment'}

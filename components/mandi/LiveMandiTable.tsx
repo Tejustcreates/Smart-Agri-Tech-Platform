@@ -23,6 +23,7 @@ const LiveMandiTable: React.FC = () => {
       if (filters.state && p.state !== filters.state) return false;
       if (filters.district && !p.district.toLowerCase().includes(filters.district.toLowerCase())) return false;
       if (filters.crop && p.crop !== filters.crop) return false;
+      if (filters.date && p.priceDate && p.priceDate !== filters.date) return false;
       return true;
     });
   }, [prices, filters]);

@@ -118,6 +118,8 @@ const MOCK_LISTINGS: EquipmentListing[] = [
   },
 ];
 
+const CUSTOM_LISTINGS: EquipmentListing[] = [];
+
 // --- Haversine Distance ---
 export function haversineDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
   const R = 6371;
@@ -178,7 +180,13 @@ function computeMatch(
 // --- Public API ---
 export async function searchEquipment(filters: SearchFilters): Promise<EquipmentListing[]> {
   await new Promise((r) => setTimeout(r, 700));
-  const results = MOCK_LISTINGS
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+  const todayName = today.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+  const tomorrowName = tomorrow.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+
+  const results = [...MOCK_LISTINGS, ...CUSTOM_LISTINGS]
     .map((l) => {
       const d = haversineDistance(filters.lat, filters.lng, l.lat, l.lng);
       return { ...l, distance: Math.round(d * 10) / 10, travelTime: estimateTravelTime(d) };
@@ -186,9 +194,14 @@ export async function searchEquipment(filters: SearchFilters): Promise<Equipment
     .filter((l) => l.distance <= filters.radius)
     .filter((l) => !filters.category || l.category === filters.category)
     .filter((l) => filters.maxBudget <= 0 || l.pricePerDay <= filters.maxBudget)
+    .filter((l) => {
+      if (filters.availability === 'today') return l.availability.includes(todayName);
+      if (filters.availability === 'tomorrow') return l.availability.includes(tomorrowName);
+      if (filters.availability === 'this-week') return l.availability.length > 0;
+      return true;
+    })
     .map((l) => {
-      const today = new Date().toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
-      const availScore = l.availability.includes(today) ? 7 : Math.min(7, l.availability.length);
+      const availScore = l.availability.includes(todayName) ? 7 : Math.min(7, l.availability.length);
       return { ...l, matchScore: computeMatch(l.distance, l, filters, availScore) };
     })
     .sort((a, b) => a.distance - b.distance);
@@ -197,10 +210,51 @@ export async function searchEquipment(filters: SearchFilters): Promise<Equipment
 
 export async function getListingDetails(id: string): Promise<EquipmentListing | undefined> {
   await new Promise((r) => setTimeout(r, 300));
-  return MOCK_LISTINGS.find((l) => l.id === id);
+  return [...MOCK_LISTINGS, ...CUSTOM_LISTINGS].find((l) => l.id === id);
 }
 
-export async function registerEquipment(_form: RegistrationForm): Promise<{ success: boolean; id: string }> {
+export async function registerEquipment(form: RegistrationForm): Promise<{ success: boolean; id: string }> {
   await new Promise((r) => setTimeout(r, 1200));
-  return { success: true, id: `eq-new-${Date.now()}` };
+
+  const id = `eq-new-${Date.now()}`;
+  const pricePerDay = Number(form.pricePerDay) || 0;
+  const pricePerHour = Number(form.pricePerHour) || Math.round(pricePerDay / 8) || 0;
+  const image = form.coverPhoto || IMAGES[CUSTOM_LISTINGS.length % IMAGES.length];
+
+  CUSTOM_LISTINGS.unshift({
+    id,
+    name: form.equipmentName,
+    category: (form.category || 'Others') as EquipmentListing['category'],
+    brand: form.brand || 'Unbranded',
+    model: form.model || '',
+    horsepower: Number(form.horsepower) || 0,
+    year: Number(form.year) || new Date().getFullYear(),
+    condition: (form.condition || 'Good') as EquipmentListing['condition'],
+    image,
+    images: [image, ...(form.additionalPhotos || [])],
+    pricePerDay,
+    pricePerHour,
+    deposit: Number(form.deposit) || 0,
+    fuelIncluded: form.fuelIncluded,
+    operatorIncluded: form.operatorIncluded,
+    minRental: form.minRental || '4 hours',
+    availability: form.availability.length > 0 ? form.availability : ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
+    ownerName: form.ownerName,
+    ownerPhone: form.phone,
+    village: form.village || 'Your location',
+    lat: form.lat,
+    lng: form.lng,
+    distance: 0,
+    travelTime: '~10 min',
+    rating: 0,
+    reviewCount: 0,
+    verified: false,
+    featured: false,
+    recentlyAdded: true,
+    lowPrice: pricePerDay > 0 && pricePerDay <= 2000,
+    matchScore: 0,
+    description: form.description || `${form.brand || ''} ${form.equipmentName} available for rent in ${form.village || 'your area'}.`.trim(),
+  });
+
+  return { success: true, id };
 }

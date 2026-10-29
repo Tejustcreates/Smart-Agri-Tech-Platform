@@ -35,7 +35,7 @@ const BestRecommendation: React.FC = () => {
     try {
       const qty = Number(input.quantity);
       const tc = Number(input.transportCost) || 200;
-      const recs = await getRecommendation(input.crop, qty, tc);
+      const recs = await getRecommendation(input.crop, qty, tc, input.location || 'Pune');
       setResults(recs);
     } finally {
       setLoading(false);
@@ -212,6 +212,14 @@ const BestRecommendation: React.FC = () => {
               </div>
             </motion.div>
           ))}
+        </div>
+      )}
+
+      {searched && !loading && results.length === 0 && (
+        <div className="text-center py-16">
+          <Truck size={36} className="text-gray-300 mx-auto mb-3" />
+          <p className="text-gray-500 text-sm">No mandis found within your transport budget.</p>
+          <p className="text-gray-400 text-xs mt-1">Increase the budget or try a different crop/location.</p>
         </div>
       )}
 

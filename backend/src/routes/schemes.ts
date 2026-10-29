@@ -106,6 +106,106 @@ const GOVT_SCHEMES: SchemeData[] = [
   },
 ];
 
+export interface MatchableUser {
+  farmerCategory?: string | null;
+  landholdingSize?: number | null;
+  state?: string | null;
+  irrigationType?: string | null;
+  dateOfBirth?: Date | string | null;
+  interests?: string[] | null;
+}
+
+export interface SchemeMatchResult {
+  id: string;
+  name: string;
+  description: string;
+  benefits: string;
+  requiredDocuments: string;
+  applicationLink: string;
+  matchScore: number;
+  matchReasons: string[];
+}
+
+export function matchSchemesForUser(user: MatchableUser): SchemeMatchResult[] {
+  const age = user.dateOfBirth
+    ? Math.floor((Date.now() - new Date(user.dateOfBirth).getTime()) / (365.25 * 24 * 60 * 60 * 1000))
+    : null;
+
+  const matched = GOVT_SCHEMES.map(scheme => {
+    const eligibility = scheme.eligibility;
+    let score = 0;
+    let totalRules = 0;
+    const reasons: string[] = [];
+
+    if (eligibility.farmerCategory) {
+      totalRules++;
+      if (user.farmerCategory && eligibility.farmerCategory.includes(user.farmerCategory)) {
+        score++;
+        reasons.push(`Eligible for ${user.farmerCategory.toLowerCase()} farmers`);
+      }
+    }
+
+    if (eligibility.landholdingMax && user.landholdingSize) {
+      totalRules++;
+      if (user.landholdingSize <= eligibility.landholdingMax) {
+        score++;
+        reasons.push(`Landholding ${user.landholdingSize} acres ≤ ${eligibility.landholdingMax} acres limit`);
+      }
+    }
+
+    if (scheme.state && user.state) {
+      totalRules++;
+      if (scheme.state === user.state) {
+        score++;
+        reasons.push(`Available in ${user.state}`);
+      }
+    }
+
+    if (eligibility.hasIrrigation === false && user.irrigationType) {
+      totalRules++;
+      if (user.irrigationType.toLowerCase() === 'rainfed') {
+        score++;
+        reasons.push('Prioritised for rainfed / unirrigated farms');
+      }
+    }
+
+    if ((eligibility.ageMin || eligibility.ageMax) && age !== null) {
+      totalRules++;
+      const meetsMin = !eligibility.ageMin || age >= eligibility.ageMin;
+      const meetsMax = !eligibility.ageMax || age <= eligibility.ageMax;
+      if (meetsMin && meetsMax) {
+        score++;
+        reasons.push(`Age ${age} is within the ${eligibility.ageMin}-${eligibility.ageMax} year window`);
+      }
+    }
+
+    if (eligibility.interestIn && user.interests?.length) {
+      totalRules++;
+      if (user.interests.some((interest) => interest.toLowerCase().includes(eligibility.interestIn.toLowerCase()))) {
+        score++;
+        reasons.push(`Matches your interest in ${eligibility.interestIn}`);
+      }
+    }
+
+    if (totalRules === 0) score = 0.5;
+
+    const matchScore = totalRules > 0 ? Math.round((score / totalRules) * 100) : 50;
+
+    return {
+      id: scheme.name.toLowerCase().replace(/[^a-z0-9]/g, '-'),
+      name: scheme.name,
+      description: scheme.description,
+      benefits: scheme.benefits,
+      requiredDocuments: scheme.requiredDocuments,
+      applicationLink: scheme.applicationLink,
+      matchScore,
+      matchReasons: reasons.length > 0 ? reasons : ['General eligibility — check details for specific requirements'],
+    };
+  });
+
+  return matched.sort((a, b) => b.matchScore - a.matchScore);
+}
+
 // GET /api/schemes — list all active schemes
 router.get('/', async (_req, res: Response) => {
   const dbSchemes = await prisma.governmentScheme.findMany({
@@ -140,58 +240,7 @@ router.get('/match', authenticate, async (req: AuthRequest, res: Response) => {
     return;
   }
 
-  const matched = GOVT_SCHEMES.map(scheme => {
-    const eligibility = scheme.eligibility;
-    let score = 0;
-    let totalRules = 0;
-    const reasons: string[] = [];
-
-    // Check farmer category
-    if (eligibility.farmerCategory) {
-      totalRules++;
-      if (eligibility.farmerCategory.includes(user.farmerCategory)) {
-        score++;
-        reasons.push(`Eligible for ${user.farmerCategory?.toLowerCase()} farmers`);
-      }
-    }
-
-    // Check landholding
-    if (eligibility.landholdingMax && user.landholdingSize) {
-      totalRules++;
-      if (user.landholdingSize <= eligibility.landholdingMax) {
-        score++;
-        reasons.push(`Landholding ${user.landholdingSize} acres ≤ ${eligibility.landholdingMax} acres limit`);
-      }
-    }
-
-    // Check state
-    if (scheme.state && user.state) {
-      totalRules++;
-      if (scheme.state === user.state) {
-        score++;
-        reasons.push(`Available in ${user.state}`);
-      }
-    }
-
-    // Base relevance (everyone is somewhat eligible for general schemes)
-    if (totalRules === 0) score = 0.5;
-
-    const matchScore = totalRules > 0 ? Math.round((score / totalRules) * 100) : 50;
-
-    return {
-      id: scheme.name.toLowerCase().replace(/[^a-z0-9]/g, '-'),
-      name: scheme.name,
-      description: scheme.description,
-      benefits: scheme.benefits,
-      requiredDocuments: scheme.requiredDocuments,
-      applicationLink: scheme.applicationLink,
-      matchScore,
-      matchReasons: reasons.length > 0 ? reasons : ['General eligibility — check details for specific requirements'],
-    };
-  });
-
-  matched.sort((a, b) => b.matchScore - a.matchScore);
-
+  const matched = matchSchemesForUser(user);
   res.json({ schemes: matched });
 });
 

@@ -42,7 +42,13 @@ const PricePrediction: React.FC = () => {
     if (!input.crop || !input.currentPrice) return;
     setLoading(true);
     try {
-      const forecast = await getPricePrediction(input.crop, Number(input.currentPrice));
+      const forecast = await getPricePrediction(input.crop, Number(input.currentPrice), {
+        state: input.state,
+        district: input.district,
+        season: input.season,
+        month: input.month,
+        rainfall: input.rainfall,
+      });
       setResult(forecast);
     } finally {
       setLoading(false);
@@ -176,7 +182,7 @@ const PricePrediction: React.FC = () => {
               />
             </div>
             <p className="text-[11px] text-gray-400 mt-2">
-              Prediction is based on historical price patterns and seasonal trends. Backend ML model (XGBoost) will be integrated later for higher accuracy.
+              Prediction uses current price, season, month, rainfall, and location to estimate a deterministic short-term trend. It is a planning aid, not a guarantee of market prices.
             </p>
           </div>
 
@@ -191,7 +197,7 @@ const PricePrediction: React.FC = () => {
         <div className="text-center py-16">
           <BarChart3 size={40} className="text-gray-300 mx-auto mb-3" />
           <p className="text-gray-500 text-sm">Enter crop details and current price to get a prediction.</p>
-          <p className="text-gray-400 text-xs mt-1">Currently using placeholder logic. XGBoost model will replace this later.</p>
+          <p className="text-gray-400 text-xs mt-1">Add season, month, rainfall, and location for a more informed forecast.</p>
         </div>
       )}
     </div>

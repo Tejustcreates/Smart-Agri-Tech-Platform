@@ -34,6 +34,7 @@ export interface HourlyForecast {
   cloudCover: number;
   windSpeed: number;
   uvIndex: number;
+  pressureMsl: number;
   isDay: boolean;
 }
 

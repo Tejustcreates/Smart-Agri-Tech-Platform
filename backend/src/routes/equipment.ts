@@ -114,6 +114,20 @@ router.post('/:id/book', authenticate, validate(z.object({
     },
   });
 
+  const farmer = await prisma.user.findUnique({
+    where: { id: req.user!.id },
+    select: { name: true, mobileNumber: true },
+  });
+
+  await prisma.notification.create({
+    data: {
+      userId: equipment.ownerId,
+      type: 'EQUIPMENT_BOOKING',
+      title: 'New rental request',
+      body: `${farmer?.name ?? 'A farmer'} requested ${equipment.equipmentName} from ${req.body.startDate.toLocaleDateString('en-IN')} to ${req.body.endDate.toLocaleDateString('en-IN')}.`,
+    },
+  });
+
   res.status(201).json({ booking, message: 'Rental request submitted. Waiting for owner confirmation.' });
 });
 

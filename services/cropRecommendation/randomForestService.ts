@@ -101,232 +101,191 @@ const CROP_PROFILES: CropProfile[] = [
   },
 ];
 
-// --- Random Forest Implementation ---
+const FEATURE_WEIGHTS = {
+  nitrogen: 0.10,
+  phosphorus: 0.08,
+  potassium: 0.08,
+  ph: 0.10,
+  temperature: 0.15,
+  rainfall: 0.12,
+  humidity: 0.07,
+  moisture: 0.07,
+  season: 0.15,
+  soil: 0.08,
+};
 
-interface TreeNode {
-  featureIndex: number;
-  threshold: number;
-  left: TreeNode | PredictionLeaf | null;
-  right: TreeNode | PredictionLeaf | null;
-  isLeaf: boolean;
+const FEATURE_LABELS: Record<string, string> = {
+  nitrogen: 'Nitrogen',
+  phosphorus: 'Phosphorus',
+  potassium: 'Potassium',
+  ph: 'pH',
+  temperature: 'Temperature',
+  rainfall: 'Rainfall',
+  humidity: 'Humidity',
+  moisture: 'Moisture',
+  season: 'Season',
+  soil: 'Soil Type',
+};
+
+let modelTrained = false;
+
+function rangeScore(value: number, [min, max]: [number, number]): number {
+  const span = Math.max(max - min, 1);
+  const midpoint = (min + max) / 2;
+  if (value >= min && value <= max) {
+    const distanceFromMid = Math.abs(value - midpoint) / (span / 2);
+    return Math.round(100 - distanceFromMid * 8);
+  }
+  const distance = value < min ? min - value : value - max;
+  const penalty = 8 + (distance / (span * 0.5)) * 92;
+  return Math.max(0, Math.round(100 - penalty));
 }
 
-interface PredictionLeaf {
-  isLeaf: true;
-  prediction: number;
-  probabilities: number[];
+function parseYield(yieldPerAcre: string): { low: number; high: number; unit: string } {
+  const match = yieldPerAcre.match(/([\d.]+)\s*[–-]\s*([\d.]+)\s*(.+)/);
+  if (!match) return { low: 0, high: 0, unit: 'tons' };
+  return { low: parseFloat(match[1]), high: parseFloat(match[2]), unit: match[3].trim() };
 }
 
-type DecisionNode = TreeNode | PredictionLeaf;
-
-function gaussRandom(): number {
-  let u = 0, v = 0;
-  while (u === 0) u = Math.random();
-  while (v === 0) v = Math.random();
-  return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+function formatNumber(value: number): string {
+  if (value >= 10) return String(Math.round(value));
+  return String(Math.round(value * 10) / 10);
 }
 
-function buildTree(features: number[][], labels: number[], featureIndices: number[], depth: number, maxDepth: number): DecisionNode {
-  const numClasses = new Set(labels).size;
-  const nodeSize = labels.length;
+function computeScores(crop: CropProfile, sensor: SensorPayload, season: string, soilType: string) {
+  const featureScores: Record<string, number> = {
+    nitrogen: rangeScore(sensor.nitrogen, crop.idealN),
+    phosphorus: rangeScore(sensor.phosphorus, crop.idealP),
+    potassium: rangeScore(sensor.potassium, crop.idealK),
+    ph: rangeScore(sensor.ph, crop.idealPh),
+    temperature: rangeScore(sensor.temperature, crop.idealTemp),
+    rainfall: rangeScore(sensor.rainfall, crop.idealRain),
+    humidity: rangeScore(sensor.humidity, crop.idealHumidity),
+    moisture: rangeScore(sensor.moisture, crop.idealMoisture),
+    season: crop.seasons.includes(season) ? 100 : 25,
+    soil: crop.soils.includes(soilType) ? 100 : 40,
+  };
 
-  if (depth >= maxDepth || nodeSize <= 3 || numClasses <= 1) {
-    const probs = new Array(CROP_PROFILES.length).fill(0);
-    labels.forEach(l => { probs[l]++; });
-    const total = labels.length;
-    const normalized = probs.map(p => p / total);
-    const prediction = labels.length > 0 ? labels.reduce((a, b) => {
-      const countA = labels.filter(x => x === a).length;
-      const countB = labels.filter(x => x === b).length;
-      return countA >= countB ? a : b;
-    }) : 0;
-    return { isLeaf: true, prediction, probabilities: normalized };
-  }
+  const environmentalScore = (Object.keys(FEATURE_WEIGHTS) as (keyof typeof FEATURE_WEIGHTS)[])
+    .filter((key) => key !== 'season' && key !== 'soil')
+    .reduce((sum, key) => sum + featureScores[key] * FEATURE_WEIGHTS[key], 0);
 
-  let bestFeature = 0;
-  let bestThreshold = 0;
-  let bestGini = Infinity;
+  const weightedScore = (Object.keys(FEATURE_WEIGHTS) as (keyof typeof FEATURE_WEIGHTS)[])
+    .reduce((sum, key) => sum + featureScores[key] * FEATURE_WEIGHTS[key], 0);
 
-  const sampleSize = Math.max(1, Math.floor(Math.sqrt(featureIndices.length)));
-  const shuffledFeatures = [...featureIndices].sort(() => Math.random() - 0.5).slice(0, sampleSize);
+  let confidence = weightedScore * (0.4 + 0.6 * (environmentalScore / 77));
 
-  for (const fi of shuffledFeatures) {
-    const values = features.map(f => f[fi]).sort((a, b) => a - b);
-    const uniqueValues = [...new Set(values)];
-    const thresholds = uniqueValues.slice(0, Math.min(10, uniqueValues.length));
-
-    for (const t of thresholds) {
-      const leftLabels: number[] = [];
-      const rightLabels: number[] = [];
-      for (let i = 0; i < nodeSize; i++) {
-        if (features[i][fi] <= t) leftLabels.push(labels[i]);
-        else rightLabels.push(labels[i]);
-      }
-      if (leftLabels.length === 0 || rightLabels.length === 0) continue;
-
-      const giniLeft = 1 - leftLabels.reduce((s, l) => s + Math.pow(leftLabels.filter(x => x === l).length / leftLabels.length, 2), 0);
-      const giniRight = 1 - rightLabels.reduce((s, l) => s + Math.pow(rightLabels.filter(x => x === l).length / rightLabels.length, 2), 0);
-      const weightedGini = (leftLabels.length * giniLeft + rightLabels.length * giniRight) / nodeSize;
-
-      if (weightedGini < bestGini) {
-        bestGini = weightedGini;
-        bestFeature = fi;
-        bestThreshold = t;
-      }
-    }
-  }
-
-  if (bestGini === Infinity) {
-    const probs = new Array(CROP_PROFILES.length).fill(0);
-    labels.forEach(l => { probs[l]++; });
-    const total = labels.length;
-    return { isLeaf: true, prediction: labels[0] ?? 0, probabilities: probs.map(p => p / total) };
-  }
-
-  const leftFeatures: number[][] = [];
-  const leftLabelsArr: number[] = [];
-  const rightFeatures: number[][] = [];
-  const rightLabelsArr: number[] = [];
-
-  for (let i = 0; i < nodeSize; i++) {
-    if (features[i][bestFeature] <= bestThreshold) {
-      leftFeatures.push(features[i]);
-      leftLabelsArr.push(labels[i]);
-    } else {
-      rightFeatures.push(features[i]);
-      rightLabelsArr.push(labels[i]);
-    }
-  }
+  if (featureScores.season < 100) confidence = Math.min(confidence, 55);
+  if (featureScores.soil < 100) confidence = Math.min(confidence, 78);
+  if (environmentalScore < 30) confidence = Math.min(confidence, 35);
 
   return {
-    isLeaf: false,
-    featureIndex: bestFeature,
-    threshold: bestThreshold,
-    left: buildTree(leftFeatures, leftLabelsArr, featureIndices, depth + 1, maxDepth),
-    right: buildTree(rightFeatures, rightLabelsArr, featureIndices, depth + 1, maxDepth),
+    featureScores,
+    environmentalScore,
+    confidence: Math.max(2, Math.min(98, Math.round(confidence))),
   };
 }
 
-function predictTree(tree: DecisionNode, sample: number[]): PredictionLeaf {
-  const node = tree as TreeNode;
-  if (node.isLeaf) return node as unknown as PredictionLeaf;
-  const leftBranch = node.left as DecisionNode;
-  const rightBranch = node.right as DecisionNode;
-  if (sample[node.featureIndex] <= node.threshold) {
-    return predictTree(leftBranch, sample);
-  }
-  return predictTree(rightBranch, sample);
-}
+function generateReason(crop: CropProfile, sensor: SensorPayload, featureScores: Record<string, number>): string {
+  const matches: string[] = [];
+  const issues: string[] = [];
 
-// --- Feature Engineering ---
+  const values: Record<string, number> = {
+    nitrogen: sensor.nitrogen,
+    phosphorus: sensor.phosphorus,
+    potassium: sensor.potassium,
+    ph: sensor.ph,
+    temperature: sensor.temperature,
+    rainfall: sensor.rainfall,
+    humidity: sensor.humidity,
+    moisture: sensor.moisture,
+  };
+  const idealRanges: Record<string, [number, number]> = {
+    nitrogen: crop.idealN,
+    phosphorus: crop.idealP,
+    potassium: crop.idealK,
+    ph: crop.idealPh,
+    temperature: crop.idealTemp,
+    rainfall: crop.idealRain,
+    humidity: crop.idealHumidity,
+    moisture: crop.idealMoisture,
+  };
 
-function normalizeFeature(value: number, min: number, max: number): number {
-  return Math.max(0, Math.min(1, (value - min) / (max - min)));
-}
-
-function buildFeatureVector(sensor: SensorPayload, season: string, soilType: string): number[] {
-  const seasonMap: Record<string, number> = { 'Kharif': 0, 'Rabi': 1, 'Zaid': 2 };
-  const soilMap: Record<string, number> = { 'Sandy': 0, 'Loamy': 1, 'Clay': 2, 'Silty': 3, 'Black': 4, 'Red': 5 };
-
-  return [
-    normalizeFeature(sensor.nitrogen, 0, 100),
-    normalizeFeature(sensor.phosphorus, 0, 60),
-    normalizeFeature(sensor.potassium, 0, 60),
-    normalizeFeature(sensor.ph, 4, 9),
-    normalizeFeature(sensor.temperature, 5, 45),
-    normalizeFeature(sensor.rainfall, 0, 300),
-    normalizeFeature(sensor.humidity, 20, 100),
-    normalizeFeature(sensor.moisture, 0, 100),
-    (seasonMap[season] ?? 0) / 2,
-    (soilMap[soilType] ?? 1) / 5,
-  ];
-}
-
-// --- Training Data Generation ---
-
-function generateTrainingData(): { features: number[][]; labels: number[] } {
-  const features: number[][] = [];
-  const labels: number[] = [];
-
-  CROP_PROFILES.forEach((crop, cropIdx) => {
-    for (let i = 0; i < 60; i++) {
-      const sensor: SensorPayload = {
-        nitrogen: crop.idealN[0] + Math.random() * (crop.idealN[1] - crop.idealN[0]),
-        phosphorus: crop.idealP[0] + Math.random() * (crop.idealP[1] - crop.idealP[0]),
-        potassium: crop.idealK[0] + Math.random() * (crop.idealK[1] - crop.idealK[0]),
-        moisture: crop.idealMoisture[0] + Math.random() * (crop.idealMoisture[1] - crop.idealMoisture[0]),
-        temperature: crop.idealTemp[0] + Math.random() * (crop.idealTemp[1] - crop.idealTemp[0]),
-        humidity: crop.idealHumidity[0] + Math.random() * (crop.idealHumidity[1] - crop.idealHumidity[0]),
-        rainfall: crop.idealRain[0] + Math.random() * (crop.idealRain[1] - crop.idealRain[0]),
-        ph: crop.idealPh[0] + Math.random() * (crop.idealPh[1] - crop.idealPh[0]),
-        light: 500 + Math.random() * 600,
-        ec: 0.5 + Math.random() * 1.5,
-        timestamp: Date.now(),
-      };
-      const season = crop.seasons[Math.floor(Math.random() * crop.seasons.length)];
-      const soil = crop.soils[Math.floor(Math.random() * crop.soils.length)];
-      features.push(buildFeatureVector(sensor, season, soil));
-      labels.push(cropIdx);
+  Object.keys(values).forEach((key) => {
+    if (featureScores[key] >= 90) matches.push(FEATURE_LABELS[key].toLowerCase());
+    else if (featureScores[key] < 50) {
+      const ideal = idealRanges[key];
+      issues.push(`${FEATURE_LABELS[key].toLowerCase()} ${values[key] < ideal[0] ? 'low' : 'high'}`);
     }
   });
 
-  return { features, labels };
+  if (featureScores.season === 100) matches.push('season');
+  else issues.push('season');
+  if (featureScores.soil === 100) matches.push('soil type');
+  else issues.push('soil type');
+
+  if (matches.length === 0 && issues.length === 0) return 'General suitability based on soil and climate.';
+  const parts: string[] = [];
+  if (matches.length > 0) parts.push(`Matches: ${matches.slice(0, 4).join(', ')}`);
+  if (issues.length > 0) parts.push(`Needs attention: ${issues.slice(0, 4).join(', ')}`);
+  return parts.join(' · ');
 }
 
-// --- Model State ---
+function buildFeatureImportance(featureScores: Record<string, number>): Record<string, number> {
+  const raw: Record<string, number> = {};
+  (Object.keys(FEATURE_WEIGHTS) as (keyof typeof FEATURE_WEIGHTS)[]).forEach((key) => {
+    raw[FEATURE_LABELS[key]] = featureScores[key] * FEATURE_WEIGHTS[key];
+  });
+  const total = Object.values(raw).reduce((sum, value) => sum + value, 0) || 1;
+  const importance: Record<string, number> = {};
+  Object.keys(raw).forEach((key) => {
+    importance[key] = Math.round((raw[key] / total) * 1000) / 10;
+  });
+  return importance;
+}
 
-let trainedTrees: DecisionNode[] = [];
-let modelTrained = false;
-const NUM_TREES = 25;
-const MAX_DEPTH = 8;
+function buildRadarData(sensor: SensorPayload, crop: CropProfile): { feature: string; actual: number; ideal: number }[] {
+  const scale = (value: number, min: number, max: number) =>
+    Math.max(0, Math.min(100, Math.round(((value - min) / (max - min)) * 100)));
+  const ideal = (value: number, min: number, max: number) => scale(value, min, max);
+
+  return [
+    { feature: 'N', actual: scale(sensor.nitrogen, 0, 100), ideal: ideal((crop.idealN[0] + crop.idealN[1]) / 2, 0, 100) },
+    { feature: 'P', actual: scale(sensor.phosphorus, 0, 60), ideal: ideal((crop.idealP[0] + crop.idealP[1]) / 2, 0, 60) },
+    { feature: 'K', actual: scale(sensor.potassium, 0, 60), ideal: ideal((crop.idealK[0] + crop.idealK[1]) / 2, 0, 60) },
+    { feature: 'pH', actual: scale(sensor.ph, 4, 9), ideal: ideal((crop.idealPh[0] + crop.idealPh[1]) / 2, 4, 9) },
+    { feature: 'Temp', actual: scale(sensor.temperature, 5, 45), ideal: ideal((crop.idealTemp[0] + crop.idealTemp[1]) / 2, 5, 45) },
+    { feature: 'Rain', actual: scale(sensor.rainfall, 0, 300), ideal: ideal((crop.idealRain[0] + crop.idealRain[1]) / 2, 0, 300) },
+    { feature: 'Humidity', actual: scale(sensor.humidity, 20, 100), ideal: ideal((crop.idealHumidity[0] + crop.idealHumidity[1]) / 2, 20, 100) },
+    { feature: 'Moisture', actual: scale(sensor.moisture, 0, 100), ideal: ideal((crop.idealMoisture[0] + crop.idealMoisture[1]) / 2, 0, 100) },
+  ];
+}
 
 export function trainModel(): void {
-  if (modelTrained) return;
-  const { features, labels } = generateTrainingData();
-  const numFeatures = features[0]?.length ?? 0;
-  const featureIndices = Array.from({ length: numFeatures }, (_, i) => i);
-
-  for (let t = 0; t < NUM_TREES; t++) {
-    const sampleSize = features.length;
-    const bagFeatures: number[][] = [];
-    const bagLabels: number[] = [];
-    for (let i = 0; i < sampleSize; i++) {
-      const idx = Math.floor(Math.random() * sampleSize);
-      bagFeatures.push(features[idx]);
-      bagLabels.push(labels[idx]);
-    }
-    trainedTrees.push(buildTree(bagFeatures, bagLabels, featureIndices, 0, MAX_DEPTH));
-  }
   modelTrained = true;
 }
 
 export function predict(sensor: SensorPayload, season: string, soilType: string): PredictionResult {
   if (!modelTrained) trainModel();
 
-  const featureVector = buildFeatureVector(sensor, season, soilType);
-  const voteCounts = new Array(CROP_PROFILES.length).fill(0);
-  const probSums = new Array(CROP_PROFILES.length).fill(0);
+  const scored = CROP_PROFILES.map((crop) => ({
+    crop,
+    ...computeScores(crop, sensor, season, soilType),
+  })).sort((a, b) => b.confidence - a.confidence);
 
-  for (const tree of trainedTrees) {
-    const leaf = predictTree(tree, featureVector);
-    voteCounts[leaf.prediction]++;
-    leaf.probabilities.forEach((p, i) => { probSums[i] += p; });
-  }
-
-  const totalVotes = trainedTrees.length;
-  const avgProbs = probSums.map(p => p / totalVotes);
-
-  const results: CropPrediction[] = avgProbs.map((prob, idx) => {
-    const crop = CROP_PROFILES[idx];
-    const confidence = Math.round(prob * 100 * (0.85 + Math.random() * 0.15));
-    const suitabilityScore = Math.min(99, Math.max(10, confidence));
-
+  const top = scored[0];
+  const topCrop = top.crop;
+  const predictions: CropPrediction[] = scored.slice(0, 5).map(({ crop, confidence, featureScores }) => {
+    const yieldInfo = parseYield(crop.yieldPerAcre);
+    const factor = 0.6 + 0.35 * (confidence / 100);
     return {
       crop: crop.name,
-      confidence: suitabilityScore,
+      confidence,
       expectedYield: crop.yieldPerAcre,
-      estimatedYield: crop.yieldPerAcre,
-      reason: generateReason(crop, sensor),
+      estimatedYield: `${formatNumber(yieldInfo.low * factor)}–${formatNumber(yieldInfo.high * factor)} ${yieldInfo.unit}/acre`,
+      yieldRange: [Math.round(yieldInfo.low * factor * 10) / 10, Math.round(yieldInfo.high * factor * 10) / 10],
+      yieldUnit: yieldInfo.unit,
+      reason: generateReason(crop, sensor, featureScores),
       suitableSeason: crop.seasons.join(', '),
       suitableSoil: crop.soils.join(', '),
       waterRequirement: crop.waterReq,
@@ -334,52 +293,18 @@ export function predict(sensor: SensorPayload, season: string, soilType: string)
       profitability: crop.profitability,
       difficultyLevel: crop.difficulty,
     };
-  }).sort((a, b) => b.confidence - a.confidence).slice(0, 5);
-
-  const featureImportance = computeFeatureImportance();
-  const npkBalance = {
-    nitrogen: Math.round(sensor.nitrogen / 100 * 100),
-    phosphorus: Math.round(sensor.phosphorus / 60 * 100),
-    potassium: Math.round(sensor.potassium / 60 * 100),
-  };
-  const radarData = buildRadarData(sensor);
-
-  return { predictions: results, featureImportance, npkBalance, radarData };
-}
-
-function generateReason(crop: CropProfile, sensor: SensorPayload): string {
-  const reasons: string[] = [];
-  if (sensor.nitrogen >= crop.idealN[0] && sensor.nitrogen <= crop.idealN[1]) reasons.push('N level ideal');
-  if (sensor.phosphorus >= crop.idealP[0] && sensor.phosphorus <= crop.idealP[1]) reasons.push('P suitable');
-  if (sensor.potassium >= crop.idealK[0] && sensor.potassium <= crop.idealK[1]) reasons.push('K optimal');
-  if (sensor.ph >= crop.idealPh[0] && sensor.ph <= crop.idealPh[1]) reasons.push('pH matches');
-  if (sensor.temperature >= crop.idealTemp[0] && sensor.temperature <= crop.idealTemp[1]) reasons.push('temp favorable');
-  if (sensor.rainfall >= crop.idealRain[0] && sensor.rainfall <= crop.idealRain[1]) reasons.push('rainfall adequate');
-  return reasons.length > 0 ? reasons.join(' · ') : 'General suitability based on soil & climate';
-}
-
-function computeFeatureImportance(): Record<string, number> {
-  const featureNames = ['Nitrogen', 'Phosphorus', 'Potassium', 'pH', 'Temperature', 'Rainfall', 'Humidity', 'Moisture', 'Season', 'Soil Type'];
-  const importance: Record<string, number> = {};
-  featureNames.forEach((name, i) => {
-    importance[name] = Math.round((15 + Math.random() * 25) * 10) / 10;
   });
-  const total = Object.values(importance).reduce((s, v) => s + v, 0);
-  Object.keys(importance).forEach(k => { importance[k] = Math.round(importance[k] / total * 100); });
-  return importance;
+
+  return {
+    predictions,
+    featureImportance: buildFeatureImportance(top.featureScores),
+    npkBalance: {
+      nitrogen: top.featureScores.nitrogen,
+      phosphorus: top.featureScores.phosphorus,
+      potassium: top.featureScores.potassium,
+    },
+    radarData: buildRadarData(sensor, topCrop),
+  };
 }
 
-function buildRadarData(sensor: SensorPayload): { feature: string; actual: number; ideal: number }[] {
-  return [
-    { feature: 'N', actual: Math.min(100, sensor.nitrogen), ideal: 55 },
-    { feature: 'P', actual: Math.min(100, sensor.phosphorus / 60 * 100), ideal: 50 },
-    { feature: 'K', actual: Math.min(100, sensor.potassium / 60 * 100), ideal: 50 },
-    { feature: 'pH', actual: Math.min(100, (sensor.ph - 4) / 5 * 100), ideal: 50 },
-    { feature: 'Temp', actual: Math.min(100, sensor.temperature / 45 * 100), ideal: 55 },
-    { feature: 'Rain', actual: Math.min(100, sensor.rainfall / 300 * 100), ideal: 45 },
-    { feature: 'Humidity', actual: sensor.humidity, ideal: 60 },
-    { feature: 'Moisture', actual: sensor.moisture, ideal: 55 },
-  ];
-}
-
-export { CROP_PROFILES, buildFeatureVector, generateTrainingData };
+export { CROP_PROFILES };
