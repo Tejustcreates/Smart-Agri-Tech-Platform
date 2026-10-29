@@ -79,7 +79,17 @@ router.post('/request-otp', validate(requestOtpSchema), async (req, res: Respons
     return;
   }
 
-  const { otp, otpHash } = await generateOtp(mobileNumber);
+  let otpHash: string;
+  try {
+    ({ otpHash } = await generateOtp(mobileNumber));
+  } catch (err: any) {
+    console.error('[OTP] SMS delivery failed:', err?.message || err);
+    res.status(502).json({
+      error: 'Unable to send OTP SMS right now. Please check the mobile number and try again.',
+      code: 'SMS_FAILED',
+    });
+    return;
+  }
 
   // Invalidate previous unverified OTPs for this number
   await prisma.otpRequest.updateMany({

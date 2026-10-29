@@ -98,7 +98,13 @@ const AuthStepsForm: React.FC<AuthStepsFormProps> = ({ flow, onLoginSuccess, onS
           <Button type="primary" htmlType="submit" block size="large" loading={flow.loading}>
             Verify OTP
           </Button>
-          <Button type="link" block onClick={flow.changeNumber} className="!text-brand-600 !font-medium">
+          <Button
+            type="link"
+            block
+            onClick={() => { flow.resendOtp().catch(() => {}); }}
+            loading={flow.loading}
+            className="!text-brand-600 !font-medium"
+          >
             Resend OTP
           </Button>
         </Form>

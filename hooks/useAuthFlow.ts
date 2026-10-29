@@ -53,6 +53,19 @@ export function useAuthFlow(initialMode: AuthMode = 'login') {
     }
   }, [mode, requestOtp]);
 
+  const resendOtp = useCallback(async () => {
+    setError('');
+    setLoading(true);
+    try {
+      await requestOtp(mobileNumber, mode === 'login' ? 'LOGIN' : 'SIGNUP');
+    } catch (err: any) {
+      setError(err.message || 'Failed to resend OTP');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, [mobileNumber, mode, requestOtp]);
+
   const verifyOtp = useCallback(async (otpValue: string) => {
     setError('');
     setLoading(true);
@@ -102,6 +115,6 @@ export function useAuthFlow(initialMode: AuthMode = 'login') {
 
   return {
     mode, step, mobileNumber, loading, error,
-    setMode, reset, sendOtp, verifyOtp, changeNumber, createAccount,
+    setMode, reset, sendOtp, resendOtp, verifyOtp, changeNumber, createAccount,
   };
 }

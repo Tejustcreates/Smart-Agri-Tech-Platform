@@ -1,9 +1,6 @@
 import bcrypt from 'bcryptjs';
 import { env } from '../config/env';
-
-// ─── MOCK OTP SERVICE ───────────────────────────────────────
-// In production, replace this with Twilio/MSG91 integration.
-// The OTP is logged to console for local development.
+import { sendOtpSms } from './sms';
 
 export interface OtpResult {
   otp: string;
@@ -19,11 +16,7 @@ export async function generateOtp(mobileNumber: string): Promise<OtpResult> {
   const otp = Array.from({ length }, () => Math.floor(Math.random() * 10)).join('');
   const otpHash = await bcrypt.hash(otp, 10);
 
-  // MOCK: In production, send SMS here
-  console.log(`\n╔══════════════════════════════════════════╗`);
-  console.log(`║  OTP for ${mobileNumber}: ${otp}`);
-  console.log(`║  (Mock SMS — in production, this goes via Twilio/MSG91)`);
-  console.log(`╚══════════════════════════════════════════╝\n`);
+  await sendOtpSms(mobileNumber, otp);
 
   return { otp, otpHash };
 }

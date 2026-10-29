@@ -1,4 +1,7 @@
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
+const configuredApiBase = import.meta.env.VITE_API_URL;
+const API_BASE = import.meta.env.DEV && (!configuredApiBase || /localhost|127\.0\.0\.1/.test(configuredApiBase))
+  ? '/api'
+  : (configuredApiBase || '/api');
 
 interface ApiOptions extends RequestInit {
   token?: string;

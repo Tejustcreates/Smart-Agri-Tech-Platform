@@ -15,4 +15,12 @@ export const env = {
   FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:3000',
   UPLOAD_DIR: process.env.UPLOAD_DIR || './uploads',
   MAX_FILE_SIZE: parseInt(process.env.MAX_FILE_SIZE || '10485760'),
+  // SMS / OTP delivery. Auto-detected from whichever provider credentials exist.
+  SMS_PROVIDER: process.env.SMS_PROVIDER || '',
+  FAST2SMS_API_KEY: process.env.FAST2SMS_API_KEY || '',
+  TWILIO_ACCOUNT_SID: process.env.TWILIO_ACCOUNT_SID || '',
+  TWILIO_AUTH_TOKEN: process.env.TWILIO_AUTH_TOKEN || '',
+  TWILIO_FROM_NUMBER: process.env.TWILIO_FROM_NUMBER || '',
+  MSG91_AUTH_KEY: process.env.MSG91_AUTH_KEY || '',
+  MSG91_TEMPLATE_ID: process.env.MSG91_TEMPLATE_ID || '',
 };
