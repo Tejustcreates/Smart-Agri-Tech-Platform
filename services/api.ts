@@ -18,34 +18,57 @@ class ApiClient {
     return localStorage.getItem('growsmart_access_token');
   }
 
-  private getFallbackBaseUrl(): string | null {
-    if (!import.meta.env.DEV || typeof window === 'undefined' || !this.baseUrl.startsWith('/')) {
-      return null;
+  private getApiCandidates(): string[] {
+    const candidates: string[] = [];
+    const add = (url?: string | null) => {
+      const cleaned = url?.replace(/\/$/, '');
+      if (cleaned && !candidates.includes(cleaned)) candidates.push(cleaned);
+    };
+
+    add(this.baseUrl);
+
+    if (typeof window !== 'undefined') {
+      const { hostname, protocol } = window.location;
+      if (hostname) {
+        add(`${protocol}//${hostname}:4000/api`);
+        if (protocol === 'http:') {
+          add('http://localhost:4000/api');
+          add('http://127.0.0.1:4000/api');
+        }
+      }
+
+      if (!this.baseUrl.startsWith('/') && /localhost|127\.0\.0\.1/.test(this.baseUrl) && !/localhost|127\.0\.0\.1/.test(hostname)) {
+        try {
+          const url = new URL(this.baseUrl);
+          url.hostname = hostname;
+          add(url.toString());
+        } catch {
+          // Ignore malformed configured URL.
+        }
+      }
     }
-    return `${window.location.protocol}//${window.location.hostname}:4000/api`;
+
+    return candidates;
   }
 
   private async fetchWithFallback(endpoint: string, options: RequestInit): Promise<Response> {
-    try {
-      const response = await fetch(`${this.baseUrl}${endpoint}`, options);
-      const contentType = response.headers.get('content-type') || '';
-      const isStaticMiss = (response.status === 404 || response.status === 405) && !contentType.includes('application/json');
+    let lastError: unknown;
 
-      if (!isStaticMiss) return response;
-    } catch {
-      // Fall through to the direct backend URL below.
+    for (const baseUrl of this.getApiCandidates()) {
+      try {
+        const response = await fetch(`${baseUrl}${endpoint}`, options);
+        const contentType = response.headers.get('content-type') || '';
+        const isStaticMiss = [404, 405, 500, 502, 503, 504].includes(response.status)
+          && !contentType.includes('application/json');
+
+        if (!isStaticMiss) return response;
+      } catch (err) {
+        lastError = err;
+      }
     }
 
-    const fallbackBase = this.getFallbackBaseUrl();
-    if (!fallbackBase) {
-      throw new Error('Unable to reach the server. Please check your connection and try again.');
-    }
-
-    try {
-      return await fetch(`${fallbackBase}${endpoint}`, options);
-    } catch {
-      throw new Error('Unable to reach the server. Please check your connection and try again.');
-    }
+    console.error('[API] Unable to reach backend', { endpoint, candidates: this.getApiCandidates(), lastError });
+    throw new Error('Unable to reach the server. Please check your connection and try again.');
   }
 
   private async request<T = any>(endpoint: string, options: ApiOptions = {}): Promise<T> {
