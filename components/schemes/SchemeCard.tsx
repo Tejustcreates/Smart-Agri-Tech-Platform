@@ -8,10 +8,11 @@ interface SchemeCardProps {
   rank: number;
 }
 
-const levelColor = {
+const levelColor: Record<string, string> = {
   Central: 'bg-blue-100 text-blue-700',
   State: 'bg-purple-100 text-purple-700',
 };
+const DEFAULT_LEVEL_COLOR = 'bg-gray-100 text-gray-700';
 
 const matchColor = (score: number) => {
   if (score >= 85) return 'bg-brand-600';
@@ -53,7 +54,7 @@ const SchemeCard: React.FC<SchemeCardProps> = ({ scheme, rank }) => {
               <p className="text-xs text-gray-400 mt-0.5 truncate">{scheme.ministry}</p>
             </div>
           </div>
-          <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold flex-shrink-0 ${levelColor[scheme.level]}`}>
+          <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold flex-shrink-0 ${levelColor[scheme.level] || DEFAULT_LEVEL_COLOR}`}>
             {scheme.level}
           </span>
         </div>

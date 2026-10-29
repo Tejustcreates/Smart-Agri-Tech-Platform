@@ -1,3 +1,6 @@
+import type { LucideIcon } from 'lucide-react';
+import { Home, Store, CloudSun, Bug, Sprout, Landmark, Tractor, Newspaper, ChartLine } from 'lucide-react';
+
 export const ROUTES = {
   HOME: '/',
   MANDI: '/mandi',
@@ -14,16 +17,23 @@ export const ROUTES = {
   SIGNUP: '/signup',
 } as const;
 
-export const NAV_ITEMS = [
-  { name: 'Home', route: ROUTES.HOME, icon: 'fas fa-home', sectionId: 'hero' },
-  { name: 'Mandi', route: ROUTES.MANDI, icon: 'fas fa-store', sectionId: 'mandi' },
-  { name: 'Weather', route: ROUTES.WEATHER, icon: 'fas fa-cloud-sun', sectionId: 'weather' },
-  { name: 'Crop Doctor', route: ROUTES.DISEASE, icon: 'fas fa-bug', sectionId: 'disease-detection' },
-  { name: 'Crop Advisor', route: ROUTES.CROPS, icon: 'fas fa-seedling', sectionId: 'crop-recommender' },
-  { name: 'Schemes', route: ROUTES.SCHEMES, icon: 'fas fa-landmark', sectionId: 'schemes' },
-  { name: 'Equipment', route: ROUTES.EQUIPMENT, icon: 'fas fa-tractor', sectionId: 'equipment-recommender' },
-  { name: 'News', route: ROUTES.NEWS, icon: 'fas fa-newspaper', sectionId: 'news' },
-  { name: 'Dashboard', route: ROUTES.DASHBOARD, icon: 'fas fa-chart-line', sectionId: 'dashboard' },
+export interface NavItem {
+  name: string;
+  route: string;
+  icon: LucideIcon;
+  sectionId: string;
+}
+
+export const NAV_ITEMS: NavItem[] = [
+  { name: 'Home', route: ROUTES.HOME, icon: Home, sectionId: 'hero' },
+  { name: 'Mandi', route: ROUTES.MANDI, icon: Store, sectionId: 'mandi' },
+  { name: 'Weather', route: ROUTES.WEATHER, icon: CloudSun, sectionId: 'weather' },
+  { name: 'Crop Doctor', route: ROUTES.DISEASE, icon: Bug, sectionId: 'disease-detection' },
+  { name: 'Crop Advisor', route: ROUTES.CROPS, icon: Sprout, sectionId: 'crop-recommender' },
+  { name: 'Schemes', route: ROUTES.SCHEMES, icon: Landmark, sectionId: 'schemes' },
+  { name: 'Equipment', route: ROUTES.EQUIPMENT, icon: Tractor, sectionId: 'equipment-recommender' },
+  { name: 'News', route: ROUTES.NEWS, icon: Newspaper, sectionId: 'news' },
+  { name: 'Dashboard', route: ROUTES.DASHBOARD, icon: ChartLine, sectionId: 'dashboard' },
 ];
 
 export const INDIAN_STATES = [

@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, MapPin, Locate, ArrowRight, Loader2 } from 'lucide-react';
+import { AutoComplete, Input } from 'antd';
+import { Search, MapPin, Locate, ArrowRight, Loader2, CloudSun } from 'lucide-react';
 import { INDIAN_CITIES } from '../../services/weather/openMeteo';
 import { GeoLocation } from '../../types/weather';
 import { reverseGeocode } from '../../services/shared/locationService';
@@ -16,26 +17,35 @@ const popularCities = INDIAN_CITIES;
 
 const WeatherLanding: React.FC<WeatherLandingProps> = ({ onSelectLocation, searchResults, onSearch, searching }) => {
   const [query, setQuery] = useState('');
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [focused, setFocused] = useState(false);
   const [gpsLoading, setGpsLoading] = useState(false);
   const [gpsError, setGpsError] = useState<string | null>(null);
 
   const handleSearch = useCallback((value: string) => {
     setQuery(value);
     if (value.length >= 2) {
-      setShowDropdown(true);
       onSearch(value);
-    } else {
-      setShowDropdown(false);
     }
   }, [onSearch]);
 
   const handleSelect = (loc: GeoLocation) => {
     setQuery('');
-    setShowDropdown(false);
     onSelectLocation(loc.latitude, loc.longitude, `${loc.name}, ${loc.admin1 || loc.country}`);
   };
+
+  const locationOptions = searchResults.slice(0, 6).map((loc, i) => ({
+    value: `${loc.latitude},${loc.longitude}`,
+    key: `${loc.name}-${loc.latitude}-${i}`,
+    label: (
+      <div className="flex items-center gap-3 py-1">
+        <MapPin size={16} className="text-gray-400 flex-shrink-0" />
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium text-gray-800">{loc.name}</p>
+          <p className="text-xs text-gray-500">{loc.admin1 && `${loc.admin1}, `}{loc.country}</p>
+        </div>
+        <ArrowRight size={14} className="text-gray-300 flex-shrink-0" />
+      </div>
+    ),
+  }));
 
   const handleGeolocate = () => {
     if (!navigator.geolocation) return;
@@ -71,7 +81,7 @@ const WeatherLanding: React.FC<WeatherLandingProps> = ({ onSelectLocation, searc
         className="mb-8 sm:mb-10"
       >
         <div className="w-32 h-32 sm:w-44 sm:h-44 rounded-full bg-gradient-to-br from-brand-200 via-brand-100 to-emerald-100 flex items-center justify-center shadow-lg shadow-brand-100/50 mx-auto animate-breathe">
-          <i className="fas fa-cloud-sun text-5xl sm:text-6xl text-brand-600"></i>
+          <CloudSun size={64} className="text-brand-600" />
         </div>
       </motion.div>
 
@@ -105,7 +115,7 @@ const WeatherLanding: React.FC<WeatherLandingProps> = ({ onSelectLocation, searc
           {gpsLoading ? (
             <Loader2 size={20} className="animate-spin" />
           ) : (
-            <i className="fas fa-location-crosshairs text-lg"></i>
+            <Locate size={20} />
           )}
           {gpsLoading ? 'Detecting location...' : 'Use My Location'}
         </button>
@@ -139,72 +149,33 @@ const WeatherLanding: React.FC<WeatherLandingProps> = ({ onSelectLocation, searc
         transition={{ delay: 0.3, duration: 0.5 }}
         className="w-full max-w-xl relative mb-4"
       >
-        <div className="flex items-center gap-3">
-          <div className="flex-1 relative">
-            <div className="absolute left-4 top-1/2 -translate-y-1/2">
-              {searching && query.length >= 2 ? (
-                <Loader2 size={22} className="text-brand-500 animate-spin" />
-              ) : (
-                <Search size={22} className="text-gray-400" />
-              )}
-            </div>
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => handleSearch(e.target.value)}
-              onFocus={() => { setFocused(true); if (query.length >= 2) setShowDropdown(true); }}
-              onBlur={() => { setFocused(false); setTimeout(() => setShowDropdown(false), 250); }}
-              placeholder="Search Village, Taluka, District or City"
-              className={`w-full pl-12 pr-4 py-4 sm:py-5 bg-white rounded-2xl border text-base sm:text-lg focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all shadow-md placeholder:text-gray-400 ${
-                focused
-                  ? 'border-brand-400 shadow-lg ring-2 ring-brand-100'
-                  : 'border-gray-200 hover:shadow-lg hover:border-gray-300'
-              }`}
-            />
-          </div>
-        </div>
-
-        {/* Search Dropdown */}
-        <AnimatePresence>
-          {showDropdown && searchResults.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: -8, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -8, scale: 0.98 }}
-              transition={{ duration: 0.2 }}
-              className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50"
-            >
-              {searchResults.slice(0, 6).map((loc, i) => (
-                <button
-                  key={`${loc.name}-${loc.latitude}-${i}`}
-                  onMouseDown={() => handleSelect(loc)}
-                  className="w-full flex items-center gap-3 px-5 py-4 hover:bg-brand-50 active:bg-brand-100 transition-colors text-left border-b border-gray-50 last:border-0"
-                >
-                  <MapPin size={18} className="text-gray-400 flex-shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-base font-medium text-gray-800">{loc.name}</p>
-                    <p className="text-sm text-gray-500">{loc.admin1 && `${loc.admin1}, `}{loc.country}</p>
-                  </div>
-                  <ArrowRight size={16} className="text-gray-300 flex-shrink-0" />
-                </button>
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* No results hint */}
-        <AnimatePresence>
-          {showDropdown && !searching && query.length >= 2 && searchResults.length === 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: -4 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-gray-100 p-5 text-center z-50"
-            >
-              <p className="text-sm text-gray-500">No locations found. Try a different spelling.</p>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <label htmlFor="weather-location-search" className="sr-only">
+          Search for a village, taluka, district or city
+        </label>
+        <AutoComplete
+          id="weather-location-search"
+          className="w-full weather-location-search"
+          value={query}
+          options={locationOptions}
+          onSearch={handleSearch}
+          onChange={(value) => setQuery(value)}
+          onSelect={(value) => {
+            const loc = searchResults.find((l) => `${l.latitude},${l.longitude}` === value);
+            if (loc) handleSelect(loc);
+          }}
+          notFoundContent={
+            !searching && query.length >= 2 && searchResults.length === 0 ? (
+              <p className="text-sm text-gray-500 text-center py-2">No locations found. Try a different spelling.</p>
+            ) : null
+          }
+        >
+          <Input
+            size="large"
+            placeholder="Search Village, Taluka, District or City"
+            prefix={searching && query.length >= 2 ? <Loader2 size={20} className="text-brand-500 animate-spin" /> : <Search size={20} className="text-gray-400" />}
+            className="!rounded-2xl !py-4 sm:!py-5 !px-4 !text-base sm:!text-lg !shadow-md"
+          />
+        </AutoComplete>
       </motion.div>
 
       {/* Helper Text */}

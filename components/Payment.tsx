@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { CheckCircle, ArrowLeft, Leaf, FlaskConical, CreditCard, Loader2 } from 'lucide-react';
 
 interface PaymentProps {
   total: number;
@@ -24,7 +25,7 @@ const Payment: React.FC<PaymentProps> = ({ total, onPaymentSuccess, onBackToCart
     return (
       <section id="payment" className="py-20 bg-gray-100 flex items-center justify-center min-h-[calc(100vh-64px)]">
         <div className="text-center bg-white p-10 rounded-xl shadow-lg animate-fade-in-up px-4">
-          <i className="fas fa-check-circle text-6xl text-brand-500 mb-4"></i>
+          <CheckCircle size={48} className="text-brand-500 mb-4" />
           <h2 className="text-3xl font-bold text-gray-800">Payment Successful!</h2>
           <p className="text-gray-600 mt-2">Redirecting you to the home page...</p>
         </div>
@@ -37,10 +38,10 @@ const Payment: React.FC<PaymentProps> = ({ total, onPaymentSuccess, onBackToCart
       {/* Brand-900 header bar */}
       <div className="bg-brand-900 px-4 py-3 flex items-center gap-3">
         <button onClick={onBackToCart} className="text-white/70 hover:text-white min-h-[48px] min-w-[48px] flex items-center justify-center" aria-label="Back to cart">
-          <i className="fas fa-arrow-left text-lg"></i>
+          <ArrowLeft size={18} />
         </button>
         <div className="flex items-center gap-2">
-          <i className="fas fa-leaf text-brand-400"></i>
+          <Leaf size={16} className="text-brand-400" />
           <span className="text-white font-bold">Checkout</span>
         </div>
       </div>
@@ -50,7 +51,7 @@ const Payment: React.FC<PaymentProps> = ({ total, onPaymentSuccess, onBackToCart
           {/* Demo payment badge — prominent amber */}
           <div className="mb-6 p-4 bg-amber-50 border-2 border-amber-300 rounded-xl flex items-center gap-3">
             <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0">
-              <i className="fas fa-flask text-amber-600 text-lg"></i>
+              <FlaskConical size={18} className="text-amber-600" />
             </div>
             <div>
               <p className="font-bold text-amber-800 text-sm">Demo Payment</p>
@@ -78,7 +79,7 @@ const Payment: React.FC<PaymentProps> = ({ total, onPaymentSuccess, onBackToCart
                   inputMode="numeric"
                   required
                 />
-                <i className="fab fa-cc-visa text-gray-400 text-2xl absolute right-3 top-1/2 -translate-y-1/2"></i>
+                <CreditCard size={24} className="text-gray-400 absolute right-3 top-1/2 -translate-y-1/2" />
               </div>
             </div>
             <div className="flex gap-4 mb-6">
@@ -113,7 +114,7 @@ const Payment: React.FC<PaymentProps> = ({ total, onPaymentSuccess, onBackToCart
                 <span className="text-2xl font-bold text-brand-600">₹{total.toFixed(2)}</span>
               </div>
               <button type="submit" className="w-full py-3.5 min-h-[48px] text-white bg-brand-600 rounded-lg hover:bg-brand-700 font-bold text-lg disabled:bg-brand-400 transition-colors" disabled={paymentState === 'processing'}>
-                {paymentState === 'processing' ? <><i className="fas fa-spinner fa-spin mr-2"></i>Processing...</> : `Pay ₹${total.toFixed(2)}`}
+                {paymentState === 'processing' ? <><Loader2 size={16} className="animate-spin mr-2 inline" />Processing...</> : `Pay ₹${total.toFixed(2)}`}
               </button>
             </div>
           </form>

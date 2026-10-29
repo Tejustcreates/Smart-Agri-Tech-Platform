@@ -1,5 +1,12 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { Rate } from 'antd';
+import type { LucideIcon } from 'lucide-react';
+import {
+  ShieldCheck, ChartLine, CloudSun, PhoneCall, ArrowRight, Store, Bug, Sprout, Landmark, Tractor,
+  Users, Languages, Heart, CircleCheck, MapPin, FlaskConical, Scale, Handshake, Award, Smartphone,
+  Bot, HandCoins, MessageSquare, Rocket, Phone,
+} from 'lucide-react';
 import { ROUTES } from '../../constants';
 
 interface QuickActionItem {
@@ -7,7 +14,7 @@ interface QuickActionItem {
   title: string;
   subTitle: string;
   desc: string;
-  icon: string;
+  icon: LucideIcon;
   sectionId?: string;
   route?: string;
   accent: string;
@@ -21,7 +28,7 @@ const QUICK_ACTIONS: QuickActionItem[] = [
     title: 'Live Mandi Prices',
     subTitle: 'बाजार भाव',
     desc: 'Compare 50+ APMC mandi rates and maximize your crop profits',
-    icon: 'fas fa-store',
+    icon: Store,
     route: ROUTES.MANDI,
     accent: 'border-emerald-200 hover:border-emerald-400',
     badge: 'Live Rates',
@@ -32,7 +39,7 @@ const QUICK_ACTIONS: QuickActionItem[] = [
     title: 'Weather & Rain Alert',
     subTitle: 'हवामान अंदाज',
     desc: '7-day local forecast, rainfall chance & farm spraying advice',
-    icon: 'fas fa-cloud-sun',
+    icon: CloudSun,
     route: ROUTES.WEATHER,
     accent: 'border-sky-200 hover:border-sky-400',
     badge: 'Real-time',
@@ -43,7 +50,7 @@ const QUICK_ACTIONS: QuickActionItem[] = [
     title: 'Crop Doctor & Disease Check',
     subTitle: 'पीक रोग निदान',
     desc: 'Instant plant disease diagnosis with organic & chemical cures',
-    icon: 'fas fa-bug',
+    icon: Bug,
     route: ROUTES.DISEASE,
     accent: 'border-rose-200 hover:border-rose-400',
     badge: 'AI Doctor',
@@ -54,7 +61,7 @@ const QUICK_ACTIONS: QuickActionItem[] = [
     title: 'Crop Advisor & Soil Care',
     subTitle: 'पीक सल्लागार',
     desc: 'Personalized crop recommendations based on your soil & season',
-    icon: 'fas fa-seedling',
+    icon: Sprout,
     route: ROUTES.CROPS,
     accent: 'border-teal-200 hover:border-teal-400',
     badge: 'High Yield',
@@ -65,7 +72,7 @@ const QUICK_ACTIONS: QuickActionItem[] = [
     title: 'Govt Schemes & Subsidies',
     subTitle: 'सरकारी योजना',
     desc: 'Check eligibility for PM-KISAN, crop insurance & subsidized loans',
-    icon: 'fas fa-landmark',
+    icon: Landmark,
     route: ROUTES.SCHEMES,
     accent: 'border-amber-200 hover:border-amber-400',
     badge: 'Direct Benefit',
@@ -76,7 +83,7 @@ const QUICK_ACTIONS: QuickActionItem[] = [
     title: 'Community Equipment Rental',
     subTitle: 'कृषी यंत्रे',
     desc: 'Rent tractors, harvesters & spray pumps from nearby farmers',
-    icon: 'fas fa-tractor',
+    icon: Tractor,
     route: ROUTES.EQUIPMENT,
     accent: 'border-orange-200 hover:border-orange-400',
     badge: 'Affordable',
@@ -95,33 +102,33 @@ const TICKER_ITEMS = [
 ];
 
 const STATS = [
-  { value: '10K+', label: 'Active Farmers', subtext: 'Trusting GrowSmart', icon: 'fas fa-users' },
-  { value: '50+', label: 'APMC Mandis', subtext: 'Tracked daily', icon: 'fas fa-store' },
-  { value: '12+', label: 'Indian Languages', subtext: 'Accessible nationwide', icon: 'fas fa-language' },
-  { value: '100%', label: 'Free Forever', subtext: 'Zero subscription cost', icon: 'fas fa-heart' },
+  { value: '10K+', label: 'Active Farmers', subtext: 'Trusting GrowSmart', icon: Users },
+  { value: '50+', label: 'APMC Mandis', subtext: 'Tracked daily', icon: Store },
+  { value: '12+', label: 'Indian Languages', subtext: 'Accessible nationwide', icon: Languages },
+  { value: '100%', label: 'Free Forever', subtext: 'Zero subscription cost', icon: Heart },
 ];
 
 const WHY_ITEMS = [
   {
-    icon: 'fas fa-language',
+    icon: Languages,
     title: 'Multi-Language Accessibility',
     desc: 'Available in Hindi, Marathi, Telugu, Tamil, Bengali, and English so every farmer can use it in their mother tongue.',
     color: 'from-emerald-500 to-green-600',
   },
   {
-    icon: 'fas fa-mobile-screen-button',
+    icon: Smartphone,
     title: 'Farmer-Friendly Design',
     desc: 'Large touch buttons, clear icons, and high contrast designed specifically for outdoor viewing on mobile screens in fields.',
     color: 'from-blue-500 to-cyan-600',
   },
   {
-    icon: 'fas fa-robot',
+    icon: Bot,
     title: 'Scientific Agri-AI Models',
     desc: 'Machine learning models trained on Indian agricultural data for precise crop, disease, and weather intelligence.',
     color: 'from-violet-500 to-purple-600',
   },
   {
-    icon: 'fas fa-hand-holding-dollar',
+    icon: HandCoins,
     title: '100% Free & Transparent',
     desc: 'No hidden charges or subscription fees. Every single advisory tool is completely free for all Indian farmers.',
     color: 'from-amber-500 to-orange-600',
@@ -237,7 +244,7 @@ const HomePage: React.FC = () => {
           {/* Top Hero Pitch */}
           <div className="max-w-3xl mx-auto text-center mb-12">
             <div className="inline-flex items-center gap-2 bg-emerald-500/15 border border-emerald-400/30 rounded-full px-4 py-1.5 text-xs font-bold text-emerald-300 mb-6 shadow-sm">
-              <i className="fas fa-shield-halved text-emerald-400"></i>
+              <ShieldCheck size={13} className="text-emerald-400" />
               <span>National Smart Agri-Tech Platform • 100% Free for Farmers</span>
             </div>
 
@@ -259,21 +266,21 @@ const HomePage: React.FC = () => {
                 onClick={() => scrollToSection('mandi')}
                 className="btn-modern inline-flex items-center gap-2.5 bg-gradient-to-r from-emerald-400 to-green-500 text-slate-950 font-black py-3.5 px-6 rounded-xl hover:shadow-lg hover:shadow-emerald-500/25 transition-all text-sm"
               >
-                <i className="fas fa-chart-line"></i>
+                <ChartLine size={15} />
                 Check Live Mandi Rates
               </button>
               <button
                 onClick={() => scrollToSection('weather')}
                 className="btn-modern inline-flex items-center gap-2.5 bg-white/10 hover:bg-white/15 border border-white/25 text-white font-bold py-3.5 px-6 rounded-xl transition-all text-sm backdrop-blur-sm"
               >
-                <i className="fas fa-cloud-sun text-sky-300"></i>
+                <CloudSun size={15} className="text-sky-300" />
                 Check Local Weather
               </button>
               <a
                 href="tel:18001801551"
                 className="inline-flex items-center gap-2 bg-amber-400/15 hover:bg-amber-400/25 border border-amber-400/30 text-amber-300 font-bold py-3.5 px-5 rounded-xl transition-all text-sm"
               >
-                <i className="fas fa-phone-volume"></i>
+                <PhoneCall size={15} />
                 Kisan Helpline: 1800-180-1551
               </a>
             </div>
@@ -304,7 +311,7 @@ const HomePage: React.FC = () => {
                   <div className="flex items-start justify-between mb-3 w-full">
                     <div className="flex items-center gap-3">
                       <div className={`w-12 h-12 rounded-xl ${action.iconBg} flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform`}>
-                        <i className={`${action.icon} text-lg`}></i>
+                        <action.icon size={20} />
                       </div>
                       <div>
                         <h3 className="font-extrabold text-slate-900 text-base group-hover:text-emerald-700 transition-colors">
@@ -326,7 +333,7 @@ const HomePage: React.FC = () => {
 
                   <div className="flex items-center justify-between pt-3 border-t border-slate-100 text-xs font-bold text-emerald-700">
                     <span>Open Tool</span>
-                    <i className="fas fa-arrow-right text-[11px] group-hover:translate-x-1 transition-transform"></i>
+                    <ArrowRight size={11} className="group-hover:translate-x-1 transition-transform" />
                   </div>
                 </button>
               ))}
@@ -337,7 +344,7 @@ const HomePage: React.FC = () => {
           <div className="mt-14 pt-8 border-t border-emerald-500/20 grid grid-cols-2 sm:grid-cols-4 gap-4">
             {STATS.map((s) => (
               <div key={s.label} className="bg-white/5 border border-white/10 rounded-2xl p-4 text-center backdrop-blur-sm">
-                <i className={`${s.icon} text-emerald-400 text-lg mb-1.5`}></i>
+                <s.icon size={20} className="text-emerald-400 mb-1.5 mx-auto" />
                 <div className="text-2xl sm:text-3xl font-black text-white">{s.value}</div>
                 <div className="text-xs font-bold text-emerald-100">{s.label}</div>
                 <div className="text-[10px] text-emerald-300/70">{s.subtext}</div>
@@ -352,7 +359,7 @@ const HomePage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-14">
             <div className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-full px-4 py-1 text-xs font-bold mb-3">
-              <i className="fas fa-circle-check text-emerald-600"></i>
+              <CircleCheck size={13} className="text-emerald-600" />
               <span>Simple 4-Step Process</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-black text-slate-900">
@@ -365,10 +372,10 @@ const HomePage: React.FC = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { step: '01', title: 'Choose Location', desc: 'Select your state & district to get hyper-local weather alerts and nearby mandi prices.', icon: 'fas fa-location-dot', color: 'from-emerald-500 to-green-600' },
-              { step: '02', title: 'Check Advisory', desc: 'Check soil suitability, recommended sowing crops, or diagnose plant pests by symptoms.', icon: 'fas fa-flask-vial', color: 'from-sky-500 to-blue-600' },
-              { step: '03', title: 'Compare Mandis', desc: 'Compare live market rates across nearby APMCs to find the highest selling price for your crop.', icon: 'fas fa-scale-balanced', color: 'from-amber-500 to-orange-600' },
-              { step: '04', title: 'Claim Benefits', desc: 'Find government schemes, subsidised seeds, equipment rental, and direct income support.', icon: 'fas fa-handshake-angle', color: 'from-purple-500 to-indigo-600' },
+              { step: '01', title: 'Choose Location', desc: 'Select your state & district to get hyper-local weather alerts and nearby mandi prices.', icon: MapPin, color: 'from-emerald-500 to-green-600' },
+              { step: '02', title: 'Check Advisory', desc: 'Check soil suitability, recommended sowing crops, or diagnose plant pests by symptoms.', icon: FlaskConical, color: 'from-sky-500 to-blue-600' },
+              { step: '03', title: 'Compare Mandis', desc: 'Compare live market rates across nearby APMCs to find the highest selling price for your crop.', icon: Scale, color: 'from-amber-500 to-orange-600' },
+              { step: '04', title: 'Claim Benefits', desc: 'Find government schemes, subsidised seeds, equipment rental, and direct income support.', icon: Handshake, color: 'from-purple-500 to-indigo-600' },
             ].map((st) => (
               <div key={st.step} className="farmer-card p-6 relative flex flex-col justify-between">
                 <div>
@@ -379,7 +386,7 @@ const HomePage: React.FC = () => {
                   <p className="text-xs text-slate-600 leading-relaxed">{st.desc}</p>
                 </div>
                 <div className="mt-4 pt-3 border-t border-slate-100 flex items-center gap-2 text-slate-400 text-xs font-semibold">
-                  <i className={`${st.icon} text-emerald-600`}></i>
+                  <st.icon size={13} className="text-emerald-600" />
                   <span>Step {st.step} of 04</span>
                 </div>
               </div>
@@ -393,7 +400,7 @@ const HomePage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-14">
             <div className="inline-flex items-center gap-1.5 bg-emerald-100 text-emerald-900 rounded-full px-4 py-1 text-xs font-bold mb-3">
-              <i className="fas fa-award text-emerald-600"></i>
+              <Award size={13} className="text-emerald-600" />
               <span>Built for Rural Realities</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-black text-slate-900">
@@ -407,8 +414,8 @@ const HomePage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {WHY_ITEMS.map((item) => (
               <div key={item.title} className="farmer-card p-6 bg-white">
-                <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${item.color} text-white flex items-center justify-center text-xl mb-4 shadow-sm`}>
-                  <i className={item.icon}></i>
+                <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${item.color} text-white flex items-center justify-center mb-4 shadow-sm`}>
+                  <item.icon size={20} />
                 </div>
                 <h3 className="font-bold text-slate-900 text-base mb-2">{item.title}</h3>
                 <p className="text-xs text-slate-600 leading-relaxed">{item.desc}</p>
@@ -423,7 +430,7 @@ const HomePage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-14">
             <div className="inline-flex items-center gap-1.5 bg-amber-50 text-amber-900 border border-amber-200 rounded-full px-4 py-1 text-xs font-bold mb-3">
-              <i className="fas fa-comment-dots text-amber-600"></i>
+              <MessageSquare size={13} className="text-amber-600" />
               <span>Farmer Experiences</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-black text-slate-900">
@@ -442,11 +449,8 @@ const HomePage: React.FC = () => {
                     <span className="px-2.5 py-1 rounded-md text-[10px] font-black uppercase bg-emerald-50 text-emerald-800 border border-emerald-200">
                       {t.tag}
                     </span>
-                    <div className="flex text-amber-400 text-xs">
-                      {[...Array(5)].map((_, i) => (
-                        <i key={i} className="fas fa-star"></i>
-                      ))}
-                    </div>
+                    <Rate disabled defaultValue={5} className="!text-xs !text-amber-400" />
+
                   </div>
                   <p className="text-xs sm:text-sm text-slate-700 leading-relaxed italic mb-6">
                     "{t.text}"
@@ -473,7 +477,7 @@ const HomePage: React.FC = () => {
         <div className="absolute inset-0 hero-pattern opacity-20 pointer-events-none"></div>
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
           <div className="inline-flex items-center gap-2 bg-amber-400/20 border border-amber-300/30 text-amber-300 px-4 py-1.5 rounded-full text-xs font-bold mb-5">
-            <i className="fas fa-phone-volume"></i>
+            <PhoneCall size={13} />
             <span>Govt of India Kisan Call Center: 1800-180-1551 (Toll Free)</span>
           </div>
 
@@ -489,14 +493,14 @@ const HomePage: React.FC = () => {
               onClick={() => scrollToSection('weather')}
               className="btn-modern inline-flex items-center gap-2 bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black py-3.5 px-8 rounded-xl text-sm transition-all shadow-lg shadow-emerald-500/25"
             >
-              <i className="fas fa-rocket"></i>
+              <Rocket size={15} />
               Get Started Free
             </button>
             <a
               href="tel:18001801551"
               className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold py-3.5 px-6 rounded-xl text-sm transition-all"
             >
-              <i className="fas fa-phone"></i>
+              <Phone size={15} />
               Call Kisan Helpline
             </a>
           </div>

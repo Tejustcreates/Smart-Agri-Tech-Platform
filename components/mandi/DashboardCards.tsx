@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Skeleton } from 'antd';
 import { TrendingUp, TrendingDown, Minus, IndianRupee, MapPin, BarChart3, Wheat } from 'lucide-react';
 import { MandiDashboardSummary } from '../../types/mandi';
 
@@ -27,13 +28,12 @@ const trendColor = (t: string) => {
 };
 
 const SkeletonCard = () => (
-  <div className="bg-white/60 backdrop-blur-sm rounded-2xl border border-gray-100 p-4 sm:p-5 animate-pulse">
+  <div className="bg-white/60 backdrop-blur-sm rounded-2xl border border-gray-100 p-4 sm:p-5">
     <div className="flex items-center gap-3 mb-3">
-      <div className="w-10 h-10 bg-gray-200 rounded-xl" />
-      <div className="h-3 bg-gray-200 rounded w-24" />
+      <Skeleton.Avatar active shape="square" size={40} className="!rounded-xl" />
+      <Skeleton.Input active size="small" style={{ width: 96, height: 12 }} />
     </div>
-    <div className="h-7 bg-gray-200 rounded w-20 mb-1" />
-    <div className="h-2.5 bg-gray-100 rounded w-32" />
+    <Skeleton active title={{ width: 80 }} paragraph={{ rows: 1, width: 128 }} />
   </div>
 );
 

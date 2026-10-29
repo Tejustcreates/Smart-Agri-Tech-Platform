@@ -1,10 +1,10 @@
 import React from 'react';
-import SectionHeader from './SectionHeader';
+import type { LucideIcon } from 'lucide-react';
 
 interface SectionProps {
   id: string;
   eyebrow: string;
-  icon: string;
+  icon: LucideIcon;
   title: string;
   subtitle?: string;
   tone?: 'green' | 'amber' | 'sky' | 'rose' | 'violet' | 'teal';
@@ -23,7 +23,7 @@ const TONES: Record<string, { bg: string; chip: string; text: string; divider: s
   teal:   { bg: 'from-teal-50/60',    chip: 'bg-teal-100',       text: 'text-teal-700',    divider: 'from-teal-500 to-cyan-400' },
 };
 
-export default function Section({ id, eyebrow, icon, title, subtitle, tone = 'green', children, className = '' }: SectionProps) {
+export default function Section({ id, eyebrow, icon: Icon, title, subtitle, tone = 'green', children, className = '' }: SectionProps) {
   const t = TONES[tone];
   return (
     <section id={id} className={`snap-section border-t border-slate-200/70 scroll-mt-16 ${className}`}>
@@ -31,7 +31,7 @@ export default function Section({ id, eyebrow, icon, title, subtitle, tone = 'gr
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-14 sm:py-20">
           <div className="text-center mb-10 max-w-3xl mx-auto">
             <div className={`inline-flex items-center gap-2 ${t.chip} ${t.text} border border-black/5 rounded-full px-4 py-1 text-xs font-extrabold mb-3 shadow-xs`}>
-              <i className={`${icon} text-[11px]`}></i>
+              <Icon size={11} />
               <span>{eyebrow}</span>
             </div>
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 tracking-tight">{title}</h2>

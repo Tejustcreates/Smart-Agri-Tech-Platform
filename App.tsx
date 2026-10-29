@@ -2,7 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster, toast } from 'react-hot-toast';
+import { ConfigProvider, App as AntApp } from 'antd';
+import { antdTheme } from './theme';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { HelpCircle, Home } from 'lucide-react';
 import './i18n';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -25,6 +28,7 @@ import PaymentPage from './components/pages/PaymentPage';
 import FarmerDashboard from './components/pages/FarmerDashboard';
 import FarmerNews from './components/farmer-news/FarmerNews';
 import AdminPanel from './components/pages/AdminPanel';
+import LegalPage from './components/pages/LegalPage';
 import { exportToExcel } from './services/sheetService';
 import { User as UserType, CartItem, Product } from './types';
 import { ROUTES } from './constants';
@@ -43,12 +47,12 @@ const NotFound: React.FC = () => (
   <section className="py-20 bg-gray-50 flex items-center justify-center min-h-[calc(100vh-64px)]">
     <div className="text-center">
       <div className="w-24 h-24 bg-brand-100 rounded-full flex items-center justify-center mx-auto mb-6">
-        <i className="fas fa-question text-brand-600 text-4xl"></i>
+        <HelpCircle size={40} className="text-brand-600" />
       </div>
       <h2 className="text-3xl font-bold text-gray-800">Page Not Found</h2>
       <p className="text-gray-600 mt-2 mb-6">The page you're looking for doesn't exist.</p>
-      <a href="/" className="px-6 py-3 bg-brand-600 text-white rounded-lg hover:bg-brand-700 font-semibold transition-colors">
-        <i className="fas fa-home mr-2"></i>Go Home
+      <a href="/" className="px-6 py-3 bg-brand-600 text-white rounded-lg hover:bg-brand-700 font-semibold transition-colors inline-flex items-center gap-2">
+        <Home size={16} />Go Home
       </a>
     </div>
   </section>
@@ -197,12 +201,13 @@ const AppContent: React.FC = () => {
               <AdminPanel />
             </ProtectedRoute>
           } />
+          <Route path="/legal/:slug" element={<LegalPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
       {!location.pathname.startsWith('/auth') && !location.pathname.startsWith('/onboarding') && <Footer />}
       {!location.pathname.startsWith('/auth') && !location.pathname.startsWith('/onboarding') && (
-        <BottomNav user={user as unknown as UserType | null} onLogout={handleLogout} cartCount={cartCount} />
+        <BottomNav cartCount={cartCount} />
       )}
       <BackToTop />
       <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} initialMode={authMode} />
@@ -212,13 +217,17 @@ const AppContent: React.FC = () => {
 
 const App: React.FC = () => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <AuthProvider>
-          <AppContent />
-        </AuthProvider>
-      </BrowserRouter>
-    </QueryClientProvider>
+    <ConfigProvider theme={antdTheme}>
+      <AntApp>
+        <QueryClientProvider client={queryClient}>
+          <BrowserRouter>
+            <AuthProvider>
+              <AppContent />
+            </AuthProvider>
+          </BrowserRouter>
+        </QueryClientProvider>
+      </AntApp>
+    </ConfigProvider>
   );
 };
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { message } from 'antd';
 import { BarChart3, MapPin, TrendingUp, Sparkles, Store, Trophy } from 'lucide-react';
 import { MandiTab, MandiDashboardSummary } from '../../types/mandi';
 import { getDashboardSummary } from '../../services/mandi/mandiApi';
@@ -23,14 +24,17 @@ const DigitalMandi: React.FC = () => {
   const [summaryLoading, setSummaryLoading] = useState(true);
 
   useEffect(() => {
-    getDashboardSummary().then(setSummary).finally(() => setSummaryLoading(false));
+    getDashboardSummary()
+      .then(setSummary)
+      .catch(() => message.error('Failed to load mandi dashboard summary.'))
+      .finally(() => setSummaryLoading(false));
   }, []);
 
   return (
     <Section
       id="mandi"
       tone="violet"
-      icon="fas fa-store"
+      icon={Store}
       eyebrow="Digital Mandi Intelligence"
       title="Smart Mandi Information System"
       subtitle="Smart market intelligence to help farmers sell their crops at the best possible mandi."

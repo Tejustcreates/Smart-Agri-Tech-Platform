@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import CircularProgress from '../shared/CircularProgress';
 
 interface HealthScoreProps {
   score: number;
@@ -14,11 +15,6 @@ const getScoreColor = (score: number) => {
 
 const HealthScore: React.FC<HealthScoreProps> = ({ score }) => {
   const { ring, bg, text, label } = getScoreColor(score);
-  const size = 120;
-  const strokeWidth = 8;
-  const radius = (size - strokeWidth) / 2;
-  const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (score / 100) * circumference;
 
   return (
     <motion.div
@@ -28,28 +24,19 @@ const HealthScore: React.FC<HealthScoreProps> = ({ score }) => {
     >
       <div className="text-center">
         <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Agriculture Health</h3>
-        <div className="relative inline-block" style={{ width: size, height: size }}>
-          <svg width={size} height={size} className="-rotate-90">
-            <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="#f0f0f0" strokeWidth={strokeWidth} />
-            <motion.circle
-              cx={size / 2}
-              cy={size / 2}
-              r={radius}
-              fill="none"
-              stroke={ring}
-              strokeWidth={strokeWidth}
-              strokeLinecap="round"
-              strokeDasharray={circumference}
-              initial={{ strokeDashoffset: circumference }}
-              animate={{ strokeDashoffset: offset }}
-              transition={{ duration: 1.5, ease: 'easeOut' }}
-            />
-          </svg>
-          <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className={`text-3xl font-bold ${text}`}>{score}</span>
-            <span className="text-[10px] text-gray-400">/ 100</span>
-          </div>
-        </div>
+        <CircularProgress
+          value={score}
+          size={120}
+          strokeWidth={8}
+          strokeColor={ring}
+          trailColor="#f0f0f0"
+          formatValue={(v) => (
+            <div className="flex flex-col items-center justify-center">
+              <span className={`text-3xl font-bold ${text}`}>{Math.round(v)}</span>
+              <span className="text-[10px] text-gray-400">/ 100</span>
+            </div>
+          )}
+        />
         <div className={`mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r ${bg} text-white text-xs font-semibold`}>
           {label}
         </div>

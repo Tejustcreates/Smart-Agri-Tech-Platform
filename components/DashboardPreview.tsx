@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { PieChart, CloudSun, CircleCheck, Sprout, Store, Trophy, Landmark, Newspaper, ChartLine, LogIn } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 import ScrollReveal from './ScrollReveal';
@@ -24,7 +25,7 @@ export default function DashboardPreview() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-10 max-w-2xl mx-auto">
           <div className="inline-flex items-center gap-1.5 bg-emerald-100 text-emerald-800 rounded-full px-4 py-1 text-xs font-bold mb-3">
-            <i className="fas fa-chart-pie text-emerald-600"></i>
+            <PieChart size={13} className="text-emerald-600" />
             <span>Farmer Daily Briefing</span>
           </div>
           <h2 className="text-2xl sm:text-3xl font-black text-slate-900">
@@ -42,7 +43,7 @@ export default function DashboardPreview() {
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <div className={`${iconWrap} bg-sky-100 text-sky-600`}>
-                    <i className="fas fa-cloud-sun"></i>
+                    <CloudSun size={17} />
                   </div>
                   <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-sky-50 text-sky-700 border border-sky-200">
                     Live
@@ -52,7 +53,7 @@ export default function DashboardPreview() {
                 <div className="text-xs font-semibold text-slate-700 mt-0.5">{DEMO.weather.cond}</div>
               </div>
               <div className="mt-3 pt-2.5 border-t border-slate-100 text-[11px] font-semibold text-emerald-700 flex items-center gap-1.5">
-                <i className="fas fa-circle-check text-emerald-500"></i>
+                <CircleCheck size={13} className="text-emerald-500" />
                 <span>{DEMO.weather.advice}</span>
               </div>
             </div>
@@ -64,7 +65,7 @@ export default function DashboardPreview() {
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <div className={`${iconWrap} bg-emerald-100 text-emerald-600`}>
-                    <i className="fas fa-seedling"></i>
+                    <Sprout size={17} />
                   </div>
                   <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
                     {DEMO.cropTip.crop}
@@ -85,7 +86,7 @@ export default function DashboardPreview() {
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <div className={`${iconWrap} bg-amber-100 text-amber-600`}>
-                    <i className="fas fa-store"></i>
+                    <Store size={17} />
                   </div>
                   <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
                     {DEMO.mandi.change}
@@ -95,7 +96,7 @@ export default function DashboardPreview() {
                 <div className="text-xs font-semibold text-slate-700 mt-0.5">{DEMO.mandi.crop} · {DEMO.mandi.mandi}</div>
               </div>
               <div className="mt-3 pt-2.5 border-t border-slate-100 text-[11px] font-bold text-amber-700 flex items-center gap-1">
-                <i className="fas fa-trophy text-amber-500"></i>
+                <Trophy size={13} className="text-amber-500" />
                 <span>Top Regional Price</span>
               </div>
             </div>
@@ -107,7 +108,7 @@ export default function DashboardPreview() {
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <div className={`${iconWrap} bg-violet-100 text-violet-600`}>
-                    <i className="fas fa-landmark"></i>
+                    <Landmark size={17} />
                   </div>
                   <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-violet-50 text-violet-700 border border-violet-200">
                     {DEMO.scheme.status}
@@ -128,7 +129,7 @@ export default function DashboardPreview() {
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <div className={`${iconWrap} bg-teal-100 text-teal-600`}>
-                    <i className="fas fa-newspaper"></i>
+                    <Newspaper size={17} />
                   </div>
                   <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-teal-50 text-teal-700 border border-teal-200">
                     Policy Update
@@ -148,7 +149,7 @@ export default function DashboardPreview() {
             onClick={() => navigate(user ? '/dashboard' : '/login')}
             className="btn-modern inline-flex items-center gap-2.5 px-7 py-3.5 rounded-xl font-bold bg-gradient-to-r from-emerald-600 via-green-600 to-emerald-700 hover:from-emerald-700 hover:to-green-800 text-white shadow-md hover:shadow-lg transition-all text-xs sm:text-sm"
           >
-            <i className={user ? 'fas fa-chart-line' : 'fas fa-arrow-right-to-bracket'}></i>
+            {user ? <ChartLine size={15} /> : <LogIn size={15} />}
             <span>{user ? 'Open Farmer Command Dashboard' : 'Login to Access Personalized Farmer Dashboard'}</span>
           </button>
         </div>

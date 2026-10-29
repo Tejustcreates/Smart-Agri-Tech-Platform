@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { ArrowLeft, Tractor } from 'lucide-react';
 import { ROUTES } from '../../constants';
 import CommunityEquipment from '../equipment/CommunityEquipment';
 
@@ -11,11 +12,11 @@ const EquipmentPage: React.FC = () => (
           to={ROUTES.HOME}
           className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-600 hover:text-emerald-700 transition-colors bg-white border border-slate-200/80 px-3.5 py-1.5 rounded-xl shadow-xs"
         >
-          <i className="fas fa-arrow-left text-xs"></i>
+          <ArrowLeft size={13} />
           <span>Back to Home</span>
         </Link>
-        <span className="text-xs font-bold text-teal-700 bg-teal-100/80 px-3 py-1 rounded-full border border-teal-200">
-          <i className="fas fa-tractor mr-1.5"></i> Farm Equipment Sharing
+        <span className="text-xs font-bold text-teal-700 bg-teal-100/80 px-3 py-1 rounded-full border border-teal-200 inline-flex items-center gap-1.5">
+          <Tractor size={13} /> Farm Equipment Sharing
         </span>
       </div>
     </div>

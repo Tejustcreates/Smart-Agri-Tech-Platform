@@ -4,10 +4,9 @@ import { NearbyMandi } from '../../types/mandi';
 
 interface MandiCardProps {
   mandi: NearbyMandi;
-  sortBy: string;
 }
 
-const MandiCard: React.FC<MandiCardProps> = ({ mandi, sortBy }) => {
+const MandiCard: React.FC<MandiCardProps> = ({ mandi }) => {
   const netPrice = mandi.todayPrice - mandi.transportCost;
   const profitVsAvg = netPrice - mandi.averagePrice;
 

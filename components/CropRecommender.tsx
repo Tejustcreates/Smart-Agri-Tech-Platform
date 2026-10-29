@@ -10,7 +10,8 @@ import ManualInput from './crop/ManualInput';
 import IoTDashboard from './crop/IoTDashboard';
 import RecommendationCard from './crop/RecommendationCard';
 import PredictionAnalytics from './crop/PredictionAnalytics';
-import { Loader2 } from 'lucide-react';
+import { Loader2, FlaskConical, SatelliteDish, Sprout, Lightbulb } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 
 type TabKey = 'manual' | 'iot';
 
@@ -90,16 +91,16 @@ const CropRecommender: React.FC = () => {
     await handlePredict();
   };
 
-  const tabs = [
-    { key: 'manual' as TabKey, label: 'Manual Soil Analysis', icon: 'fas fa-flask' },
-    { key: 'iot' as TabKey, label: 'IoT Smart Farm', icon: 'fas fa-satellite-dish' },
+  const tabs: { key: TabKey; label: string; icon: LucideIcon }[] = [
+    { key: 'manual', label: 'Manual Soil Analysis', icon: FlaskConical },
+    { key: 'iot', label: 'IoT Smart Farm', icon: SatelliteDish },
   ];
 
   return (
     <SectionShell
       id={Section.CROP_RECOMMENDER}
       tone="green"
-      icon="fas fa-seedling"
+      icon={Sprout}
       eyebrow="Crop Advisor"
       title="Smart Crop Recommendation"
       subtitle="Enter your soil data or connect your IoT sensor hub for AI-powered crop suggestions."
@@ -125,7 +126,7 @@ const CropRecommender: React.FC = () => {
                     : 'text-gray-500 hover:text-gray-700 hover:bg-white/50'
                 }`}
               >
-                <i className={`${tab.icon} text-base`}></i>
+                <tab.icon size={16} />
                 {tab.label}
               </button>
             ))}
@@ -139,7 +140,7 @@ const CropRecommender: React.FC = () => {
               {activeTab === 'manual' ? (
                 <motion.div key="manual" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }}>
                   <h3 className="text-lg font-bold text-gray-800 mb-5 flex items-center gap-2">
-                    <i className="fas fa-flask text-brand-600 text-xl"></i>
+                    <FlaskConical size={20} className="text-brand-600" />
                     Enter Soil & Climate Data
                   </h3>
                   <ManualInput
@@ -158,7 +159,7 @@ const CropRecommender: React.FC = () => {
               ) : (
                 <motion.div key="iot" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
                   <h3 className="text-lg font-bold text-gray-800 mb-5 flex items-center gap-2">
-                    <i className="fas fa-satellite-dish text-brand-600 text-xl"></i>
+                    <SatelliteDish size={20} className="text-brand-600" />
                     IoT Smart Farm Dashboard
                   </h3>
                   <IoTDashboard
@@ -194,7 +195,7 @@ const CropRecommender: React.FC = () => {
                 </div>
 
                 <div className="bg-gradient-to-r from-brand-600 to-brand-800 text-white rounded-2xl p-6 mt-4">
-                  <h4 className="font-bold text-base mb-2"><i className="fas fa-lightbulb mr-2"></i>Pro Tip</h4>
+                  <h4 className="font-bold text-base mb-2 flex items-center gap-2"><Lightbulb size={16} />Pro Tip</h4>
                   <p className="text-sm opacity-90">
                     Rotate crops seasonally to maintain soil health. Legumes like Soybean and Moong fix nitrogen
                     naturally, benefiting subsequent crops like Wheat and Cotton.
@@ -204,7 +205,7 @@ const CropRecommender: React.FC = () => {
             ) : (
               <div className="bg-white rounded-2xl shadow-sm p-12 text-center border border-gray-100 flex-1 flex flex-col items-center justify-center">
                 <div className="w-24 h-24 bg-brand-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <i className="fas fa-seedling text-brand-600 text-4xl"></i>
+                  <Sprout size={40} className="text-brand-600" />
                 </div>
                 <h3 className="text-xl font-bold text-gray-800 mb-2">Ready for Recommendations</h3>
                 <p className="text-gray-500 mb-6">

@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Sprout } from 'lucide-react';
+import { Sprout, Droplet, SprayCan, Scissors, type LucideIcon } from 'lucide-react';
 import { FarmingAdvisory } from '../../types/weather';
 
 interface FarmingAdviceProps {
@@ -13,11 +13,11 @@ const urgencyColor = {
   low: 'bg-brand-50 text-brand-800 border-brand-200',
 };
 
-const urgencyIcon: Record<string, { icon: string; label: string }> = {
-  irrigation: { icon: 'fas fa-droplet', label: 'Irrigate' },
-  spraying: { icon: 'fas fa-spray-can-sparkles', label: 'Spray' },
-  harvesting: { icon: 'fas fa-scissors', label: 'Harvest' },
-  planting: { icon: 'fas fa-seedling', label: 'Plant' },
+const urgencyIcon: Record<string, { icon: LucideIcon; label: string }> = {
+  irrigation: { icon: Droplet, label: 'Irrigate' },
+  spraying: { icon: SprayCan, label: 'Spray' },
+  harvesting: { icon: Scissors, label: 'Harvest' },
+  planting: { icon: Sprout, label: 'Plant' },
 };
 
 interface AdviceRowProps {
@@ -37,7 +37,7 @@ const AdviceRow: React.FC<AdviceRowProps> = ({ type, recommendation, urgency, re
       transition={{ delay }}
       className={`flex items-center gap-4 p-4 rounded-xl border min-h-[56px] ${urgencyColor[urgency]}`}
     >
-      <i className={`${config.icon} text-xl flex-shrink-0`} aria-hidden="true"></i>
+      <config.icon size={20} className="flex-shrink-0" aria-hidden="true" />
       <div className="flex-1 min-w-0">
         <p className="text-sm font-bold">{config.label}: {recommendation}</p>
         <p className="text-xs opacity-75 mt-0.5">{reason}</p>

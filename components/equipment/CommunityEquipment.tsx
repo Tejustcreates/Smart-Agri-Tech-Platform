@@ -18,7 +18,7 @@ const CommunityEquipment: React.FC = () => {
     <Section
       id="equipment-recommender"
       tone="teal"
-      icon="fas fa-tractor"
+      icon={Tractor}
       eyebrow="Community Marketplace"
       title="Community Equipment Rental Marketplace"
       subtitle="Rent farming equipment directly from nearby farmers in your area."

@@ -1,4 +1,5 @@
 import React from 'react';
+import { ShoppingCart, Minus, Plus, Trash2, ArrowLeft } from 'lucide-react';
 import { CartItem } from '../types';
 
 interface CartProps {
@@ -18,7 +19,7 @@ const Cart: React.FC<CartProps> = ({ cartItems, onUpdateQuantity, onRemoveItem, 
     return (
       <section id="cart" className="py-20 bg-gray-100 flex items-center justify-center min-h-[calc(100vh-64px)]">
         <div className="text-center px-4">
-          <i className="fas fa-shopping-cart text-6xl text-gray-300 mb-4"></i>
+          <ShoppingCart size={48} className="text-gray-300 mb-4" />
           <h2 className="text-3xl font-bold text-gray-800">Your Cart is Empty</h2>
           <p className="text-gray-600 mt-2">Looks like you haven't added anything to your cart yet.</p>
           <button onClick={onBackToShopping} className="mt-6 px-8 py-3.5 min-h-[48px] bg-brand-600 text-white rounded-lg hover:bg-brand-700 font-semibold transition-colors duration-300">
@@ -55,7 +56,7 @@ const Cart: React.FC<CartProps> = ({ cartItems, onUpdateQuantity, onRemoveItem, 
                       aria-label={`Decrease quantity of ${item.name}`}
                       className="min-h-[48px] min-w-[48px] flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700 font-bold text-xl transition-colors"
                     >
-                      <i className="fas fa-minus text-sm"></i>
+                      <Minus size={14} />
                     </button>
                     <span className="w-10 text-center font-semibold text-lg">{item.quantity}</span>
                     <button
@@ -63,14 +64,14 @@ const Cart: React.FC<CartProps> = ({ cartItems, onUpdateQuantity, onRemoveItem, 
                       aria-label={`Increase quantity of ${item.name}`}
                       className="min-h-[48px] min-w-[48px] flex items-center justify-center bg-brand-600 hover:bg-brand-700 rounded-lg text-white font-bold text-xl transition-colors"
                     >
-                      <i className="fas fa-plus text-sm"></i>
+                      <Plus size={14} />
                     </button>
                     <button
                       onClick={() => onRemoveItem(item.id)}
                       aria-label={`Remove ${item.name} from cart`}
                       className="min-h-[48px] min-w-[48px] flex items-center justify-center text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors ml-1"
                     >
-                      <i className="fas fa-trash" aria-hidden="true"></i>
+                      <Trash2 size={14} aria-hidden="true" />
                     </button>
                   </div>
                 </div>
@@ -100,7 +101,7 @@ const Cart: React.FC<CartProps> = ({ cartItems, onUpdateQuantity, onRemoveItem, 
               Proceed to Checkout
             </button>
             <button onClick={onBackToShopping} className="w-full mt-4 min-h-[48px] text-center text-brand-600 hover:text-brand-700 font-medium transition-colors">
-              <i className="fas fa-arrow-left mr-2"></i>Continue Shopping
+              <ArrowLeft size={14} className="mr-2 inline" />Continue Shopping
             </button>
           </div>
         </div>

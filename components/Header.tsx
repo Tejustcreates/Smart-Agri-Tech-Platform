@@ -1,6 +1,10 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { toast } from 'react-hot-toast';
+import { Dropdown, Button, type MenuProps } from 'antd';
+import {
+  Search, X, ChevronDown, Globe, PhoneCall, Menu as MenuIcon, LogOut, ShoppingCart,
+  Store, CloudSun, Bug, Sprout, Landmark, Tractor, Newspaper,
+} from 'lucide-react';
 import { User } from '../types';
 import { NAV_ITEMS, ROUTES } from '../constants';
 
@@ -13,13 +17,13 @@ declare global {
 const PRIMARY_NAV_ROUTES = [ROUTES.HOME, ROUTES.MANDI, ROUTES.WEATHER, ROUTES.DISEASE];
 
 const SEARCH_SUGGESTIONS = [
-  { label: 'Live Mandi Prices', subtext: 'Check latest market rates & nearby APMCs', route: ROUTES.MANDI, icon: 'fas fa-store', keywords: ['mandi', 'price', 'rate', 'bhav', 'market', 'onion', 'soybean', 'wheat', 'cotton'] },
-  { label: 'Weather Forecast & Rain Alert', subtext: 'Rain forecast, humidity & spray advisory', route: ROUTES.WEATHER, icon: 'fas fa-cloud-sun', keywords: ['weather', 'rain', 'temperature', 'forecast', 'monsoon', 'barish', 'havaman'] },
-  { label: 'Crop Doctor (Disease Detection)', subtext: 'Identify plant diseases & remedies', route: ROUTES.DISEASE, icon: 'fas fa-bug', keywords: ['disease', 'doctor', 'leaf', 'blight', 'pest', 'fungus', 'cure', 'spray', 'keeda'] },
-  { label: 'Crop Advisor & Soil Recommendations', subtext: 'Smart crop selection by soil & season', route: ROUTES.CROPS, icon: 'fas fa-seedling', keywords: ['crop', 'advisor', 'soil', 'yield', 'sowing', 'npk', 'fertilizer', 'seed'] },
-  { label: 'Govt Schemes & PM-KISAN', subtext: 'Check eligibility & application steps', route: ROUTES.SCHEMES, icon: 'fas fa-landmark', keywords: ['scheme', 'yojana', 'pm-kisan', 'subsidy', 'loan', 'insurance', 'kcc', 'grant'] },
-  { label: 'Farm Equipment Rental', subtext: 'Rent tractors, harvesters & sprayers', route: ROUTES.EQUIPMENT, icon: 'fas fa-tractor', keywords: ['equipment', 'tractor', 'rental', 'rent', 'tools', 'harvester', 'spray pump'] },
-  { label: 'Farmer News & MSP Alerts', subtext: 'Daily updates on MSP and policies', route: ROUTES.NEWS, icon: 'fas fa-newspaper', keywords: ['news', 'msp', 'updates', 'articles', 'agri', 'batmya'] },
+  { label: 'Live Mandi Prices', subtext: 'Check latest market rates & nearby APMCs', route: ROUTES.MANDI, icon: Store, keywords: ['mandi', 'price', 'rate', 'bhav', 'market', 'onion', 'soybean', 'wheat', 'cotton'] },
+  { label: 'Weather Forecast & Rain Alert', subtext: 'Rain forecast, humidity & spray advisory', route: ROUTES.WEATHER, icon: CloudSun, keywords: ['weather', 'rain', 'temperature', 'forecast', 'monsoon', 'barish', 'havaman'] },
+  { label: 'Crop Doctor (Disease Detection)', subtext: 'Identify plant diseases & remedies', route: ROUTES.DISEASE, icon: Bug, keywords: ['disease', 'doctor', 'leaf', 'blight', 'pest', 'fungus', 'cure', 'spray', 'keeda'] },
+  { label: 'Crop Advisor & Soil Recommendations', subtext: 'Smart crop selection by soil & season', route: ROUTES.CROPS, icon: Sprout, keywords: ['crop', 'advisor', 'soil', 'yield', 'sowing', 'npk', 'fertilizer', 'seed'] },
+  { label: 'Govt Schemes & PM-KISAN', subtext: 'Check eligibility & application steps', route: ROUTES.SCHEMES, icon: Landmark, keywords: ['scheme', 'yojana', 'pm-kisan', 'subsidy', 'loan', 'insurance', 'kcc', 'grant'] },
+  { label: 'Farm Equipment Rental', subtext: 'Rent tractors, harvesters & sprayers', route: ROUTES.EQUIPMENT, icon: Tractor, keywords: ['equipment', 'tractor', 'rental', 'rent', 'tools', 'harvester', 'spray pump'] },
+  { label: 'Farmer News & MSP Alerts', subtext: 'Daily updates on MSP and policies', route: ROUTES.NEWS, icon: Newspaper, keywords: ['news', 'msp', 'updates', 'articles', 'agri', 'batmya'] },
 ];
 
 interface HeaderProps {
@@ -31,14 +35,12 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ user, onLogout, cartCount, onOpenAuth }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isMoreOpen, setIsMoreOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchFocused, setSearchFocused] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const location = useLocation();
-  const moreRef = useRef<HTMLDivElement>(null);
-  const searchRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -47,9 +49,8 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, cartCount, onOpenAuth }
   }, []);
 
   const navigateTo = useCallback((route: string) => {
-    setIsSearchOpen(false);
     setIsMenuOpen(false);
-    setIsMoreOpen(false);
+    setSearchQuery('');
     navigate(route);
   }, [navigate]);
 
@@ -59,39 +60,24 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, cartCount, onOpenAuth }
   }, [location.pathname]);
 
   useEffect(() => {
-    const initGoogleTranslate = () => {
-      const desktopEl = document.getElementById('google_translate_element');
+    const initMobileWidget = () => {
       const mobileEl = document.getElementById('google_translate_element_mobile');
-      if (window.google && desktopEl && desktopEl.childElementCount === 0) {
-        new window.google.translate.TranslateElement(
-          { pageLanguage: 'en', includedLanguages: 'en,hi,bn,te,mr,ta,gu,kn,ml,pa,ur,or', layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE },
-          'google_translate_element'
-        );
-      }
-      if (window.google && mobileEl && mobileEl.childElementCount === 0) {
+      if (window.google?.translate && mobileEl && mobileEl.childElementCount === 0) {
         new window.google.translate.TranslateElement(
           { pageLanguage: 'en', includedLanguages: 'en,hi,bn,te,mr,ta,gu,kn,ml,pa,ur,or', layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE },
           'google_translate_element_mobile'
         );
+        return true;
       }
+      return false;
     };
     const maxAttempts = 25;
     let attempts = 0;
     const interval = setInterval(() => {
       attempts++;
-      if (window.google?.translate) { initGoogleTranslate(); clearInterval(interval); }
-      else if (attempts >= maxAttempts) clearInterval(interval);
+      if (initMobileWidget() || attempts >= maxAttempts) clearInterval(interval);
     }, 200);
     return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (moreRef.current && !moreRef.current.contains(e.target as Node)) setIsMoreOpen(false);
-      if (searchRef.current && !searchRef.current.contains(e.target as Node)) setIsSearchOpen(false);
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const handleLogout = () => { onLogout(); navigate('/'); };
@@ -99,21 +85,38 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, cartCount, onOpenAuth }
   const primaryNav = NAV_ITEMS.filter((item) => PRIMARY_NAV_ROUTES.includes(item.route as any));
   const moreNav = NAV_ITEMS.filter((item) => !PRIMARY_NAV_ROUTES.includes(item.route as any));
 
-  const filteredSearch = SEARCH_SUGGESTIONS.filter((item) => {
-    if (!searchQuery.trim()) return true;
-    const q = searchQuery.toLowerCase();
-    return item.label.toLowerCase().includes(q) ||
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setSearchFocused(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const searchOptions = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return SEARCH_SUGGESTIONS;
+    return SEARCH_SUGGESTIONS.filter((item) =>
+      item.label.toLowerCase().includes(q) ||
       item.subtext.toLowerCase().includes(q) ||
-      item.keywords.some((k) => k.includes(q));
-  });
+      item.keywords.some((k) => k.includes(q))
+    );
+  }, [searchQuery]);
+
+  const moreMenuItems: MenuProps['items'] = moreNav.map((item) => ({
+    key: item.route,
+    label: item.name,
+    icon: <item.icon size={14} />,
+  }));
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-      scrolled
-        ? 'bg-[#062c18]/95 backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.2)] border-b border-emerald-500/20'
-        : 'bg-[#07361d] border-b border-emerald-600/20 shadow-md'
-    }`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
+      ? 'bg-[#062c18]/95 backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.2)] border-b border-emerald-500/20'
+      : 'bg-[#07361d] border-b border-emerald-600/20 shadow-md'
+      }`}>
+      <div className=" mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 gap-3">
 
           {/* Logo */}
@@ -125,7 +128,7 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, cartCount, onOpenAuth }
             className="flex items-center gap-2.5 flex-shrink-0 group text-left"
           >
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 via-green-500 to-emerald-600 flex items-center justify-center shadow-md shadow-emerald-500/25 group-hover:scale-105 transition-transform">
-              <i className="fas fa-leaf text-white text-base"></i>
+              <Sprout size={20} className="text-white" />
             </div>
             <div className="leading-tight">
               <div className="text-lg font-black text-white tracking-tight flex items-center gap-1">
@@ -136,57 +139,59 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, cartCount, onOpenAuth }
           </button>
 
           {/* Center Interactive Quick Search (desktop) */}
-          <div className="hidden lg:block relative flex-1 max-w-sm xl:max-w-md" ref={searchRef}>
-            <div className="flex items-center bg-white/10 rounded-xl px-3.5 py-2 border border-white/15 hover:border-emerald-400/40 focus-within:border-emerald-400 focus-within:bg-white/15 focus-within:ring-2 focus-within:ring-emerald-400/20 transition-all">
-              <i className="fas fa-search text-white/50 text-xs mr-2.5"></i>
+          <div ref={searchRef} className="hidden lg:block relative flex-1 min-w-96 max-w-md xl:max-w-lg">
+            <div className="relative">
+              <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50 pointer-events-none z-10" />
               <input
                 type="text"
+                aria-label="Search features and tools"
+                placeholder="Search mandi, weather, crop doctor..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                onFocus={() => setIsSearchOpen(true)}
-                placeholder="Search mandi, weather, crop doctor..."
-                className="bg-transparent text-white placeholder-white/50 text-xs outline-none flex-1 min-w-0"
+                onFocus={() => setSearchFocused(true)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && searchOptions.length > 0) {
+                    navigateTo(searchOptions[0].route);
+                  }
+                  if (e.key === 'Escape') setSearchFocused(false);
+                }}
+                style={{ backgroundColor: 'rgba(255,255,255,0.1)', color: 'white' }}
+                className="header-search-input w-full rounded-2xl pl-11 pr-10 py-3 border border-white/15 hover:border-emerald-400/40 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20 transition-all placeholder-white/50 text-sm font-medium outline-none"
               />
               {searchQuery && (
                 <button
+                  type="button"
                   onClick={() => setSearchQuery('')}
-                  className="text-white/40 hover:text-white text-xs px-1"
+                  aria-label="Clear search"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/40 hover:text-white text-sm p-1 z-10"
                 >
-                  <i className="fas fa-times"></i>
+                  <X size={14} />
                 </button>
               )}
             </div>
-
-            {/* Search Dropdown */}
-            {isSearchOpen && (
-              <div className="absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2.5 z-50 animate-fade-in-down overflow-hidden">
-                <div className="px-3.5 pb-2 border-b border-gray-100 flex items-center justify-between text-[11px] font-bold text-gray-400 uppercase tracking-wider">
-                  <span>Quick Features & Tools</span>
-                  <span className="text-emerald-600 font-medium">Click to open dedicated page</span>
-                </div>
-                <div className="max-h-64 overflow-y-auto py-1">
-                  {filteredSearch.length > 0 ? (
-                    filteredSearch.map((item) => (
-                      <button
-                        key={item.route}
-                        onClick={() => navigateTo(item.route)}
-                        className="w-full text-left px-3.5 py-2.5 hover:bg-emerald-50/70 flex items-start gap-3 transition-colors group"
-                      >
-                        <span className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
-                          <i className={`${item.icon} text-xs`}></i>
-                        </span>
-                        <div>
-                          <p className="text-xs font-bold text-gray-800 group-hover:text-emerald-800 transition-colors">{item.label}</p>
-                          <p className="text-[11px] text-gray-500">{item.subtext}</p>
-                        </div>
-                      </button>
-                    ))
-                  ) : (
-                    <div className="p-4 text-center text-xs text-gray-500">
-                      No matching tools found for "{searchQuery}".
-                    </div>
-                  )}
-                </div>
+            {searchFocused && (
+              <div className="absolute top-full left-0 right-0 mt-2 bg-[#0a1f12]/95 backdrop-blur-xl border border-emerald-500/30 rounded-xl shadow-2xl shadow-black/40 overflow-hidden z-50 max-h-80 overflow-y-auto">
+                {searchOptions.length > 0 ? (
+                  searchOptions.map((item) => (
+                    <button
+                      key={item.route}
+                      onClick={() => navigateTo(item.route)}
+                      className="w-full text-left flex items-start gap-3 px-4 py-3 hover:bg-emerald-500/15 transition-colors"
+                    >
+                      <span className="w-8 h-8 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <item.icon size={14} />
+                      </span>
+                      <div>
+                        <p className="text-xs font-bold text-white">{item.label}</p>
+                        <p className="text-[11px] text-emerald-200/60">{item.subtext}</p>
+                      </div>
+                    </button>
+                  ))
+                ) : (
+                  <div className="p-4 text-center text-xs text-emerald-200/50">
+                    No matching tools found.
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -199,61 +204,43 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, cartCount, onOpenAuth }
               title="Kisan Call Center (Toll-Free Govt Helpline)"
               className="hidden xl:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-400/30 text-amber-300 hover:bg-amber-500/25 transition-all text-xs font-bold mr-1"
             >
-              <i className="fas fa-phone-volume text-amber-400 text-xs"></i>
+              <PhoneCall size={13} className="text-amber-400" />
               <span>Helpline: 1800-180-1551</span>
             </a>
 
             {primaryNav.map((item) => (
-              <button
+              <NavLink
                 key={item.route}
-                onClick={() => navigateTo(item.route)}
-                className={`px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-200 ${
-                  isRouteActive(item.route)
+                to={item.route}
+                end={item.route === ROUTES.HOME}
+                onClick={() => setIsMenuOpen(false)}
+                className={({ isActive }) =>
+                  `px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-200 inline-flex items-center gap-1.5 ${isActive
                     ? 'bg-white/20 text-white font-bold shadow-sm ring-1 ring-white/30'
                     : 'text-white/70 hover:bg-white/10 hover:text-white'
-                }`}
+                  }`
+                }
               >
-                <i className={`${item.icon} mr-1.5 text-[11px]`}></i>
+                <item.icon size={13} />
                 {item.name}
-              </button>
+              </NavLink>
             ))}
 
             {/* More dropdown */}
-            <div className="relative" ref={moreRef}>
-              <button
-                onClick={() => setIsMoreOpen(!isMoreOpen)}
-                className="px-3 py-2 rounded-xl text-xs font-semibold text-white/70 hover:bg-white/10 hover:text-white transition-all duration-200 flex items-center gap-1"
-              >
+            <Dropdown
+              trigger={['click']}
+              menu={{ items: moreMenuItems, onClick: ({ key }) => navigateTo(key) }}
+              overlayClassName="header-more-dropdown"
+            >
+              <button className="px-3 py-2 rounded-xl text-xs font-semibold text-white/70 hover:bg-white/10 hover:text-white transition-all duration-200 flex items-center gap-1">
                 <span>More Tools</span>
-                <i className={`fas fa-chevron-down text-[9px] transition-transform duration-200 ${isMoreOpen ? 'rotate-180' : ''}`}></i>
+                <ChevronDown size={11} />
               </button>
-              {isMoreOpen && (
-                <div className="absolute right-0 top-full mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 w-56 z-50 animate-fade-in-down">
-                  {moreNav.map((item) => (
-                    <button
-                      key={item.route}
-                      onClick={() => { setIsMoreOpen(false); navigateTo(item.route); }}
-                      className={`w-full text-left px-4 py-2.5 text-xs font-semibold flex items-center gap-3 transition-all duration-200 ${
-                        isRouteActive(item.route)
-                          ? 'bg-emerald-50 text-emerald-800 font-bold'
-                          : 'text-gray-700 hover:bg-gray-50 hover:text-emerald-700'
-                      }`}
-                    >
-                      <span className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs ${
-                        isRouteActive(item.route) ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'
-                      }`}>
-                        <i className={item.icon}></i>
-                      </span>
-                      {item.name}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+            </Dropdown>
 
             {/* Language pill */}
             <div className="translate-pill ml-1">
-              <i className="fas fa-globe text-white/70 text-xs"></i>
+              <Globe size={13} className="text-white/70" />
               <div id="google_translate_element"></div>
             </div>
 
@@ -265,7 +252,7 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, cartCount, onOpenAuth }
                 `relative p-2.5 rounded-xl transition-all duration-200 ${isActive ? 'text-white bg-white/15 ring-1 ring-white/20' : 'text-white/70 hover:text-white hover:bg-white/10'}`
               }
             >
-              <i className="fas fa-shopping-cart text-sm"></i>
+              <ShoppingCart size={15} />
               {cartCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-amber-500 text-slate-900 text-[10px] rounded-full h-4 min-w-[18px] flex items-center justify-center font-black px-1 shadow-md">
                   {cartCount}
@@ -282,18 +269,18 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, cartCount, onOpenAuth }
                   </div>
                   <span className="text-xs text-white font-semibold">{user.name.split(' ')[0]}</span>
                 </div>
-                <button onClick={handleLogout} className="px-3 py-1.5 text-xs font-semibold text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition-all">
+                <Button type="text" onClick={handleLogout} className="!text-white/70 hover:!text-white !text-xs !font-semibold !px-3 !h-auto !py-1.5">
                   Logout
-                </button>
+                </Button>
               </div>
             ) : (
               <div className="flex items-center gap-2 ml-1">
-                <button onClick={() => onOpenAuth && onOpenAuth('login')} className="px-3.5 py-1.5 text-xs font-bold border border-white/25 text-white rounded-xl hover:bg-white/10 transition-all">
+                <Button onClick={() => onOpenAuth && onOpenAuth('login')} className="!border-white/25 !text-white !bg-transparent !text-xs !font-bold !h-auto !py-1.5 hover:!bg-white/10">
                   Login
-                </button>
-                <button onClick={() => onOpenAuth && onOpenAuth('signup')} className="btn-modern px-3.5 py-1.5 text-xs font-bold bg-gradient-to-r from-emerald-400 to-green-500 text-slate-950 rounded-xl hover:shadow-lg hover:shadow-emerald-500/25 transition-all">
+                </Button>
+                <Button type="primary" onClick={() => onOpenAuth && onOpenAuth('signup')} className="btn-modern !text-xs !font-bold !h-auto !py-1.5 !bg-gradient-to-r !from-emerald-400 !to-green-500 !text-slate-950 !border-0 hover:!shadow-lg hover:!shadow-emerald-500/25">
                   Sign Up
-                </button>
+                </Button>
               </div>
             )}
           </div>
@@ -305,10 +292,10 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, cartCount, onOpenAuth }
               aria-label="Call Kisan Helpline"
               className="p-2 rounded-xl text-amber-300 bg-amber-500/20 border border-amber-400/30 flex items-center justify-center"
             >
-              <i className="fas fa-phone-volume text-sm"></i>
+              <PhoneCall size={15} />
             </a>
             <NavLink to={ROUTES.CART} className="relative p-2 rounded-xl text-white/70 hover:text-white hover:bg-white/10">
-              <i className="fas fa-shopping-cart text-base"></i>
+              <ShoppingCart size={17} />
               {cartCount > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 bg-amber-500 text-slate-900 text-[9px] rounded-full h-4 min-w-[16px] flex items-center justify-center font-black px-0.5">
                   {cartCount}
@@ -321,7 +308,7 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, cartCount, onOpenAuth }
               aria-expanded={isMenuOpen}
               className="p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-all"
             >
-              <i className={`fas ${isMenuOpen ? 'fa-times' : 'fa-bars'} text-lg transition-transform duration-200 ${isMenuOpen ? 'rotate-90' : ''}`}></i>
+              {isMenuOpen ? <X size={19} /> : <MenuIcon size={19} />}
             </button>
           </div>
         </div>
@@ -337,7 +324,7 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, cartCount, onOpenAuth }
               className="w-full flex items-center justify-between p-3.5 rounded-xl bg-amber-500/15 border border-amber-400/30 text-amber-200 mb-2 font-bold text-xs"
             >
               <div className="flex items-center gap-2.5">
-                <i className="fas fa-phone-volume text-amber-400 text-base"></i>
+                <PhoneCall size={16} className="text-amber-400" />
                 <div>
                   <div className="text-white font-black">Kisan Call Center</div>
                   <div className="text-[11px] text-amber-300/80">Toll-Free Helpline: 1800-180-1551</div>
@@ -347,22 +334,28 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, cartCount, onOpenAuth }
             </a>
 
             {NAV_ITEMS.map((item) => (
-              <button
+              <NavLink
                 key={item.route}
-                onClick={() => { setIsMenuOpen(false); navigateTo(item.route); }}
-                className={`w-full text-left px-3.5 py-3 rounded-xl text-sm font-semibold flex items-center gap-3 transition-all ${
-                  isRouteActive(item.route)
+                to={item.route}
+                end={item.route === ROUTES.HOME}
+                onClick={() => setIsMenuOpen(false)}
+                className={({ isActive }) =>
+                  `w-full text-left px-3.5 py-3 rounded-xl text-sm font-semibold flex items-center gap-3 transition-all ${isActive
                     ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold'
                     : 'text-white/70 hover:bg-white/10 hover:text-white'
-                }`}
+                  }`
+                }
               >
-                <span className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs ${
-                  isRouteActive(item.route) ? 'bg-emerald-400 text-slate-950 font-bold' : 'bg-white/10 text-white/80'
-                }`}>
-                  <i className={item.icon}></i>
-                </span>
-                <span>{item.name}</span>
-              </button>
+                {({ isActive }) => (
+                  <>
+                    <span className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs ${isActive ? 'bg-emerald-400 text-slate-950 font-bold' : 'bg-white/10 text-white/80'
+                      }`}>
+                      <item.icon size={14} />
+                    </span>
+                    <span>{item.name}</span>
+                  </>
+                )}
+              </NavLink>
             ))}
 
             <div className="border-t border-white/10 mt-3 pt-3">
@@ -376,7 +369,7 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, cartCount, onOpenAuth }
                     <span className="text-sm text-white font-bold">{user.name}</span>
                   </div>
                   <button onClick={() => { handleLogout(); setIsMenuOpen(false); }} className="w-full text-left px-3 py-2.5 text-red-300 hover:bg-white/10 rounded-xl transition-colors font-semibold text-xs flex items-center gap-2">
-                    <i className="fas fa-sign-out-alt"></i> Logout
+                    <LogOut size={13} /> Logout
                   </button>
                 </div>
               ) : (
