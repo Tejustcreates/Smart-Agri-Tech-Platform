@@ -527,8 +527,10 @@ async function imageSignature(file: File): Promise<number> {
 }
 
 const ImageDiseaseDetector: React.FC = () => {
-  const inputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
   const [selectedCrop, setSelectedCrop] = useState('');
+  const [showSourcePicker, setShowSourcePicker] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [preview, setPreview] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -542,6 +544,7 @@ const ImageDiseaseDetector: React.FC = () => {
   }, [preview]);
 
   const acceptFile = useCallback((file: File | undefined) => {
+    setShowSourcePicker(false);
     setError('');
     setResult(null);
 
@@ -608,7 +611,9 @@ const ImageDiseaseDetector: React.FC = () => {
     setError('');
     setResult(null);
     setIsAnalyzing(false);
-    if (inputRef.current) inputRef.current.value = '';
+    setShowSourcePicker(false);
+    if (galleryInputRef.current) galleryInputRef.current.value = '';
+    if (cameraInputRef.current) cameraInputRef.current.value = '';
   }, []);
 
   return (
@@ -645,7 +650,8 @@ const ImageDiseaseDetector: React.FC = () => {
                         setImageFile(null);
                         setPreview('');
                         setResult(null);
-                        if (inputRef.current) inputRef.current.value = '';
+                        if (galleryInputRef.current) galleryInputRef.current.value = '';
+                        if (cameraInputRef.current) cameraInputRef.current.value = '';
                       }}
                       className="tap-target inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-gray-200 text-gray-600 text-xs font-semibold hover:bg-gray-100 transition-colors"
                     >
@@ -653,7 +659,11 @@ const ImageDiseaseDetector: React.FC = () => {
                     </button>
                   </div>
                 ) : (
-                  <label className="cursor-pointer block">
+                  <button
+                    type="button"
+                    onClick={() => setShowSourcePicker(true)}
+                    className="block w-full cursor-pointer"
+                  >
                     <div className="w-16 h-16 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center mx-auto mb-4">
                       <i className="fas fa-cloud-upload-alt text-2xl" />
                     </div>
@@ -662,11 +672,18 @@ const ImageDiseaseDetector: React.FC = () => {
                     <span className="tap-target inline-flex items-center gap-2 mt-4 px-5 py-2.5 rounded-xl bg-brand-600 text-white text-sm font-semibold hover:bg-brand-700 transition-colors">
                       <i className="fas fa-image" /> Choose Image
                     </span>
-                  </label>
+                  </button>
                 )}
 
                 <input
-                  ref={inputRef}
+                  ref={galleryInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => acceptFile(e.target.files?.[0])}
+                />
+                <input
+                  ref={cameraInputRef}
                   type="file"
                   accept="image/*"
                   capture="environment"
@@ -720,6 +737,75 @@ const ImageDiseaseDetector: React.FC = () => {
           </>
         )}
       </div>
+
+      <AnimatePresence>
+        {showSourcePicker && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 p-4"
+            onClick={() => setShowSourcePicker(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 30, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 30, scale: 0.98 }}
+              transition={{ duration: 0.2 }}
+              className="w-full max-w-sm rounded-2xl bg-white p-5 shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Choose photo source"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-base font-bold text-gray-800">Add Crop Photo</h3>
+                  <p className="text-xs text-gray-500 mt-0.5">Choose how you want to add the photo</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowSourcePicker(false)}
+                  className="tap-target w-9 h-9 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 flex items-center justify-center"
+                  aria-label="Close"
+                >
+                  <i className="fas fa-times" />
+                </button>
+              </div>
+
+              <div className="space-y-3">
+                <button
+                  type="button"
+                  onClick={() => { setShowSourcePicker(false); galleryInputRef.current?.click(); }}
+                  className="tap-target w-full flex items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 p-4 text-left hover:border-brand-300 hover:bg-brand-50 transition-colors"
+                >
+                  <span className="w-11 h-11 rounded-xl bg-brand-100 text-brand-600 flex items-center justify-center flex-shrink-0">
+                    <i className="fas fa-images text-lg" />
+                  </span>
+                  <span>
+                    <span className="block text-sm font-bold text-gray-800">Upload Photo</span>
+                    <span className="block text-xs text-gray-500 mt-0.5">Choose an image from your device</span>
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => { setShowSourcePicker(false); cameraInputRef.current?.click(); }}
+                  className="tap-target w-full flex items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 p-4 text-left hover:border-brand-300 hover:bg-brand-50 transition-colors"
+                >
+                  <span className="w-11 h-11 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center flex-shrink-0">
+                    <i className="fas fa-camera text-lg" />
+                  </span>
+                  <span>
+                    <span className="block text-sm font-bold text-gray-800">Take Photo</span>
+                    <span className="block text-xs text-gray-500 mt-0.5">Open your camera and capture now</span>
+                  </span>
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
